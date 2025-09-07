@@ -5,6 +5,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { Providers } from "./providers"
+import PWARegister from './pwa-register'
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -35,6 +36,7 @@ export default function RootLayout({
           <Providers>{children}</Providers>
           <Toaster />
         </ThemeProvider>
+          <PWARegister />
       </body>
     </html>
   )
