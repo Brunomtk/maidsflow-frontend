@@ -156,8 +156,8 @@ export default function RecurrencesPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white mb-1">Recurrence Management</h1>
-            <p className="text-gray-400">Manage all recurring services.</p>
+            <h1 className="text-2xl font-bold text-foreground mb-1">Recurrence Management</h1>
+            <p className="text-muted-foreground">Manage all recurring services.</p>
           </div>
           <Button
             className="bg-[#06b6d4] hover:bg-[#0891b2] text-white"
@@ -173,48 +173,48 @@ export default function RecurrencesPage() {
 
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="relative w-full md:w-auto">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by title or customer..."
               value={filters.searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              className="pl-10 w-full md:w-[300px] bg-[#1a2234] border-[#2a3349] text-white focus-visible:ring-[#06b6d4]"
+              className="pl-10 w-full md:w-[300px] bg-background border-input text-foreground focus-visible:ring-[#06b6d4]"
             />
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
             <Select value={filters.status} onValueChange={handleStatusFilter}>
-              <SelectTrigger className="w-full sm:w-[150px] bg-[#1a2234] border-[#2a3349] text-white">
+              <SelectTrigger className="w-full sm:w-[150px] bg-background border-input text-foreground">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
-                <SelectItem value="all" className="hover:bg-[#2a3349]">
+              <SelectContent className="bg-popover border-border text-popover-foreground">
+                <SelectItem value="all" className="hover:bg-accent">
                   All Statuses
                 </SelectItem>
-                <SelectItem value="active" className="hover:bg-[#2a3349]">
+                <SelectItem value="active" className="hover:bg-accent">
                   Active
                 </SelectItem>
-                <SelectItem value="inactive" className="hover:bg-[#2a3349]">
+                <SelectItem value="inactive" className="hover:bg-accent">
                   Inactive
                 </SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={filters.type} onValueChange={handleTypeFilter}>
-              <SelectTrigger className="w-full sm:w-[150px] bg-[#1a2234] border-[#2a3349] text-white">
+              <SelectTrigger className="w-full sm:w-[150px] bg-background border-input text-foreground">
                 <SelectValue placeholder="Filter by type" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
-                <SelectItem value="all" className="hover:bg-[#2a3349]">
+              <SelectContent className="bg-popover border-border text-popover-foreground">
+                <SelectItem value="all" className="hover:bg-accent">
                   All Types
                 </SelectItem>
-                <SelectItem value="regular" className="hover:bg-[#2a3349]">
+                <SelectItem value="regular" className="hover:bg-accent">
                   Regular
                 </SelectItem>
-                <SelectItem value="deep" className="hover:bg-[#2a3349]">
+                <SelectItem value="deep" className="hover:bg-accent">
                   Deep
                 </SelectItem>
-                <SelectItem value="specialized" className="hover:bg-[#2a3349]">
+                <SelectItem value="specialized" className="hover:bg-accent">
                   Specialized
                 </SelectItem>
               </SelectContent>
@@ -222,46 +222,46 @@ export default function RecurrencesPage() {
           </div>
         </div>
 
-        <div className="rounded-md border border-[#2a3349] overflow-hidden">
+        <div className="rounded-md border border-border overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#06b6d4]"></div>
             </div>
           ) : (
             <Table>
-              <TableHeader className="bg-[#1a2234]">
-                <TableRow className="border-[#2a3349] hover:bg-[#2a3349]">
-                  <TableHead className="text-white">Service</TableHead>
-                  <TableHead className="text-white">Customer</TableHead>
-                  <TableHead className="text-white">Company</TableHead>
-                  <TableHead className="text-white">Frequency</TableHead>
-                  <TableHead className="text-white">Next Execution</TableHead>
-                  <TableHead className="text-white">Team</TableHead>
-                  <TableHead className="text-white">Type</TableHead>
-                  <TableHead className="text-white">Status</TableHead>
-                  <TableHead className="text-white text-center">Actions</TableHead>
+              <TableHeader className="bg-muted/50">
+                <TableRow className="border-border hover:bg-muted">
+                  <TableHead className="text-foreground">Service</TableHead>
+                  <TableHead className="text-foreground">Customer</TableHead>
+                  <TableHead className="text-foreground">Company</TableHead>
+                  <TableHead className="text-foreground">Frequency</TableHead>
+                  <TableHead className="text-foreground">Next Execution</TableHead>
+                  <TableHead className="text-foreground">Team</TableHead>
+                  <TableHead className="text-foreground">Type</TableHead>
+                  <TableHead className="text-foreground">Status</TableHead>
+                  <TableHead className="text-foreground text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {recurrences.map((recurrence) => (
-                  <TableRow key={recurrence.id} className="border-[#2a3349] hover:bg-[#1a2234] bg-[#0f172a]">
-                    <TableCell className="font-medium text-white">
+                  <TableRow key={recurrence.id} className="border-border hover:bg-muted/50 bg-background">
+                    <TableCell className="font-medium text-foreground">
                       <div className="flex items-center gap-2">
-                        <div className="bg-[#2a3349] p-1.5 rounded-md">
+                        <div className="bg-muted p-1.5 rounded-md">
                           <RefreshCw className="h-4 w-4 text-[#06b6d4]" />
                         </div>
                         {recurrence.title}
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-400">{recurrence.customer?.name || "N/A"}</TableCell>
-                    <TableCell className="text-gray-400">{recurrence.company?.name || "N/A"}</TableCell>
-                    <TableCell className="text-gray-400">
+                    <TableCell className="text-muted-foreground">{recurrence.customer?.name || "N/A"}</TableCell>
+                    <TableCell className="text-muted-foreground">{recurrence.company?.name || "N/A"}</TableCell>
+                    <TableCell className="text-muted-foreground">
                       <div className="flex flex-col">
                         <span>{getFrequencyLabel(recurrence.frequency)}</span>
                         <span className="text-xs">Day {recurrence.day}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-400">
+                    <TableCell className="text-muted-foreground">
                       {recurrence.nextExecution ? (
                         <div className="flex flex-col">
                           <span>{formatDate(recurrence.nextExecution)}</span>
@@ -274,7 +274,7 @@ export default function RecurrencesPage() {
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="text-gray-400">{recurrence.team?.name || "N/A"}</TableCell>
+                    <TableCell className="text-muted-foreground">{recurrence.team?.name || "N/A"}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={getTypeBadge(recurrence.type).className}>
                         {getTypeBadge(recurrence.type).label}
@@ -293,7 +293,7 @@ export default function RecurrencesPage() {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleViewDetails(recurrence)}
-                              className="h-8 w-8 text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                              className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -309,7 +309,7 @@ export default function RecurrencesPage() {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleEdit(recurrence)}
-                              className="h-8 w-8 text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                              className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent"
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -325,7 +325,7 @@ export default function RecurrencesPage() {
                               variant="ghost"
                               size="icon"
                               onClick={() => setRecurrenceToDelete(recurrence)}
-                              className="h-8 w-8 text-gray-400 hover:text-red-500 hover:bg-[#2a3349]"
+                              className="h-8 w-8 text-muted-foreground hover:text-red-500 hover:bg-accent"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -344,16 +344,16 @@ export default function RecurrencesPage() {
         </div>
 
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-muted-foreground">
             Showing{" "}
-            <span className="font-medium text-white">
+            <span className="font-medium text-foreground">
               {pagination.totalItems > 0 ? (pagination.currentPage - 1) * pagination.pageSize + 1 : 0}
             </span>{" "}
             to{" "}
-            <span className="font-medium text-white">
+            <span className="font-medium text-foreground">
               {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalItems)}
             </span>{" "}
-            of <span className="font-medium text-white">{pagination.totalItems}</span> recurrences
+            of <span className="font-medium text-foreground">{pagination.totalItems}</span> recurrences
           </p>
           <div className="flex gap-2">
             <Button
@@ -361,7 +361,7 @@ export default function RecurrencesPage() {
               size="sm"
               onClick={() => setPage(pagination.currentPage - 1)}
               disabled={pagination.currentPage <= 1}
-              className="border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white"
+              className="border-input text-foreground hover:bg-accent"
             >
               Previous
             </Button>
@@ -374,8 +374,8 @@ export default function RecurrencesPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => setPage(pageNum)}
-                  className={`border-[#2a3349] hover:bg-[#2a3349] hover:text-white ${
-                    pagination.currentPage === pageNum ? "bg-[#2a3349] text-white" : "text-white"
+                  className={`border-input hover:bg-accent ${
+                    pagination.currentPage === pageNum ? "bg-accent text-foreground" : "text-foreground"
                   }`}
                 >
                   {pageNum}
@@ -388,7 +388,7 @@ export default function RecurrencesPage() {
               size="sm"
               onClick={() => setPage(pagination.currentPage + 1)}
               disabled={pagination.currentPage >= pagination.totalPages}
-              className="border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white"
+              className="border-input text-foreground hover:bg-accent"
             >
               Next
             </Button>
@@ -417,16 +417,16 @@ export default function RecurrencesPage() {
         />
 
         <AlertDialog open={!!recurrenceToDelete} onOpenChange={() => setRecurrenceToDelete(null)}>
-          <AlertDialogContent className="bg-[#1a2234] border-[#2a3349] text-white">
+          <AlertDialogContent className="bg-popover border-border text-popover-foreground">
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription className="text-gray-400">
+              <AlertDialogDescription className="text-muted-foreground">
                 This action cannot be undone. This will permanently delete the recurring service
-                <span className="font-semibold text-white block mt-1">{recurrenceToDelete?.title}</span>
+                <span className="font-semibold text-foreground block mt-1">{recurrenceToDelete?.title}</span>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="bg-transparent border-[#2a3349] text-white hover:bg-[#2a3349]">
+              <AlertDialogCancel className="bg-transparent border-input text-foreground hover:bg-accent">
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction

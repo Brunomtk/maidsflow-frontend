@@ -162,11 +162,11 @@ export default function CompaniesPage() {
       <div className="space-y-4 md:space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold text-white mb-1">Company Management</h1>
-            <p className="text-sm md:text-base text-gray-400">Manage all active companies in the system.</p>
+            <h1 className="text-xl md:text-2xl font-bold mb-1">Company Management</h1>
+            <p className="text-sm md:text-base text-muted-foreground">Manage all active companies in the system.</p>
           </div>
           <Button
-            className="bg-[#06b6d4] hover:bg-[#0891b2] text-white w-full sm:w-auto"
+            className="bg-accent hover:bg-accent/90 text-accent-foreground w-full sm:w-auto"
             onClick={() => {
               setSelectedCompany(null)
               setIsModalOpen(true)
@@ -179,12 +179,12 @@ export default function CompaniesPage() {
 
         <div className="flex flex-col gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by name or CNPJ..."
               value={searchQuery}
               onChange={handleSearchChange}
-              className="pl-10 bg-[#1a2234] border-[#2a3349] text-white focus-visible:ring-[#06b6d4]"
+              className="pl-10"
             />
           </div>
 
@@ -194,8 +194,8 @@ export default function CompaniesPage() {
               onClick={() => handleStatusFilterChange("all")}
               className={
                 statusFilter === "all"
-                  ? "bg-[#06b6d4] hover:bg-[#0891b2] text-white flex-1 sm:flex-none"
-                  : "border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent flex-1 sm:flex-none"
+                  ? "bg-accent hover:bg-accent/90 text-accent-foreground flex-1 sm:flex-none"
+                  : "flex-1 sm:flex-none"
               }
             >
               All
@@ -205,8 +205,8 @@ export default function CompaniesPage() {
               onClick={() => handleStatusFilterChange("active")}
               className={
                 statusFilter === "active"
-                  ? "bg-[#06b6d4] hover:bg-[#0891b2] text-white flex-1 sm:flex-none"
-                  : "border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent flex-1 sm:flex-none"
+                  ? "bg-accent hover:bg-accent/90 text-accent-foreground flex-1 sm:flex-none"
+                  : "flex-1 sm:flex-none"
               }
             >
               Active
@@ -216,8 +216,8 @@ export default function CompaniesPage() {
               onClick={() => handleStatusFilterChange("inactive")}
               className={
                 statusFilter === "inactive"
-                  ? "bg-[#06b6d4] hover:bg-[#0891b2] text-white flex-1 sm:flex-none"
-                  : "border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent flex-1 sm:flex-none"
+                  ? "bg-accent hover:bg-accent/90 text-accent-foreground flex-1 sm:flex-none"
+                  : "flex-1 sm:flex-none"
               }
             >
               Inactive
@@ -227,38 +227,41 @@ export default function CompaniesPage() {
 
         <div className="block md:hidden">
           {isLoading && companies.length === 0 ? (
-            <Card className="bg-[#1a2234] border-[#2a3349]">
-              <CardContent className="p-4 text-center text-gray-400">Loading companies...</CardContent>
+            <Card className="bg-gradient-to-br from-card to-muted/20 border-border shadow-lg">
+              <CardContent className="p-4 text-center text-muted-foreground">Loading companies...</CardContent>
             </Card>
           ) : error ? (
-            <Card className="bg-[#1a2234] border-[#2a3349]">
-              <CardContent className="p-4 text-center text-red-400">Error: {error}</CardContent>
+            <Card className="bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/30 shadow-lg">
+              <CardContent className="p-4 text-center text-destructive">Error: {error}</CardContent>
             </Card>
           ) : companies.length === 0 ? (
-            <Card className="bg-[#1a2234] border-[#2a3349]">
-              <CardContent className="p-4 text-center text-gray-400">No companies found</CardContent>
+            <Card className="bg-gradient-to-br from-card to-muted/20 border-border shadow-lg">
+              <CardContent className="p-4 text-center text-muted-foreground">No companies found</CardContent>
             </Card>
           ) : (
             <div className="space-y-3">
               {companies.map((company) => (
-                <Card key={company.id} className="bg-[#1a2234] border-[#2a3349]">
+                <Card
+                  key={company.id}
+                  className="bg-gradient-to-br from-card via-card to-muted/20 border-border shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                >
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <div className="bg-[#2a3349] p-1.5 rounded-md">
-                          <Building2 className="h-4 w-4 text-[#06b6d4]" />
+                        <div className="bg-gradient-to-br from-primary/20 to-primary/10 p-2 rounded-lg border border-primary/30">
+                          <Building2 className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                          <h3 className="font-medium text-white text-sm">{company.name}</h3>
-                          <p className="text-xs text-gray-400">{company.cnpj}</p>
+                          <h3 className="font-medium text-sm">{company.name}</h3>
+                          <p className="text-xs text-muted-foreground">{company.cnpj}</p>
                         </div>
                       </div>
                       <Badge
                         variant="outline"
                         className={
                           company.status === 1
-                            ? "border-green-500 text-green-500 text-xs"
-                            : "border-red-500 text-red-500 text-xs"
+                            ? "border-green-500/50 text-green-500 bg-green-500/10 text-xs"
+                            : "border-red-500/50 text-red-500 bg-red-500/10 text-xs"
                         }
                       >
                         {company.status === 1 ? "Active" : "Inactive"}
@@ -267,12 +270,12 @@ export default function CompaniesPage() {
 
                     <div className="space-y-2 mb-3">
                       <div className="flex justify-between text-xs">
-                        <span className="text-gray-400">Plan:</span>
-                        <span className="text-white">{company.planName || company.plan?.name || "N/A"}</span>
+                        <span className="text-muted-foreground">Plan:</span>
+                        <span>{company.planName || company.plan?.name || "N/A"}</span>
                       </div>
                       <div className="flex justify-between text-xs">
-                        <span className="text-gray-400">Responsible:</span>
-                        <span className="text-white">{company.responsible}</span>
+                        <span className="text-muted-foreground">Responsible:</span>
+                        <span>{company.responsible}</span>
                       </div>
                     </div>
 
@@ -281,17 +284,12 @@ export default function CompaniesPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleViewDetails(company)}
-                        className="flex-1 text-gray-400 hover:text-white hover:bg-[#2a3349] text-xs"
+                        className="flex-1 text-xs"
                       >
                         <Eye className="h-3 w-3 mr-1" />
                         View
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(company)}
-                        className="flex-1 text-gray-400 hover:text-white hover:bg-[#2a3349] text-xs"
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => handleEdit(company)} className="flex-1 text-xs">
                         <Edit className="h-3 w-3 mr-1" />
                         Edit
                       </Button>
@@ -299,7 +297,7 @@ export default function CompaniesPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => setCompanyToDelete(company)}
-                        className="flex-1 text-gray-400 hover:text-red-500 hover:bg-[#2a3349] text-xs"
+                        className="flex-1 text-destructive hover:text-destructive text-xs"
                       >
                         <Trash2 className="h-3 w-3 mr-1" />
                         Delete
@@ -313,51 +311,53 @@ export default function CompaniesPage() {
         </div>
 
         <div className="hidden md:block">
-          <div className="rounded-md border border-[#2a3349] overflow-x-auto">
+          <div className="rounded-md border overflow-x-auto">
             <Table>
-              <TableHeader className="bg-[#1a2234]">
-                <TableRow className="border-[#2a3349] hover:bg-[#2a3349]">
-                  <TableHead className="text-white">Name</TableHead>
-                  <TableHead className="text-white">CNPJ</TableHead>
-                  <TableHead className="text-white">Plan</TableHead>
-                  <TableHead className="text-white">Responsible</TableHead>
-                  <TableHead className="text-white">Status</TableHead>
-                  <TableHead className="text-white text-center">Actions</TableHead>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>CNPJ</TableHead>
+                  <TableHead>Plan</TableHead>
+                  <TableHead>Responsible</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading && companies.length === 0 ? (
-                  <TableRow className="border-[#2a3349] hover:bg-[#1a2234] bg-[#0f172a]">
-                    <TableCell colSpan={6} className="text-center py-8 text-gray-400">
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                       Loading companies...
                     </TableCell>
                   </TableRow>
                 ) : error ? (
-                  <TableRow className="border-[#2a3349] hover:bg-[#1a2234] bg-[#0f172a]">
-                    <TableCell colSpan={6} className="text-center py-8 text-red-400">
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8 text-destructive">
                       Error: {error}
                     </TableCell>
                   </TableRow>
                 ) : companies.length === 0 ? (
-                  <TableRow className="border-[#2a3349] hover:bg-[#1a2234] bg-[#0f172a]">
-                    <TableCell colSpan={6} className="text-center py-8 text-gray-400">
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                       No companies found
                     </TableCell>
                   </TableRow>
                 ) : (
                   companies.map((company) => (
-                    <TableRow key={company.id} className="border-[#2a3349] hover:bg-[#1a2234] bg-[#0f172a]">
-                      <TableCell className="font-medium text-white">
+                    <TableRow key={company.id}>
+                      <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
-                          <div className="bg-[#2a3349] p-1.5 rounded-md">
-                            <Building2 className="h-4 w-4 text-[#06b6d4]" />
+                          <div className="bg-secondary p-1.5 rounded-md">
+                            <Building2 className="h-4 w-4 text-accent" />
                           </div>
                           {company.name}
                         </div>
                       </TableCell>
-                      <TableCell className="text-gray-400">{company.cnpj}</TableCell>
-                      <TableCell className="text-gray-400">{company.planName || company.plan?.name || "N/A"}</TableCell>
-                      <TableCell className="text-gray-400">{company.responsible}</TableCell>
+                      <TableCell className="text-muted-foreground">{company.cnpj}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {company.planName || company.plan?.name || "N/A"}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">{company.responsible}</TableCell>
                       <TableCell>
                         <Badge
                           variant="outline"
@@ -376,7 +376,7 @@ export default function CompaniesPage() {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => handleViewDetails(company)}
-                                className="h-8 w-8 text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                                className="h-8 w-8"
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>
@@ -392,7 +392,7 @@ export default function CompaniesPage() {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => handleEdit(company)}
-                                className="h-8 w-8 text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                                className="h-8 w-8"
                               >
                                 <Edit className="h-4 w-4" />
                               </Button>
@@ -408,7 +408,7 @@ export default function CompaniesPage() {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => setCompanyToDelete(company)}
-                                className="h-8 w-8 text-gray-400 hover:text-red-500 hover:bg-[#2a3349]"
+                                className="h-8 w-8 text-destructive hover:text-destructive"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -429,9 +429,9 @@ export default function CompaniesPage() {
 
         {pagination.totalPages > 1 && (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <p className="text-xs sm:text-sm text-gray-400 text-center sm:text-left">
-              Page <span className="font-medium text-white">{pagination.currentPage}</span> of{" "}
-              <span className="font-medium text-white">{pagination.totalPages}</span>
+            <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+              Page <span className="font-medium">{pagination.currentPage}</span> of{" "}
+              <span className="font-medium">{pagination.totalPages}</span>
             </p>
             <div className="flex gap-1 sm:gap-2 justify-center">
               <Button
@@ -439,7 +439,7 @@ export default function CompaniesPage() {
                 size="sm"
                 disabled={pagination.currentPage === 1}
                 onClick={() => handlePageChange(pagination.currentPage - 1)}
-                className="border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent text-xs px-2"
+                className="text-xs px-2"
               >
                 Previous
               </Button>
@@ -451,11 +451,7 @@ export default function CompaniesPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handlePageChange(page)}
-                    className={
-                      page === pagination.currentPage
-                        ? "border-[#2a3349] bg-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white text-xs px-2"
-                        : "border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent text-xs px-2"
-                    }
+                    className={page === pagination.currentPage ? "bg-secondary text-xs px-2" : "text-xs px-2"}
                   >
                     {page}
                   </Button>
@@ -466,7 +462,7 @@ export default function CompaniesPage() {
                 size="sm"
                 disabled={pagination.currentPage === pagination.totalPages}
                 onClick={() => handlePageChange(pagination.currentPage + 1)}
-                className="border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent text-xs px-2"
+                className="text-xs px-2"
               >
                 Next
               </Button>
@@ -494,21 +490,19 @@ export default function CompaniesPage() {
         />
 
         <AlertDialog open={!!companyToDelete} onOpenChange={() => setCompanyToDelete(null)}>
-          <AlertDialogContent className="bg-[#1a2234] border-[#2a3349] text-white">
+          <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription className="text-gray-400">
+              <AlertDialogDescription>
                 This action cannot be undone. This will permanently delete the company{" "}
-                <span className="font-semibold text-white">{companyToDelete?.name}</span> from the system.
+                <span className="font-semibold">{companyToDelete?.name}</span> from the system.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="bg-transparent border-[#2a3349] text-white hover:bg-[#2a3349]">
-                Cancel
-              </AlertDialogCancel>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDeleteCompany}
-                className="bg-red-600 hover:bg-red-700 text-white border-0"
+                className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
               >
                 Delete
               </AlertDialogAction>

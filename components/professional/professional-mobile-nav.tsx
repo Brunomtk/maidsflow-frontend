@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { CheckCircle, Home, MessageSquare, TrendingUp, User } from "lucide-react"
+import { CheckCircle, Home, Calendar, TrendingUp, User } from "lucide-react"
 
 const navigation = [
   {
@@ -20,10 +20,10 @@ const navigation = [
     label: "Check",
   },
   {
-    name: "Feedback",
-    href: "/professional/feedback",
-    icon: MessageSquare,
-    label: "Feedback",
+    name: "Appointments",
+    href: "/professional/schedule",
+    icon: Calendar,
+    label: "Appointments",
   },
   {
     name: "Performance",

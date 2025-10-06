@@ -199,73 +199,73 @@ export default function UsersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white">Users</h1>
-          <p className="text-sm md:text-base text-gray-400">Manage system users and their permissions</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Users</h1>
+          <p className="text-sm md:text-base text-muted-foreground">Manage system users and their permissions</p>
         </div>
-        <Button onClick={() => setIsCreateModalOpen(true)} className="bg-[#06b6d4] hover:bg-[#0891b2] w-full sm:w-auto">
+        <Button onClick={() => setIsCreateModalOpen(true)} className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           Add User
         </Button>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs md:text-sm font-medium text-gray-300">Total Users</CardTitle>
-            <Users className="h-3 w-3 md:h-4 md:w-4 text-gray-400" />
+            <CardTitle className="text-xs md:text-sm font-medium text-card-foreground">Total Users</CardTitle>
+            <Users className="h-3 w-3 md:h-4 md:w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-lg md:text-2xl font-bold text-white">{totalUsers}</div>
+            <div className="text-lg md:text-2xl font-bold text-blue-500">{totalUsers}</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-gradient-to-br from-green-500/10 via-card to-green-500/5 border-green-500/30 shadow-lg hover:shadow-green-500/20 hover:scale-105 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs md:text-sm font-medium text-gray-300">Active Users</CardTitle>
-            <UserCheck className="h-3 w-3 md:h-4 md:w-4 text-green-400" />
+            <CardTitle className="text-xs md:text-sm font-medium text-card-foreground">Active Users</CardTitle>
+            <UserCheck className="h-3 w-3 md:h-4 md:w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-lg md:text-2xl font-bold text-green-400">{activeUsers}</div>
+            <div className="text-lg md:text-2xl font-bold text-green-500">{activeUsers}</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-gradient-to-br from-red-500/10 via-card to-red-500/5 border-red-500/30 shadow-lg hover:shadow-red-500/20 hover:scale-105 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs md:text-sm font-medium text-gray-300">Inactive Users</CardTitle>
-            <UserX className="h-3 w-3 md:h-4 md:w-4 text-red-400" />
+            <CardTitle className="text-xs md:text-sm font-medium text-card-foreground">Inactive Users</CardTitle>
+            <UserX className="h-3 w-3 md:h-4 md:w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-lg md:text-2xl font-bold text-red-400">{inactiveUsers}</div>
+            <div className="text-lg md:text-2xl font-bold text-red-500">{inactiveUsers}</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-gradient-to-br from-purple-500/10 via-card to-purple-500/5 border-purple-500/30 shadow-lg hover:shadow-purple-500/20 hover:scale-105 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs md:text-sm font-medium text-gray-300">Administrators</CardTitle>
-            <Shield className="h-3 w-3 md:h-4 md:w-4 text-blue-400" />
+            <CardTitle className="text-xs md:text-sm font-medium text-card-foreground">Administrators</CardTitle>
+            <Shield className="h-3 w-3 md:h-4 md:w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-lg md:text-2xl font-bold text-blue-400">{adminUsers}</div>
+            <div className="text-lg md:text-2xl font-bold text-purple-500">{adminUsers}</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Mobile Cards View */}
       <div className="block md:hidden">
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-gradient-to-br from-card via-card to-muted/20 border-border shadow-lg">
           <CardHeader>
-            <CardTitle className="text-white text-lg">Users List</CardTitle>
-            <CardDescription className="text-gray-400 text-sm">A list of all users in the system</CardDescription>
+            <CardTitle className="text-card-foreground text-lg">Users List</CardTitle>
+            <CardDescription className="text-muted-foreground text-sm">
+              A list of all users in the system
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center space-x-2 mb-4">
-              <Search className="h-4 w-4 text-gray-400" />
+              <Search className="h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search users..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-[#0f172a] border-[#2a3349] text-white placeholder:text-gray-500 text-sm"
+                className="text-sm"
               />
             </div>
 
@@ -273,10 +273,10 @@ export default function UsersPage() {
               <div className="space-y-3">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="flex items-center space-x-3">
-                    <Skeleton className="h-8 w-8 rounded-full bg-[#2a3349]" />
+                    <Skeleton className="h-8 w-8 rounded-full" />
                     <div className="space-y-2">
-                      <Skeleton className="h-3 w-[150px] bg-[#2a3349]" />
-                      <Skeleton className="h-3 w-[100px] bg-[#2a3349]" />
+                      <Skeleton className="h-3 w-[150px]" />
+                      <Skeleton className="h-3 w-[100px]" />
                     </div>
                   </div>
                 ))}
@@ -284,34 +284,37 @@ export default function UsersPage() {
             ) : (
               <div className="space-y-3">
                 {filteredUsers.map((user) => (
-                  <Card key={user.id} className="bg-[#0f172a] border-[#2a3349]">
+                  <Card
+                    key={user.id}
+                    className="bg-gradient-to-br from-muted/50 via-muted/30 to-transparent border-border shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
+                  >
                     <CardContent className="p-3">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center space-x-2">
                           <Avatar className="h-8 w-8">
                             <AvatarImage src={user.avatar || undefined} alt={user.name || "User"} />
-                            <AvatarFallback className="bg-[#06b6d4] text-white text-xs">
+                            <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                               {getUserInitials(user.name || "User")}
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <div className="font-medium text-white text-sm">{user.name || "N/A"}</div>
-                            <div className="text-xs text-gray-400">{user.email || "N/A"}</div>
+                            <div className="font-medium text-foreground text-sm">{user.name || "N/A"}</div>
+                            <div className="text-xs text-muted-foreground">{user.email || "N/A"}</div>
                           </div>
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-6 w-6 p-0 text-gray-400 hover:text-white">
+                            <Button variant="ghost" className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground">
                               <MoreHorizontal className="h-3 w-3" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="bg-[#1a2234] border-[#2a3349]">
+                          <DropdownMenuContent align="end" className="bg-card border-border">
                             <DropdownMenuItem
                               onClick={() => {
                                 setSelectedUser(user)
                                 setIsDetailsModalOpen(true)
                               }}
-                              className="text-gray-300 hover:bg-[#2a3349] hover:text-white text-xs"
+                              className="text-card-foreground hover:bg-border hover:text-foreground text-xs"
                             >
                               <Eye className="mr-2 h-3 w-3" />
                               View Details
@@ -321,7 +324,7 @@ export default function UsersPage() {
                                 setSelectedUser(user)
                                 setIsEditModalOpen(true)
                               }}
-                              className="text-gray-300 hover:bg-[#2a3349] hover:text-white text-xs"
+                              className="text-card-foreground hover:bg-border hover:text-foreground text-xs"
                             >
                               <Edit className="mr-2 h-3 w-3" />
                               Edit
@@ -331,7 +334,7 @@ export default function UsersPage() {
                                 setSelectedUser(user)
                                 setIsDeleteDialogOpen(true)
                               }}
-                              className="text-red-400 hover:bg-[#2a3349] hover:text-red-300 text-xs"
+                              className="text-red-500 hover:bg-border hover:text-red-400 text-xs"
                             >
                               <Trash2 className="mr-2 h-3 w-3" />
                               Delete
@@ -349,7 +352,7 @@ export default function UsersPage() {
                         </Badge>
                       </div>
 
-                      <div className="text-xs text-gray-400">Created: {formatDate(user.createdDate)}</div>
+                      <div className="text-xs text-muted-foreground">Created: {formatDate(user.createdDate)}</div>
                     </CardContent>
                   </Card>
                 ))}
@@ -358,28 +361,27 @@ export default function UsersPage() {
 
             {!isLoading && filteredUsers.length === 0 && (
               <div className="text-center py-8">
-                <p className="text-gray-400 text-sm">No users found</p>
+                <p className="text-muted-foreground text-sm">No users found</p>
               </div>
             )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Desktop Table View */}
       <div className="hidden md:block">
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-gradient-to-br from-card via-card to-muted/20 border-border shadow-lg">
           <CardHeader>
-            <CardTitle className="text-white">Users List</CardTitle>
-            <CardDescription className="text-gray-400">A list of all users in the system</CardDescription>
+            <CardTitle className="text-card-foreground">Users List</CardTitle>
+            <CardDescription className="text-muted-foreground">A list of all users in the system</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center space-x-2 mb-4">
-              <Search className="h-4 w-4 text-gray-400" />
+              <Search className="h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search users by name, email, or role..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="max-w-sm bg-[#0f172a] border-[#2a3349] text-white placeholder:text-gray-500"
+                className="max-w-sm"
               />
             </div>
 
@@ -387,10 +389,10 @@ export default function UsersPage() {
               <div className="space-y-4">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="flex items-center space-x-4">
-                    <Skeleton className="h-10 w-10 rounded-full bg-[#2a3349]" />
+                    <Skeleton className="h-10 w-10 rounded-full" />
                     <div className="space-y-2">
-                      <Skeleton className="h-4 w-[200px] bg-[#2a3349]" />
-                      <Skeleton className="h-4 w-[150px] bg-[#2a3349]" />
+                      <Skeleton className="h-4 w-[200px]" />
+                      <Skeleton className="h-4 w-[150px]" />
                     </div>
                   </div>
                 ))}
@@ -399,28 +401,28 @@ export default function UsersPage() {
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-[#2a3349]">
-                      <TableHead className="text-gray-300">User</TableHead>
-                      <TableHead className="text-gray-300">Role</TableHead>
-                      <TableHead className="text-gray-300">Status</TableHead>
-                      <TableHead className="text-gray-300">Created</TableHead>
-                      <TableHead className="text-gray-300">Actions</TableHead>
+                    <TableRow className="border-border">
+                      <TableHead className="text-muted-foreground">User</TableHead>
+                      <TableHead className="text-muted-foreground">Role</TableHead>
+                      <TableHead className="text-muted-foreground">Status</TableHead>
+                      <TableHead className="text-muted-foreground">Created</TableHead>
+                      <TableHead className="text-muted-foreground">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredUsers.map((user) => (
-                      <TableRow key={user.id} className="border-[#2a3349]">
+                      <TableRow key={user.id} className="border-border">
                         <TableCell>
                           <div className="flex items-center space-x-3">
                             <Avatar>
                               <AvatarImage src={user.avatar || undefined} alt={user.name || "User"} />
-                              <AvatarFallback className="bg-[#06b6d4] text-white">
+                              <AvatarFallback className="bg-primary text-primary-foreground">
                                 {getUserInitials(user.name || "User")}
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <div className="font-medium text-white">{user.name || "N/A"}</div>
-                              <div className="text-sm text-gray-400">{user.email || "N/A"}</div>
+                              <div className="font-medium text-foreground">{user.name || "N/A"}</div>
+                              <div className="text-sm text-muted-foreground">{user.email || "N/A"}</div>
                             </div>
                           </div>
                         </TableCell>
@@ -432,21 +434,24 @@ export default function UsersPage() {
                             {user.status === 1 ? "Active" : "Inactive"}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-gray-300">{formatDate(user.createdDate)}</TableCell>
+                        <TableCell className="text-foreground">{formatDate(user.createdDate)}</TableCell>
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0 text-gray-400 hover:text-white">
+                              <Button
+                                variant="ghost"
+                                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                              >
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="bg-[#1a2234] border-[#2a3349]">
+                            <DropdownMenuContent align="end" className="bg-card border-border">
                               <DropdownMenuItem
                                 onClick={() => {
                                   setSelectedUser(user)
                                   setIsDetailsModalOpen(true)
                                 }}
-                                className="text-gray-300 hover:bg-[#2a3349] hover:text-white"
+                                className="text-card-foreground hover:bg-border hover:text-foreground"
                               >
                                 <Eye className="mr-2 h-4 w-4" />
                                 View Details
@@ -456,7 +461,7 @@ export default function UsersPage() {
                                   setSelectedUser(user)
                                   setIsEditModalOpen(true)
                                 }}
-                                className="text-gray-300 hover:bg-[#2a3349] hover:text-white"
+                                className="text-card-foreground hover:bg-border hover:text-foreground"
                               >
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit
@@ -466,7 +471,7 @@ export default function UsersPage() {
                                   setSelectedUser(user)
                                   setIsDeleteDialogOpen(true)
                                 }}
-                                className="text-red-400 hover:bg-[#2a3349] hover:text-red-300"
+                                className="text-red-500 hover:bg-border hover:text-red-400"
                               >
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Delete
@@ -483,7 +488,7 @@ export default function UsersPage() {
 
             {!isLoading && filteredUsers.length === 0 && (
               <div className="text-center py-8">
-                <p className="text-gray-400">No users found</p>
+                <p className="text-muted-foreground">No users found</p>
               </div>
             )}
           </CardContent>
@@ -514,22 +519,20 @@ export default function UsersPage() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="bg-[#1a2234] border-[#2a3349]">
+        <AlertDialogContent className="bg-card border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
+            <AlertDialogTitle className="text-card-foreground">Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
               This action cannot be undone. This will permanently delete the user
               {selectedUser && ` "${selectedUser.name}"`} and remove all associated data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => setSelectedUser(null)}
-              className="bg-[#2a3349] border-[#2a3349] text-gray-300 hover:bg-[#374151] hover:text-white"
+            <AlertDialogCancel onClick={() => setSelectedUser(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteUser}
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
             >
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteUser} className="bg-red-600 hover:bg-red-700 text-white">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

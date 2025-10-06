@@ -200,23 +200,23 @@ export default function ReschedulePage() {
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Total Requests</p>
-                <p className="text-2xl font-bold text-white">{stats.total}</p>
+                <p className="text-sm text-muted-foreground">Total Requests</p>
+                <p className="text-2xl font-bold">{stats.total}</p>
               </div>
-              <RefreshCw className="h-8 w-8 text-[#06b6d4]" />
+              <RefreshCw className="h-8 w-8 text-blue-500" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-gradient-to-br from-yellow-500/10 via-card to-yellow-500/5 border-yellow-500/30 hover:shadow-lg hover:shadow-yellow-500/20 hover:scale-105 transition-all duration-300">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Pending</p>
+                <p className="text-sm text-muted-foreground">Pending</p>
                 <p className="text-2xl font-bold text-yellow-500">{stats.pending}</p>
               </div>
               <Clock className="h-8 w-8 text-yellow-500" />
@@ -224,11 +224,11 @@ export default function ReschedulePage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-gradient-to-br from-green-500/10 via-card to-green-500/5 border-green-500/30 hover:shadow-lg hover:shadow-green-500/20 hover:scale-105 transition-all duration-300">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Approved</p>
+                <p className="text-sm text-muted-foreground">Approved</p>
                 <p className="text-2xl font-bold text-green-500">{stats.approved}</p>
               </div>
               <Check className="h-8 w-8 text-green-500" />
@@ -236,11 +236,11 @@ export default function ReschedulePage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-gradient-to-br from-red-500/10 via-card to-red-500/5 border-red-500/30 hover:shadow-lg hover:shadow-red-500/20 hover:scale-105 transition-all duration-300">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Rejected</p>
+                <p className="text-sm text-muted-foreground">Rejected</p>
                 <p className="text-2xl font-bold text-red-500">{stats.rejected}</p>
               </div>
               <X className="h-8 w-8 text-red-500" />
@@ -250,7 +250,7 @@ export default function ReschedulePage() {
       </div>
 
       {/* Filters and Search */}
-      <Card className="bg-[#1a2234] border-[#2a3349]">
+      <Card className="bg-card border-border">
         <CardContent className="p-6">
           <div className="flex flex-col gap-4">
             <Tabs defaultValue="all" onValueChange={setSelectedTab}>
@@ -272,32 +272,24 @@ export default function ReschedulePage() {
 
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder="Search by customer, ID, or address..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-[#0f172a] border-[#2a3349] text-white placeholder:text-gray-500"
+                  className="pl-10 bg-muted border-border"
                 />
               </div>
 
               <Select value={filterPriority} onValueChange={setFilterPriority}>
-                <SelectTrigger className="w-full sm:w-[180px] bg-[#0f172a] border-[#2a3349] text-white">
+                <SelectTrigger className="w-full sm:w-[180px] bg-muted border-border">
                   <SelectValue placeholder="Filter by priority" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
-                  <SelectItem value="all" className="hover:bg-[#2a3349]">
-                    All Priorities
-                  </SelectItem>
-                  <SelectItem value="high" className="hover:bg-[#2a3349]">
-                    High Priority
-                  </SelectItem>
-                  <SelectItem value="medium" className="hover:bg-[#2a3349]">
-                    Medium Priority
-                  </SelectItem>
-                  <SelectItem value="low" className="hover:bg-[#2a3349]">
-                    Low Priority
-                  </SelectItem>
+                <SelectContent>
+                  <SelectItem value="all">All Priorities</SelectItem>
+                  <SelectItem value="high">High Priority</SelectItem>
+                  <SelectItem value="medium">Medium Priority</SelectItem>
+                  <SelectItem value="low">Low Priority</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -306,33 +298,33 @@ export default function ReschedulePage() {
       </Card>
 
       {/* Reschedule Requests Table */}
-      <Card className="bg-[#1a2234] border-[#2a3349]">
+      <Card className="bg-card border-border">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-[#2a3349] hover:bg-transparent">
-                  <TableHead className="text-gray-400">Request ID</TableHead>
-                  <TableHead className="text-gray-400">Customer</TableHead>
-                  <TableHead className="text-gray-400">Original Schedule</TableHead>
-                  <TableHead className="text-gray-400">Requested Schedule</TableHead>
-                  <TableHead className="text-gray-400">Priority</TableHead>
-                  <TableHead className="text-gray-400">Status</TableHead>
-                  <TableHead className="text-gray-400">Actions</TableHead>
+                <TableRow className="border-border hover:bg-transparent">
+                  <TableHead className="text-muted-foreground">Request ID</TableHead>
+                  <TableHead className="text-muted-foreground">Customer</TableHead>
+                  <TableHead className="text-muted-foreground">Original Schedule</TableHead>
+                  <TableHead className="text-muted-foreground">Requested Schedule</TableHead>
+                  <TableHead className="text-muted-foreground">Priority</TableHead>
+                  <TableHead className="text-muted-foreground">Status</TableHead>
+                  <TableHead className="text-muted-foreground">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredData.map((reschedule) => (
-                  <TableRow key={reschedule.id} className="border-[#2a3349] hover:bg-[#0f172a]">
+                  <TableRow key={reschedule.id} className="border-border hover:bg-[#0f172a]">
                     <TableCell className="font-medium text-white">{reschedule.requestId}</TableCell>
                     <TableCell>
                       <div>
                         <p className="text-white font-medium">{reschedule.customer}</p>
-                        <p className="text-sm text-gray-400">{reschedule.serviceType}</p>
+                        <p className="text-sm text-muted-foreground">{reschedule.serviceType}</p>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2 text-gray-400">
+                      <div className="flex items-center gap-2 text-muted-foreground">
                         <Calendar className="h-4 w-4" />
                         <span>{reschedule.originalDate}</span>
                         <Clock className="h-4 w-4 ml-2" />
@@ -355,7 +347,7 @@ export default function ReschedulePage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleViewDetails(reschedule)}
-                          className="text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                          className="text-muted-foreground hover:text-white hover:bg-[#2a3349]"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -383,7 +375,7 @@ export default function ReschedulePage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleEditReschedule(reschedule)}
-                          className="text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                          className="text-muted-foreground hover:text-white hover:bg-[#2a3349]"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>

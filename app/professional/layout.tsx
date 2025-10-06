@@ -14,7 +14,7 @@ export default function ProfessionalLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-slate-900">
+    <div className="flex h-screen bg-muted">
       <div className="hidden md:block">
         <ProfessionalSidebar />
       </div>

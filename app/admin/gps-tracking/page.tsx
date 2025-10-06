@@ -191,7 +191,7 @@ export default function GpsTrackingPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white">Loading GPS tracking records...</div>
+        <div className="text-foreground">Loading GPS tracking records...</div>
       </div>
     )
   }
@@ -201,8 +201,10 @@ export default function GpsTrackingPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white mb-1">GPS Tracking</h1>
-            <p className="text-gray-400">Monitor and manage GPS tracking for all professionals across companies.</p>
+            <h1 className="text-2xl font-bold text-foreground mb-1">GPS Tracking</h1>
+            <p className="text-muted-foreground">
+              Monitor and manage GPS tracking for all professionals across companies.
+            </p>
           </div>
           <Button
             className="bg-[#06b6d4] hover:bg-[#0891b2] text-white"
@@ -218,12 +220,12 @@ export default function GpsTrackingPage() {
 
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="relative w-full md:w-auto">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by professional, address, or vehicle..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 w-full md:w-[300px] bg-[#1a2234] border-[#2a3349] text-white focus-visible:ring-[#06b6d4]"
+              className="pl-10 w-full md:w-[300px] bg-background border-input text-foreground focus-visible:ring-[#06b6d4]"
             />
           </div>
 
@@ -234,7 +236,7 @@ export default function GpsTrackingPage() {
               className={
                 statusFilter === "all"
                   ? "bg-[#06b6d4] hover:bg-[#0891b2] text-white"
-                  : "border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent"
+                  : "border-input text-foreground hover:bg-accent"
               }
             >
               All
@@ -245,7 +247,7 @@ export default function GpsTrackingPage() {
               className={
                 statusFilter === 1
                   ? "bg-[#06b6d4] hover:bg-[#0891b2] text-white"
-                  : "border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent"
+                  : "border-input text-foreground hover:bg-accent"
               }
             >
               Active
@@ -256,7 +258,7 @@ export default function GpsTrackingPage() {
               className={
                 statusFilter === 2
                   ? "bg-[#06b6d4] hover:bg-[#0891b2] text-white"
-                  : "border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent"
+                  : "border-input text-foreground hover:bg-accent"
               }
             >
               Inactive
@@ -264,42 +266,44 @@ export default function GpsTrackingPage() {
           </div>
         </div>
 
-        <div className="rounded-md border border-[#2a3349] overflow-hidden">
+        <div className="rounded-md border border-border overflow-hidden">
           <Table>
-            <TableHeader className="bg-[#1a2234]">
-              <TableRow className="border-[#2a3349] hover:bg-[#2a3349]">
-                <TableHead className="text-white">Professional</TableHead>
-                <TableHead className="text-white">Company</TableHead>
-                <TableHead className="text-white">Location</TableHead>
-                <TableHead className="text-white">Speed</TableHead>
-                <TableHead className="text-white">Status</TableHead>
-                <TableHead className="text-white">Last Update</TableHead>
-                <TableHead className="text-white text-center">Actions</TableHead>
+            <TableHeader className="bg-muted/50">
+              <TableRow className="border-border hover:bg-muted">
+                <TableHead className="text-foreground">Professional</TableHead>
+                <TableHead className="text-foreground">Company</TableHead>
+                <TableHead className="text-foreground">Location</TableHead>
+                <TableHead className="text-foreground">Speed</TableHead>
+                <TableHead className="text-foreground">Status</TableHead>
+                <TableHead className="text-foreground">Last Update</TableHead>
+                <TableHead className="text-foreground text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {gpsData.length === 0 ? (
-                <TableRow className="border-[#2a3349] bg-[#0f172a]">
-                  <TableCell colSpan={7} className="text-center text-gray-400 py-8">
+                <TableRow className="border-border bg-background">
+                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
                     No GPS tracking records found
                   </TableCell>
                 </TableRow>
               ) : (
                 gpsData.map((gps) => (
-                  <TableRow key={gps.id} className="border-[#2a3349] hover:bg-[#1a2234] bg-[#0f172a]">
-                    <TableCell className="font-medium text-white">
+                  <TableRow key={gps.id} className="border-border hover:bg-muted/50 bg-background">
+                    <TableCell className="font-medium text-foreground">
                       <div className="flex items-center gap-2">
-                        <div className="bg-[#2a3349] p-1.5 rounded-md">
+                        <div className="bg-muted p-1.5 rounded-md">
                           <MapPin className="h-4 w-4 text-[#06b6d4]" />
                         </div>
                         <div>
                           <div>{gps.professionalName || `Professional ${gps.professionalId}`}</div>
-                          <div className="text-xs text-gray-400">{gps.vehicle}</div>
+                          <div className="text-xs text-muted-foreground">{gps.vehicle}</div>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-400">{gps.companyName || `Company ${gps.companyId}`}</TableCell>
-                    <TableCell className="text-gray-400">
+                    <TableCell className="text-muted-foreground">
+                      {gps.companyName || `Company ${gps.companyId}`}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
                       <div className="max-w-[200px]">
                         <div className="truncate">{gps.location.address}</div>
                         <div className="text-xs">
@@ -307,13 +311,13 @@ export default function GpsTrackingPage() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-400">{gps.speed} km/h</TableCell>
+                    <TableCell className="text-muted-foreground">{gps.speed} km/h</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={getStatusColor(gps.status)}>
                         {getStatusText(gps.status)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-gray-400">{formatDate(gps.timestamp)}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatDate(gps.timestamp)}</TableCell>
                     <TableCell>
                       <div className="flex items-center justify-center gap-2">
                         <Tooltip>
@@ -322,7 +326,7 @@ export default function GpsTrackingPage() {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleViewDetails(gps)}
-                              className="h-8 w-8 text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                              className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -338,7 +342,7 @@ export default function GpsTrackingPage() {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleEdit(gps)}
-                              className="h-8 w-8 text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                              className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent"
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -354,7 +358,7 @@ export default function GpsTrackingPage() {
                               variant="ghost"
                               size="icon"
                               onClick={() => setGpsToDelete(gps)}
-                              className="h-8 w-8 text-gray-400 hover:text-red-500 hover:bg-[#2a3349]"
+                              className="h-8 w-8 text-muted-foreground hover:text-red-500 hover:bg-accent"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -373,9 +377,9 @@ export default function GpsTrackingPage() {
         </div>
 
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-400">
-            Showing <span className="font-medium text-white">{gpsData.length}</span> of{" "}
-            <span className="font-medium text-white">{pagination.totalItems}</span> GPS tracking records
+          <p className="text-sm text-muted-foreground">
+            Showing <span className="font-medium text-foreground">{gpsData.length}</span> of{" "}
+            <span className="font-medium text-foreground">{pagination.totalItems}</span> GPS tracking records
           </p>
           <div className="flex gap-2">
             <Button
@@ -383,15 +387,11 @@ export default function GpsTrackingPage() {
               size="sm"
               onClick={() => setPagination((prev) => ({ ...prev, currentPage: Math.max(1, prev.currentPage - 1) }))}
               disabled={pagination.currentPage <= 1}
-              className="border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent"
+              className="border-input text-foreground hover:bg-accent"
             >
               Previous
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-[#2a3349] bg-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white"
-            >
+            <Button variant="outline" size="sm" className="border-input bg-accent text-foreground hover:bg-accent">
               {pagination.currentPage}
             </Button>
             <Button
@@ -401,7 +401,7 @@ export default function GpsTrackingPage() {
                 setPagination((prev) => ({ ...prev, currentPage: Math.min(prev.totalPages, prev.currentPage + 1) }))
               }
               disabled={pagination.currentPage >= pagination.totalPages}
-              className="border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent"
+              className="border-input text-foreground hover:bg-accent"
             >
               Next
             </Button>
@@ -428,19 +428,19 @@ export default function GpsTrackingPage() {
         />
 
         <AlertDialog open={!!gpsToDelete} onOpenChange={() => setGpsToDelete(null)}>
-          <AlertDialogContent className="bg-[#1a2234] border-[#2a3349] text-white">
+          <AlertDialogContent className="bg-popover border-border text-popover-foreground">
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription className="text-gray-400">
+              <AlertDialogDescription className="text-muted-foreground">
                 This action cannot be undone. This will permanently delete the GPS tracking record for{" "}
-                <span className="font-semibold text-white">
+                <span className="font-semibold text-foreground">
                   {gpsToDelete?.professionalName || `Professional ${gpsToDelete?.professionalId}`}
                 </span>
                 .
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="bg-transparent border-[#2a3349] text-white hover:bg-[#2a3349]">
+              <AlertDialogCancel className="bg-transparent border-input text-foreground hover:bg-accent">
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction onClick={handleDeleteGps} className="bg-red-600 hover:bg-red-700 text-white border-0">

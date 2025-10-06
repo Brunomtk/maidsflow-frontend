@@ -99,22 +99,22 @@ export function CompanyScheduleCalendar({
     })
 
     return (
-      <div className="flex flex-col h-[600px] bg-[#1a2234] rounded-lg border border-[#2a3349]">
-        <div className="flex justify-between items-center p-4 border-b border-[#2a3349]">
+      <div className="flex flex-col h-[600px] bg-card rounded-lg border border-border">
+        <div className="flex justify-between items-center p-4 border-b border-border">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setCurrentDate((prev) => addDays(prev, -1))}
-            className="border-[#2a3349] text-white hover:bg-[#2a3349]"
+            className="border-border text-foreground hover:bg-muted"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <h3 className="text-lg font-medium text-white">{format(currentDate, "EEEE, MMMM d, yyyy")}</h3>
+          <h3 className="text-lg font-medium text-foreground">{format(currentDate, "EEEE, MMMM d, yyyy")}</h3>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setCurrentDate((prev) => addDays(prev, 1))}
-            className="border-[#2a3349] text-white hover:bg-[#2a3349]"
+            className="border-border text-foreground hover:bg-muted"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -125,14 +125,14 @@ export function CompanyScheduleCalendar({
             {hours.map((hour) => (
               <div
                 key={hour}
-                className="flex border-b border-[#2a3349] h-12 cursor-pointer hover:bg-[#1a2234]/30"
+                className="flex border-b border-border h-12 cursor-pointer hover:bg-muted/50"
                 onClick={() => {
                   const date = new Date(currentDate)
                   date.setHours(hour, 0, 0, 0)
                   onAddAppointment(date)
                 }}
               >
-                <div className="w-16 flex-shrink-0 border-r border-[#2a3349] p-1 text-xs text-gray-400 text-right pr-2">
+                <div className="w-16 flex-shrink-0 border-r border-border p-1 text-xs text-muted-foreground text-right pr-2">
                   {hour}:00
                 </div>
                 <div className="flex-1 relative"></div>
@@ -158,7 +158,7 @@ export function CompanyScheduleCalendar({
               return (
                 <div
                   key={appointment.id}
-                  className={`absolute left-16 right-2 rounded-md p-2 border-l-4 ${getTypeColor(appointment.type)} bg-[#0f172a] overflow-hidden cursor-pointer hover:bg-[#2a3349] transition-colors`}
+                  className={`absolute left-16 right-2 rounded-md p-2 border-l-4 ${getTypeColor(appointment.type)} bg-muted overflow-hidden cursor-pointer hover:bg-muted/80 transition-colors`}
                   style={{
                     top: `${top}px`,
                     height: `${Math.max(height, 24)}px`,
@@ -171,8 +171,12 @@ export function CompanyScheduleCalendar({
                 >
                   <div className="flex justify-between items-start">
                     <div className="overflow-hidden">
-                      <h4 className="font-medium text-sm truncate text-white">{appointment.title || "No Title"}</h4>
-                      <p className="text-xs text-gray-400 truncate">{appointment.customer?.name || "No customer"}</p>
+                      <h4 className="font-medium text-sm truncate text-foreground">
+                        {appointment.title || "No Title"}
+                      </h4>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {appointment.customer?.name || "No customer"}
+                      </p>
                       <div className="flex items-center mt-1">
                         <Badge
                           variant="outline"
@@ -180,7 +184,7 @@ export function CompanyScheduleCalendar({
                         >
                           {getStatusText(appointment.status)}
                         </Badge>
-                        <span className="text-xs text-gray-400 ml-2">
+                        <span className="text-xs text-muted-foreground ml-2">
                           {format(startDate, "h:mm a")} - {format(endDate, "h:mm a")}
                         </span>
                       </div>
@@ -202,24 +206,24 @@ export function CompanyScheduleCalendar({
     const hours = Array.from({ length: 17 }, (_, i) => i + 6) // 6 AM to 10 PM
 
     return (
-      <div className="flex flex-col h-[600px] bg-[#1a2234] rounded-lg border border-[#2a3349]">
-        <div className="flex justify-between items-center p-4 border-b border-[#2a3349]">
+      <div className="flex flex-col h-[600px] bg-card rounded-lg border border-border">
+        <div className="flex justify-between items-center p-4 border-b border-border">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setCurrentDate((prev) => subWeeks(prev, 1))}
-            className="border-[#2a3349] text-white hover:bg-[#2a3349]"
+            className="border-border text-foreground hover:bg-muted"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <h3 className="text-lg font-medium text-white">
+          <h3 className="text-lg font-medium text-foreground">
             {format(start, "MMM d")} - {format(end, "MMM d, yyyy")}
           </h3>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setCurrentDate((prev) => addWeeks(prev, 1))}
-            className="border-[#2a3349] text-white hover:bg-[#2a3349]"
+            className="border-border text-foreground hover:bg-muted"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -228,17 +232,17 @@ export function CompanyScheduleCalendar({
         <div className="flex-1 overflow-auto">
           <div className="min-w-[900px] relative">
             {/* Header with days */}
-            <div className="sticky top-0 bg-[#0f172a] z-10 border-b border-[#2a3349] flex">
-              <div className="w-16 border-r border-[#2a3349] p-2"></div>
+            <div className="sticky top-0 bg-muted z-10 border-b border-border flex">
+              <div className="w-16 border-r border-border p-2"></div>
               {weekDays.map((day) => (
                 <div
                   key={day.toString()}
-                  className={`flex-1 p-2 text-center border-r border-[#2a3349] last:border-r-0 ${
-                    isToday(day) ? "bg-[#1a2234]" : ""
+                  className={`flex-1 p-2 text-center border-r border-border last:border-r-0 ${
+                    isToday(day) ? "bg-card" : ""
                   }`}
                 >
-                  <div className="text-sm font-medium text-white">{format(day, "EEE")}</div>
-                  <div className={`text-xs ${isToday(day) ? "text-[#06b6d4]" : "text-gray-400"}`}>
+                  <div className="text-sm font-medium text-foreground">{format(day, "EEE")}</div>
+                  <div className={`text-xs ${isToday(day) ? "text-[#06b6d4]" : "text-muted-foreground"}`}>
                     {format(day, "MMM d")}
                   </div>
                 </div>
@@ -248,14 +252,14 @@ export function CompanyScheduleCalendar({
             {/* Time grid */}
             <div className="relative">
               {hours.map((hour) => (
-                <div key={hour} className="flex h-12 border-b border-[#2a3349]">
-                  <div className="w-16 border-r border-[#2a3349] p-1 text-xs text-gray-400 text-right pr-2 flex-shrink-0">
+                <div key={hour} className="flex h-12 border-b border-border">
+                  <div className="w-16 border-r border-border p-1 text-xs text-muted-foreground text-right pr-2 flex-shrink-0">
                     {hour}:00
                   </div>
                   {weekDays.map((day, dayIndex) => (
                     <div
                       key={`${hour}-${day}`}
-                      className="flex-1 border-r border-[#2a3349] last:border-r-0 relative cursor-pointer hover:bg-[#1a2234]/30"
+                      className="flex-1 border-r border-border last:border-r-0 relative cursor-pointer hover:bg-muted/50"
                       onClick={() => {
                         const date = new Date(day)
                         date.setHours(hour, 0, 0, 0)
@@ -293,7 +297,7 @@ export function CompanyScheduleCalendar({
                     key={appointment.id}
                     className={`absolute rounded-md p-1 border-l-4 ${getTypeColor(
                       appointment.type,
-                    )} bg-[#0f172a] overflow-hidden cursor-pointer hover:bg-[#2a3349] transition-colors z-20`}
+                    )} bg-muted overflow-hidden cursor-pointer hover:bg-muted/80 transition-colors z-20`}
                     style={{
                       top: `${top + 48}px`, // Add header height
                       height: `${height}px`,
@@ -308,9 +312,13 @@ export function CompanyScheduleCalendar({
                   >
                     <div className="flex justify-between items-start h-full">
                       <div className="overflow-hidden flex-1">
-                        <h4 className="font-medium text-xs truncate text-white">{appointment.title || "No Title"}</h4>
-                        <p className="text-xs text-gray-400 truncate">{appointment.customer?.name || "No customer"}</p>
-                        <p className="text-xs text-gray-400">{format(startDate, "h:mm a")}</p>
+                        <h4 className="font-medium text-xs truncate text-foreground">
+                          {appointment.title || "No Title"}
+                        </h4>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {appointment.customer?.name || "No customer"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{format(startDate, "h:mm a")}</p>
                       </div>
                     </div>
                   </div>
@@ -352,31 +360,31 @@ export function CompanyScheduleCalendar({
     const allDays = [...prevMonthDays, ...days, ...nextMonthDays]
 
     return (
-      <div className="flex flex-col h-[600px] bg-[#1a2234] rounded-lg border border-[#2a3349]">
-        <div className="flex justify-between items-center p-4 border-b border-[#2a3349]">
+      <div className="flex flex-col h-[600px] bg-card rounded-lg border border-border">
+        <div className="flex justify-between items-center p-4 border-b border-border">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setCurrentDate((prev) => subMonths(prev, 1))}
-            className="border-[#2a3349] text-white hover:bg-[#2a3349]"
+            className="border-border text-foreground hover:bg-muted"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <h3 className="text-lg font-medium text-white">{format(currentDate, "MMMM yyyy")}</h3>
+          <h3 className="text-lg font-medium text-foreground">{format(currentDate, "MMMM yyyy")}</h3>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setCurrentDate((prev) => addMonths(prev, 1))}
-            className="border-[#2a3349] text-white hover:bg-[#2a3349]"
+            className="border-border text-foreground hover:bg-muted"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
 
-        <div className="grid grid-cols-7 border-b border-[#2a3349]">
+        <div className="grid grid-cols-7 border-b border-border">
           {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
-            <div key={day} className="p-2 text-center border-r border-[#2a3349] last:border-r-0">
-              <div className="text-sm font-medium text-white">{day}</div>
+            <div key={day} className="p-2 text-center border-r border-border last:border-r-0">
+              <div className="text-sm font-medium text-foreground">{day}</div>
             </div>
           ))}
         </div>
@@ -397,18 +405,19 @@ export function CompanyScheduleCalendar({
               return (
                 <div
                   key={index}
-                  className={`border-r border-b border-[#2a3349] last:border-r-0 p-2 ${
-                    isCurrentMonth ? "bg-transparent" : "bg-[#0f172a]/50"
-                  } ${isToday(day) ? "bg-[#06b6d4]/10" : ""} cursor-pointer hover:bg-[#1a2234]/30`}
+                  className={`border-r border-b border-border last:border-r-0 p-2 ${
+                    isCurrentMonth ? "bg-transparent" : "bg-muted/50"
+                  } ${isToday(day) ? "bg-[#06b6d4]/10" : ""} cursor-pointer hover:bg-muted/50`}
                   onClick={() => {
-                    // If clicking on an empty area, add a new appointment at 9am
                     const date = new Date(day)
                     date.setHours(9, 0, 0, 0)
                     onAddAppointment(date)
                   }}
                 >
                   <div className="text-xs font-medium mb-1 text-right">
-                    <span className={isCurrentMonth ? "text-white" : "text-gray-500"}>{format(day, "d")}</span>
+                    <span className={isCurrentMonth ? "text-foreground" : "text-muted-foreground"}>
+                      {format(day, "d")}
+                    </span>
                   </div>
 
                   <div className="space-y-1">
@@ -417,7 +426,7 @@ export function CompanyScheduleCalendar({
                         key={appointment.id}
                         className={`rounded-sm p-1 border-l-2 ${getTypeColor(
                           appointment.type,
-                        )} bg-[#0f172a] text-white text-xs cursor-pointer hover:bg-[#2a3349] transition-colors`}
+                        )} bg-muted text-foreground text-xs cursor-pointer hover:bg-muted/80 transition-colors`}
                         onClick={(e) => {
                           e.stopPropagation()
                           onViewDetails(appointment)
@@ -441,7 +450,6 @@ export function CompanyScheduleCalendar({
                         className="text-xs text-[#06b6d4] hover:text-[#0891b2] transition-colors"
                         onClick={(e) => {
                           e.stopPropagation()
-                          // Set the current date to this day and switch to day view
                           setCurrentDate(day)
                         }}
                       >

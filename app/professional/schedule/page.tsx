@@ -1,12 +1,10 @@
-'use client'
+"use client"
 
-
-import { performCheckInWithPhoto, getCheckRecordsByAppointment, getOpenCheckRecordByAppointment } from "@/lib/api/professional-check";
+import { performCheckInWithPhoto, getCheckRecordsByAppointment } from "@/lib/api/professional-check"
 
 /* geo types */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface GeolocationPosition extends globalThis.GeolocationPosition {}
-
 
 import { useState, useEffect, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -32,14 +30,12 @@ import {
   AlertCircle,
   CalendarClock,
   X,
-  ExternalLink,
 } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { format, addDays, subDays, isToday } from "date-fns"
+import { format, addDays, subDays, isToday, startOfWeek, endOfWeek } from "date-fns"
 import { useProfessionalSchedule } from "@/hooks/use-professional-schedule"
 import { useAuth } from "@/contexts/auth-context"
 import type { Appointment } from "@/types/appointment"
-
 
 const normalizePhone = (raw?: string | null) => {
   const digits = (raw || "").replace(/\D/g, "")
@@ -53,6 +49,7 @@ export default function ProfessionalSchedule() {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [currentDate, setCurrentDate] = useState(new Date())
+  const [selectedMonthDay, setSelectedMonthDay] = useState<number | null>(null)
 
   const { toast } = useToast()
   const router = useRouter()
@@ -108,6 +105,19 @@ export default function ProfessionalSchedule() {
       return appointmentDate === formattedDate
     })
   }, [filteredAppointments, currentDate])
+
+  const getMonthDayAppointments = useMemo(() => {
+    if (selectedMonthDay === null) return []
+    const year = currentDate.getFullYear()
+    const month = currentDate.getMonth()
+    const date = new Date(year, month, selectedMonthDay)
+    const formattedDate = format(date, "yyyy-MM-dd")
+
+    return filteredAppointments.filter((appointment) => {
+      const appointmentDate = format(new Date(appointment.start), "yyyy-MM-dd")
+      return appointmentDate === formattedDate
+    })
+  }, [selectedMonthDay, currentDate, filteredAppointments])
 
   const generateDayTimeSlots = useMemo(() => {
     const timeSlots = []
@@ -224,6 +234,16 @@ export default function ProfessionalSchedule() {
     return days
   }, [currentDate, filteredAppointments])
 
+  const getWeekAppointments = useMemo(() => {
+    const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 })
+    const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 })
+
+    return filteredAppointments.filter((appointment) => {
+      const appointmentDate = new Date(appointment.start)
+      return appointmentDate >= weekStart && appointmentDate <= weekEnd
+    })
+  }, [filteredAppointments, currentDate])
+
   const handleViewDetails = (appointment: Appointment) => {
     setSelectedAppointment(appointment)
     setDetailsOpen(true)
@@ -239,6 +259,7 @@ export default function ProfessionalSchedule() {
       const newDate = new Date(currentDate)
       newDate.setMonth(newDate.getMonth() - 1)
       setCurrentDate(newDate)
+      setSelectedMonthDay(null)
     }
   }
 
@@ -252,6 +273,7 @@ export default function ProfessionalSchedule() {
       const newDate = new Date(currentDate)
       newDate.setMonth(newDate.getMonth() + 1)
       setCurrentDate(newDate)
+      setSelectedMonthDay(null)
     }
   }
 
@@ -307,14 +329,21 @@ export default function ProfessionalSchedule() {
     }
   }
 
-  if (!user) { return null }
+  if (!user) {
+    return null
+  }
 
   const handleOnMyWay = () => {
     if (!selectedAppointment) return
     const phone = normalizePhone(selectedAppointment.customer?.phone as any)
-    if (!phone) { toast({ title: "Phone not available", description: "This client has no phone number.", variant: "destructive" }); return }
+    if (!phone) {
+      toast({ title: "Phone not available", description: "This client has no phone number.", variant: "destructive" })
+      return
+    }
     const name = selectedAppointment.customer?.name || ""
-    const companyName = selectedAppointment.company?.name || (typeof window !== "undefined" ? (localStorage.getItem("company_name") || "our") : "our")
+    const companyName =
+      selectedAppointment.company?.name ||
+      (typeof window !== "undefined" ? localStorage.getItem("company_name") || "our" : "our")
     const eta = "15 minutes"
     const message = `Hi ${name}, hope your having a nice day. Your ${companyName} team is on the way, ${eta} from your house`
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
@@ -322,52 +351,60 @@ export default function ProfessionalSchedule() {
   }
 
   const handleCheckIn = async () => {
-  try {
-    if (!selectedAppointment || !user?.professionalId) {
-      toast({ title: "Missing data", description: "No appointment or user info.", variant: "destructive" })
-      return
+    try {
+      if (!selectedAppointment || !user?.professionalId) {
+        toast({ title: "Missing data", description: "No appointment or user info.", variant: "destructive" })
+        return
+      }
+      const professionalId = Number(user.professionalId)
+      const appointmentId = Number(selectedAppointment.id)
+
+      // Verificar se já existe CheckRecord para este appointment
+      const existingList = await getCheckRecordsByAppointment(professionalId, appointmentId)
+      const existing = existingList?.[0] || null
+
+      // Capturar geolocalização (opcional)
+      let location: { latitude: number; longitude: number } | undefined
+      if (typeof navigator !== "undefined" && navigator.geolocation) {
+        try {
+          const pos = (await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: true,
+              maximumAge: 60000,
+              timeout: 5000,
+            })
+          })) as GeolocationPosition
+          location = { latitude: pos.coords.latitude, longitude: pos.coords.longitude }
+        } catch {}
+      }
+
+      if (!existing) {
+        // Não cria CheckRecord manualmente — o endpoint de check-in já cria automaticamente
+        await performCheckInWithPhoto(professionalId, appointmentId, { location })
+        router.push("/professional/check-in")
+        return
+      }
+
+      if (!existing.checkInTime) {
+        // Registro existe mas ainda sem check-in
+        await performCheckInWithPhoto(professionalId, appointmentId, { location })
+        router.push("/professional/check-in")
+        return
+      }
+
+      // Já tem check-in aberto: apenas direciona para check-out
+      toast({ title: "Já em check-in", description: "Abrindo tela para finalizar check-out." })
+      router.push("/professional/check-in")
+    } catch (e: any) {
+      toast({
+        title: "Erro no check-in",
+        description: e?.message || "Não foi possível finalizar a ação.",
+        variant: "destructive",
+      })
     }
-    const professionalId = Number(user.professionalId)
-    const appointmentId = Number(selectedAppointment.id)
-
-    // Verificar se já existe CheckRecord para este appointment
-    const existingList = await getCheckRecordsByAppointment(professionalId, appointmentId)
-    const existing = existingList?.[0] || null
-
-    // Capturar geolocalização (opcional)
-    let location: { latitude: number; longitude: number } | undefined
-    if (typeof navigator !== "undefined" && navigator.geolocation) {
-      try {
-        const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, maximumAge: 60000, timeout: 5000 })
-        }) as GeolocationPosition
-        location = { latitude: pos.coords.latitude, longitude: pos.coords.longitude }
-      } catch {}
-    }
-
-    if (!existing) {
-      // Não cria CheckRecord manualmente — o endpoint de check-in já cria automaticamente
-      await performCheckInWithPhoto(professionalId, appointmentId, { location })
-      router.push("/professional/check")
-      return
-    }
-
-    if (!existing.checkInTime) {
-      // Registro existe mas ainda sem check-in
-      await performCheckInWithPhoto(professionalId, appointmentId, { location })
-      router.push("/professional/check")
-      return
-    }
-
-    // Já tem check-in aberto: apenas direciona para check-out
-    toast({ title: "Já em check-in", description: "Abrindo tela para finalizar check-out." })
-    router.push("/professional/check")
-  } catch (e: any) {
-    toast({ title: "Erro no check-in", description: e?.message || "Não foi possível finalizar a ação.", variant: "destructive" })
   }
-}
 
-if (isLoading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
@@ -395,7 +432,7 @@ if (isLoading) {
   return (
     <div className="space-y-4 pb-20 md:pb-6">
       <div className="px-4 md:px-0">
-        <h2 className="text-xl md:text-2xl font-bold tracking-tight">My Schedule</h2>
+        <h2 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">My Schedule</h2>
         <p className="text-sm md:text-base text-muted-foreground">View and manage your appointments</p>
       </div>
 
@@ -434,7 +471,7 @@ if (isLoading) {
       <div className="px-4 md:px-0">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base md:text-lg">
+            <CardTitle className="text-base md:text-lg text-foreground">
               {view === "day" && format(currentDate, "EEEE, MMMM d, yyyy")}
               {view === "week" && `Week of ${format(currentDate, "MMMM d, yyyy")}`}
               {view === "month" && format(currentDate, "MMMM yyyy")}
@@ -443,25 +480,15 @@ if (isLoading) {
           <CardContent className="px-3 md:px-6">
             {/* Day View - Otimizado para mobile */}
             {view === "day" && (
-              <div className="flex flex-col h-[500px] md:h-[600px] bg-[#1a2234] rounded-lg border border-[#2a3349]">
-                <div className="flex justify-between items-center p-3 md:p-4 border-b border-[#2a3349]">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={navigatePrevious}
-                    className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent px-2"
-                  >
+              <div className="flex flex-col h-[500px] md:h-[600px] bg-card rounded-lg border border-border">
+                <div className="flex justify-between items-center p-3 md:p-4 border-b border-border">
+                  <Button variant="outline" size="sm" onClick={navigatePrevious} className="px-2 bg-transparent">
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  <h3 className="text-sm md:text-lg font-medium text-white text-center">
+                  <h3 className="text-sm md:text-lg font-medium text-foreground text-center">
                     {format(currentDate, "EEE, MMM d")}
                   </h3>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={navigateNext}
-                    className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent px-2"
-                  >
+                  <Button variant="outline" size="sm" onClick={navigateNext} className="px-2 bg-transparent">
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
@@ -471,9 +498,9 @@ if (isLoading) {
                     {Array.from({ length: 17 }, (_, i) => i + 6).map((hour) => (
                       <div
                         key={hour}
-                        className="flex border-b border-[#2a3349] h-10 md:h-12 cursor-pointer hover:bg-[#1a2234]/30"
+                        className="flex border-b border-border h-10 md:h-12 cursor-pointer hover:bg-muted/30"
                       >
-                        <div className="w-12 md:w-16 flex-shrink-0 border-r border-[#2a3349] p-1 text-xs text-gray-400 text-right pr-2">
+                        <div className="w-12 md:w-16 flex-shrink-0 border-r border-border p-1 text-xs text-muted-foreground text-right pr-2">
                           {hour}:00
                         </div>
                         <div className="flex-1 relative"></div>
@@ -499,7 +526,7 @@ if (isLoading) {
                       return (
                         <div
                           key={appointment.id}
-                          className="absolute left-12 md:left-16 right-1 md:right-2 rounded-md p-1 md:p-2 border-l-4 border-blue-400 bg-[#0f172a] overflow-hidden cursor-pointer hover:bg-[#2a3349] transition-colors"
+                          className="absolute left-12 md:left-16 right-1 md:right-2 rounded-md p-1 md:p-2 border-l-4 border-blue-400 bg-blue-50 dark:bg-blue-950 overflow-hidden cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors"
                           style={{
                             top: `${top}px`,
                             height: `${Math.max(height, 20)}px`,
@@ -509,22 +536,32 @@ if (isLoading) {
                         >
                           <div className="flex justify-between items-start">
                             <div className="overflow-hidden">
-                              <h4 className="font-medium text-xs md:text-sm truncate text-white">
+                              <h4 className="font-medium text-xs md:text-sm truncate text-foreground">
                                 {appointment.title || "No Title"}
                               </h4>
-                              <p className="text-xs text-gray-400 truncate">
-                                {appointment.customer?.name || "No customer"}{appointment.customer && (appointment.customer.ssn || appointment.customer.ticket || appointment.customer.frequency || appointment.customer.paymentMethod) ? (
-  <span className="ml-2 text-[10px] text-gray-400" title={`SSN: ${appointment.customer?.ssn ?? "—"} | Ticket: ${appointment.customer?.ticket ?? "—"} | Freq: ${appointment.customer?.frequency ?? "—"} | Pay: ${appointment.customer?.paymentMethod ?? "—"}`}>ⓘ</span>
-) : null}
+                              <p className="text-xs text-muted-foreground truncate">
+                                {appointment.customer?.name || "No customer"}
+                                {appointment.customer &&
+                                (appointment.customer.ssn ||
+                                  appointment.customer.ticket ||
+                                  appointment.customer.frequency ||
+                                  appointment.customer.paymentMethod) ? (
+                                  <span
+                                    className="ml-2 text-[10px] text-muted-foreground"
+                                    title={`SSN: ${appointment.customer?.ssn ?? "—"} | Ticket: ${appointment.customer?.ticket ?? "—"} | Freq: ${appointment.customer?.frequency ?? "—"} | Pay: ${appointment.customer?.paymentMethod ?? "—"}`}
+                                  >
+                                    ⓘ
+                                  </span>
+                                ) : null}
                               </p>
                               <div className="flex items-center mt-1 gap-1">
                                 <Badge
                                   variant="outline"
-                                  className={`${getStatusBadge(appointment.status).className} text-white text-xs px-1 py-0 h-3 md:h-4`}
+                                  className={`${getStatusBadge(appointment.status).className} text-xs px-1 py-0 h-3 md:h-4`}
                                 >
                                   {getStatusBadge(appointment.status).label}
                                 </Badge>
-                                <span className="text-xs text-gray-400 hidden md:inline">
+                                <span className="text-xs text-muted-foreground hidden md:inline">
                                   {format(startDate, "h:mm a")} - {format(endDate, "h:mm a")}
                                 </span>
                               </div>
@@ -545,18 +582,18 @@ if (isLoading) {
                   {generateWeekDays.map((day, i) => (
                     <div key={i} className="text-center">
                       <div
-                        className={`font-medium mb-1 md:mb-2 text-xs md:text-sm ${day.isToday ? "text-primary" : ""}`}
+                        className={`font-medium mb-1 md:mb-2 text-xs md:text-sm ${day.isToday ? "text-primary" : "text-foreground"}`}
                       >
                         {day.dayName}
                       </div>
                       <div
                         className={`rounded-full w-6 h-6 md:w-8 md:h-8 mx-auto flex items-center justify-center mb-1 md:mb-2 text-xs md:text-sm
-                          ${day.isToday ? "bg-primary text-primary-foreground" : ""}`}
+                          ${day.isToday ? "bg-primary text-primary-foreground" : "text-foreground"}`}
                       >
                         {day.dayNumber}
                       </div>
                       <div
-                        className={`h-16 md:h-24 rounded-md border overflow-y-auto ${day.appointments.length > 0 ? "bg-primary/5 border-primary/20" : ""}`}
+                        className={`h-16 md:h-24 rounded-md border border-border overflow-y-auto ${day.appointments.length > 0 ? "bg-primary/5" : "bg-card"}`}
                       >
                         {day.appointments.map((appointment) => (
                           <div
@@ -565,9 +602,13 @@ if (isLoading) {
                             onClick={() => handleViewDetails(appointment)}
                           >
                             <div className="hidden md:block">
-                              {format(new Date(appointment.start), "HH:mm")}–{format(new Date(appointment.end), "HH:mm")} • {appointment.title}
+                              {format(new Date(appointment.start), "HH:mm")}–
+                              {format(new Date(appointment.end), "HH:mm")} • {appointment.title}
                             </div>
-                            <div className="md:hidden">{format(new Date(appointment.start), "HH:mm")}–{format(new Date(appointment.end), "HH:mm")}</div>
+                            <div className="md:hidden">
+                              {format(new Date(appointment.start), "HH:mm")}–
+                              {format(new Date(appointment.end), "HH:mm")}
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -576,13 +617,13 @@ if (isLoading) {
                 </div>
 
                 <div className="mt-6 space-y-3">
-                  <h3 className="text-base md:text-lg font-semibold mb-3">Week Appointments</h3>
+                  <h3 className="text-base md:text-lg font-semibold mb-3 text-foreground">Week Appointments</h3>
 
-                  {filteredAppointments.length > 0 ? (
-                    filteredAppointments.map((appointment) => (
+                  {getWeekAppointments.length > 0 ? (
+                    getWeekAppointments.map((appointment) => (
                       <div
                         key={appointment.id}
-                        className="border rounded-lg p-3 md:p-4 hover:bg-accent/50 transition-colors"
+                        className="border border-border rounded-lg p-3 md:p-4 hover:bg-muted/50 transition-colors bg-card"
                       >
                         <div className="flex flex-col gap-3">
                           <div className="space-y-2">
@@ -597,7 +638,7 @@ if (isLoading) {
                                 {getTypeLabel(appointment.type)}
                               </Badge>
                             </div>
-                            <h3 className="font-semibold text-sm md:text-base">{appointment.title}</h3>
+                            <h3 className="font-semibold text-sm md:text-base text-foreground">{appointment.title}</h3>
                             <div className="flex items-start gap-2 text-xs md:text-sm text-muted-foreground">
                               <MapPin className="h-3 w-3 md:h-4 md:w-4 mt-0.5 flex-shrink-0" />
                               <span className="break-words">{appointment.address}</span>
@@ -624,18 +665,18 @@ if (isLoading) {
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-8 text-muted-foreground text-sm">No appointments found</div>
+                    <div className="text-center py-8 text-muted-foreground text-sm">No appointments this week</div>
                   )}
                 </div>
               </div>
             )}
 
-            {/* Month View - Otimizado para mobile */}
+            {/* Month View - Updated with clickable days and appointment list */}
             {view === "month" && (
               <div className="space-y-4 max-h-[70vh] overflow-y-auto md:max-h-none">
                 <div className="grid grid-cols-7 gap-0.5 md:gap-1">
                   {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, i) => (
-                    <div key={i} className="text-center font-medium p-1 md:p-2 text-xs md:text-sm">
+                    <div key={i} className="text-center font-medium p-1 md:p-2 text-xs md:text-sm text-foreground">
                       <span className="hidden md:inline">{day}</span>
                       <span className="md:hidden">{day.slice(0, 1)}</span>
                     </div>
@@ -644,32 +685,21 @@ if (isLoading) {
                   {generateMonthDays.map((dayData, i) => (
                     <div
                       key={i}
-                      className={`h-16 md:h-24 p-0.5 md:p-1 border text-xs ${
+                      onClick={() => dayData.day && setSelectedMonthDay(dayData.day)}
+                      className={`h-16 md:h-24 p-0.5 md:p-1 border border-border text-xs transition-colors ${
                         dayData.day === null
-                          ? "border-dashed text-muted-foreground/30"
+                          ? "border-dashed text-muted-foreground/30 bg-muted/20"
                           : dayData.hasAppointment
-                            ? "bg-primary/5 border-primary/20"
-                            : ""
-                      }`}
+                            ? "bg-primary/5 cursor-pointer hover:bg-primary/10"
+                            : "bg-card cursor-pointer hover:bg-muted/30"
+                      } ${selectedMonthDay === dayData.day ? "ring-2 ring-primary bg-primary/10" : ""}`}
                     >
                       {dayData.day && (
                         <>
-                          <div className="text-xs md:text-sm">{dayData.day}</div>
-                          {dayData.appointments.slice(0, 1).map((appointment) => (
-                            <div
-                              key={appointment.id}
-                              className="mt-0.5 md:mt-1 text-xs bg-primary/10 text-primary rounded p-0.5 truncate cursor-pointer hover:bg-primary/20"
-                              onClick={() => handleViewDetails(appointment)}
-                            >
-                              <div className="hidden md:block">
-                                {format(new Date(appointment.start), "HH:mm")}–{format(new Date(appointment.end), "HH:mm")} • {appointment.title}
-                              </div>
-                              <div className="md:hidden">{format(new Date(appointment.start), "HH:mm")}–{format(new Date(appointment.end), "HH:mm")}</div>
-                            </div>
-                          ))}
-                          {dayData.appointments.length > 1 && (
-                            <div className="text-xs text-muted-foreground mt-0.5">
-                              +{dayData.appointments.length - 1}
+                          <div className="text-xs md:text-sm text-foreground font-medium">{dayData.day}</div>
+                          {dayData.appointments.length > 0 && (
+                            <div className="mt-0.5 text-[10px] md:text-xs text-primary font-medium">
+                              +{dayData.appointments.length}
                             </div>
                           )}
                         </>
@@ -678,50 +708,118 @@ if (isLoading) {
                   ))}
                 </div>
 
-                <div className="space-y-4 max-h-[70vh] overflow-y-auto md:max-h-none">
-                  <h3 className="text-base md:text-lg font-semibold">Monthly Summary</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-                    <Card>
-                      <CardContent className="pt-4 md:pt-6">
-                        <div className="flex items-center justify-between">
-                          <div className="flex flex-col">
-                            <span className="text-muted-foreground text-xs md:text-sm">Total Appointments</span>
-                            <span className="text-xl md:text-2xl font-bold">
-                              {scheduleSummary?.totalAppointments || 0}
-                            </span>
-                          </div>
-                          <Calendar className="h-6 w-6 md:h-8 md:w-8 text-primary" />
-                        </div>
-                      </CardContent>
-                    </Card>
+                {selectedMonthDay !== null && (
+                  <div className="space-y-3 pt-4 border-t">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base md:text-lg font-semibold text-foreground">
+                        {format(
+                          new Date(currentDate.getFullYear(), currentDate.getMonth(), selectedMonthDay),
+                          "MMMM d, yyyy",
+                        )}{" "}
+                        - Appointments
+                      </h3>
+                      <Button variant="ghost" size="sm" onClick={() => setSelectedMonthDay(null)} className="text-xs">
+                        Clear
+                      </Button>
+                    </div>
 
-                    <Card>
-                      <CardContent className="pt-4 md:pt-6">
-                        <div className="flex items-center justify-between">
-                          <div className="flex flex-col">
-                            <span className="text-muted-foreground text-xs md:text-sm">Clients Served</span>
-                            <span className="text-xl md:text-2xl font-bold">{scheduleSummary?.clientsServed || 0}</span>
+                    {getMonthDayAppointments.length > 0 ? (
+                      <div className="space-y-2">
+                        {getMonthDayAppointments.map((appointment) => (
+                          <div
+                            key={appointment.id}
+                            className="border border-border rounded-lg p-3 hover:bg-muted/50 transition-colors bg-card"
+                          >
+                            <div className="flex flex-col gap-2">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <Badge variant="outline" className={getStatusBadge(appointment.status).className}>
+                                  {getStatusBadge(appointment.status).label}
+                                </Badge>
+                                <Badge variant="secondary" className="text-xs">
+                                  {getTypeLabel(appointment.type)}
+                                </Badge>
+                              </div>
+                              <h4 className="font-semibold text-sm text-foreground">{appointment.title}</h4>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <Clock className="h-3 w-3" />
+                                <span>
+                                  {format(new Date(appointment.start), "HH:mm")} -{" "}
+                                  {format(new Date(appointment.end), "HH:mm")}
+                                </span>
+                              </div>
+                              <div className="flex items-start gap-2 text-xs text-muted-foreground">
+                                <MapPin className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                                <span className="break-words line-clamp-1">{appointment.address}</span>
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {appointment.customer?.name || "No customer"}
+                              </div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full mt-2 bg-transparent text-xs"
+                                onClick={() => handleViewDetails(appointment)}
+                              >
+                                View Details
+                              </Button>
+                            </div>
                           </div>
-                          <Users className="h-6 w-6 md:h-8 md:w-8 text-primary" />
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    <Card>
-                      <CardContent className="pt-4 md:pt-6">
-                        <div className="flex items-center justify-between">
-                          <div className="flex flex-col">
-                            <span className="text-muted-foreground text-xs md:text-sm">Completion Rate</span>
-                            <span className="text-xl md:text-2xl font-bold">
-                              {scheduleSummary?.completionRate || 0}%
-                            </span>
-                          </div>
-                          <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-primary" />
-                        </div>
-                      </CardContent>
-                    </Card>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 text-muted-foreground text-sm">No appointments on this day</div>
+                    )}
                   </div>
-                </div>
+                )}
+
+                {selectedMonthDay === null && (
+                  <div className="space-y-4">
+                    <h3 className="text-base md:text-lg font-semibold text-foreground">Monthly Summary</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+                      <Card>
+                        <CardContent className="pt-4 md:pt-6">
+                          <div className="flex items-center justify-between">
+                            <div className="flex flex-col">
+                              <span className="text-muted-foreground text-xs md:text-sm">Total Appointments</span>
+                              <span className="text-xl md:text-2xl font-bold">
+                                {scheduleSummary?.totalAppointments || 0}
+                              </span>
+                            </div>
+                            <Calendar className="h-6 w-6 md:h-8 md:w-8 text-primary" />
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardContent className="pt-4 md:pt-6">
+                          <div className="flex items-center justify-between">
+                            <div className="flex flex-col">
+                              <span className="text-muted-foreground text-xs md:text-sm">Clients Served</span>
+                              <span className="text-xl md:text-2xl font-bold">
+                                {scheduleSummary?.clientsServed || 0}
+                              </span>
+                            </div>
+                            <Users className="h-6 w-6 md:h-8 md:w-8 text-primary" />
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardContent className="pt-4 md:pt-6">
+                          <div className="flex items-center justify-between">
+                            <div className="flex flex-col">
+                              <span className="text-muted-foreground text-xs md:text-sm">Completion Rate</span>
+                              <span className="text-xl md:text-2xl font-bold">
+                                {scheduleSummary?.completionRate || 0}%
+                              </span>
+                            </div>
+                            <CheckCircle className="h-6 w-6 md:h-8 md:w-8 text-primary" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
@@ -734,7 +832,7 @@ if (isLoading) {
             <DialogHeader className="pb-2 md:pb-4">
               <DialogTitle className="flex flex-col gap-2">
                 <div className="flex items-start justify-between">
-                  <span className="text-base md:text-lg font-semibold pr-2">Appointment Details</span>
+                  <span className="text-base md:text-lg font-semibold pr-2 text-foreground">Appointment Details</span>
                   <Badge
                     variant="outline"
                     className={`${getStatusBadge(selectedAppointment.status).className} text-xs flex-shrink-0`}
@@ -750,7 +848,9 @@ if (isLoading) {
                 {/* Service Details Section */}
                 <div className="space-y-3">
                   <div>
-                    <h3 className="text-lg md:text-xl font-semibold mb-2">{selectedAppointment.title}</h3>
+                    <h3 className="text-lg md:text-xl font-semibold mb-2 text-foreground">
+                      {selectedAppointment.title}
+                    </h3>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <CalendarClock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
@@ -770,23 +870,27 @@ if (isLoading) {
 
                   {/* Service Info Grid */}
                   <div>
-                    <h4 className="font-medium mb-3 text-base">Service Information</h4>
+                    <h4 className="font-medium mb-3 text-base text-foreground">Service Information</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Type:</span>
-                        <span className="font-medium">{getTypeLabel(selectedAppointment.type)}</span>
+                        <span className="font-medium text-foreground">{getTypeLabel(selectedAppointment.type)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Status:</span>
-                        <span className="font-medium">{getStatusBadge(selectedAppointment.status).label}</span>
+                        <span className="font-medium text-foreground">
+                          {getStatusBadge(selectedAppointment.status).label}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Company:</span>
-                        <span className="font-medium">{selectedAppointment.company?.name || "N/A"}</span>
+                        <span className="font-medium text-foreground">
+                          {selectedAppointment.company?.name || "N/A"}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Team:</span>
-                        <span className="font-medium">{selectedAppointment.team?.name || "N/A"}</span>
+                        <span className="font-medium text-foreground">{selectedAppointment.team?.name || "N/A"}</span>
                       </div>
                     </div>
                   </div>
@@ -796,13 +900,13 @@ if (isLoading) {
                   {/* Client Information Card */}
                   <Card>
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-base">Client Information</CardTitle>
+                      <CardTitle className="text-base text-foreground">Client Information</CardTitle>
                     </CardHeader>
                     <CardContent className="pb-3">
                       <div className="flex items-center gap-3 mb-4">
                         <Avatar className="h-12 w-12">
                           <AvatarImage
-                            src={`/placeholder.svg?height=48&width=48&query=${selectedAppointment.customer?.name || "Customer"}`}
+                            src={`/.jpg?height=48&width=48&query=${selectedAppointment.customer?.name || "Customer"}`}
                             alt={selectedAppointment.customer?.name || "Customer"}
                           />
                           <AvatarFallback className="text-sm">
@@ -813,7 +917,7 @@ if (isLoading) {
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
-                          <div className="font-medium text-base">
+                          <div className="font-medium text-base text-foreground">
                             {selectedAppointment.customer?.name || "No customer"}
                           </div>
                           <div className="text-sm text-muted-foreground">Client</div>
@@ -827,7 +931,7 @@ if (isLoading) {
                               <Phone className="h-4 w-4 text-muted-foreground" />
                               <span>Phone</span>
                             </div>
-                            <span className="font-medium">{selectedAppointment.customer.phone}</span>
+                            <span className="font-medium text-foreground">{selectedAppointment.customer.phone}</span>
                           </div>
                         )}
                         {selectedAppointment.customer?.email && (
@@ -836,7 +940,7 @@ if (isLoading) {
                               <Mail className="h-4 w-4 text-muted-foreground" />
                               <span>Email</span>
                             </div>
-                            <span className="font-medium text-xs md:text-sm break-all">
+                            <span className="font-medium text-xs md:text-sm break-all text-foreground">
                               {selectedAppointment.customer.email}
                             </span>
                           </div>
@@ -852,10 +956,10 @@ if (isLoading) {
                       <div>
                         <div className="flex items-center gap-2 mb-3">
                           <AlertCircle className="h-4 w-4 text-amber-500" />
-                          <h4 className="font-medium text-base">Notes</h4>
+                          <h4 className="font-medium text-base text-foreground">Notes</h4>
                         </div>
                         <div className="bg-muted/50 rounded-lg p-3">
-                          <p className="text-sm leading-relaxed">{selectedAppointment.notes}</p>
+                          <p className="text-sm leading-relaxed text-foreground">{selectedAppointment.notes}</p>
                         </div>
                       </div>
                     </>
@@ -878,22 +982,30 @@ if (isLoading) {
                         Check In
                       </Button>
                       <Button asChild variant="outline" className="w-full bg-transparent">
-                        <a target="_blank" rel="noreferrer" href={selectedAppointment?.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedAppointment.address)}` : undefined}>
-                        <MapPin className="h-4 w-4 mr-2" />
-                        Get Directions
+                        <a
+                          target="_blank"
+                          rel="noreferrer"
+                          href={
+                            selectedAppointment?.address
+                              ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedAppointment.address)}`
+                              : undefined
+                          }
+                        >
+                          <MapPin className="h-4 w-4 mr-2" />
+                          Get Directions
                         </a>
                       </Button>
                     </div>
 
                     <div className="grid grid-cols-1 gap-2">
-                        <Button
-                          variant="outline"
-                          className="w-full text-red-500 hover:text-red-500 hover:bg-red-50 bg-transparent"
-                        >
-                          <X className="h-4 w-4 mr-2" />
-                          Cancel
-                        </Button>
-                      </div>
+                      <Button
+                        variant="outline"
+                        className="w-full text-red-500 hover:text-red-500 hover:bg-red-50 bg-transparent"
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -907,7 +1019,6 @@ if (isLoading) {
               >
                 Close
               </Button>
-              
             </DialogFooter>
           </DialogContent>
         </Dialog>

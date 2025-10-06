@@ -159,7 +159,7 @@ export default function FeedbackPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white">Loading feedback data...</div>
+        <div className="text-muted-foreground">Loading feedback data...</div>
       </div>
     )
   }
@@ -168,79 +168,83 @@ export default function FeedbackPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white mb-1">Internal Feedback</h1>
-          <p className="text-gray-400">Review feedback and issues reported by cleaning professionals</p>
+          <h1 className="text-2xl font-bold text-foreground mb-1">Internal Feedback</h1>
+          <p className="text-muted-foreground">Review feedback and issues reported by cleaning professionals</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-lg">Total Feedback</CardTitle>
+            <CardTitle className="text-foreground text-lg">Total Feedback</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="bg-[#2a3349] p-2 rounded-full">
-                  <MessageSquare className="h-5 w-5 text-[#06b6d4]" />
+                <div className="bg-muted p-2 rounded-full">
+                  <MessageSquare className="h-5 w-5 text-primary" />
                 </div>
               </div>
-              <span className="text-3xl font-bold text-white">{feedbacks.length}</span>
+              <span className="text-3xl font-bold text-foreground">{feedbacks.length}</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-lg">Pending Issues</CardTitle>
+            <CardTitle className="text-foreground text-lg">Pending Issues</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="bg-[#2a3349] p-2 rounded-full">
+                <div className="bg-muted p-2 rounded-full">
                   <AlertTriangle className="h-5 w-5 text-amber-500" />
                 </div>
               </div>
-              <span className="text-3xl font-bold text-white">{feedbacks.filter((f) => f.status === 0).length}</span>
+              <span className="text-3xl font-bold text-foreground">
+                {feedbacks.filter((f) => f.status === 0).length}
+              </span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-lg">Resolved Issues</CardTitle>
+            <CardTitle className="text-foreground text-lg">Resolved Issues</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="bg-[#2a3349] p-2 rounded-full">
+                <div className="bg-muted p-2 rounded-full">
                   <CheckCircle className="h-5 w-5 text-green-500" />
                 </div>
               </div>
-              <span className="text-3xl font-bold text-white">{feedbacks.filter((f) => f.status === 2).length}</span>
+              <span className="text-3xl font-bold text-foreground">
+                {feedbacks.filter((f) => f.status === 2).length}
+              </span>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="bg-[#1a2234] border-[#2a3349]">
+      <Card className="bg-card border-border">
         <CardHeader>
           <div className="flex flex-col md:flex-row gap-4 justify-between">
             <div className="relative w-full md:w-64">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search feedback..."
-                className="pl-8 bg-[#2a3349] border-0 text-white placeholder:text-gray-500 focus-visible:ring-[#06b6d4]"
+                className="pl-8 bg-background border-border text-foreground placeholder:text-muted-foreground"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="flex gap-2">
               <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-full md:w-40 bg-[#2a3349] border-0 text-white focus:ring-[#06b6d4]">
+                <SelectTrigger className="w-full md:w-40 bg-background border-border">
                   <SelectValue placeholder="Filter by type" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+                <SelectContent>
                   <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="equipment">Equipment</SelectItem>
                   <SelectItem value="scheduling">Scheduling</SelectItem>
@@ -249,10 +253,10 @@ export default function FeedbackPage() {
                 </SelectContent>
               </Select>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full md:w-40 bg-[#2a3349] border-0 text-white focus:ring-[#06b6d4]">
+                <SelectTrigger className="w-full md:w-40 bg-background border-border">
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+                <SelectContent>
                   <SelectItem value="all">All Statuses</SelectItem>
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="in_progress">In Progress</SelectItem>
@@ -265,25 +269,25 @@ export default function FeedbackPage() {
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow className="border-[#2a3349] hover:bg-[#2a3349]">
-                <TableHead className="text-gray-400">Professional</TableHead>
-                <TableHead className="text-gray-400">Team</TableHead>
-                <TableHead className="text-gray-400">Date</TableHead>
-                <TableHead className="text-gray-400">Category</TableHead>
-                <TableHead className="text-gray-400 w-1/3">Title</TableHead>
-                <TableHead className="text-gray-400">Priority</TableHead>
-                <TableHead className="text-gray-400">Status</TableHead>
-                <TableHead className="text-gray-400">Actions</TableHead>
+              <TableRow className="border-border hover:bg-muted/50">
+                <TableHead className="text-muted-foreground">Professional</TableHead>
+                <TableHead className="text-muted-foreground">Team</TableHead>
+                <TableHead className="text-muted-foreground">Date</TableHead>
+                <TableHead className="text-muted-foreground">Category</TableHead>
+                <TableHead className="text-muted-foreground w-1/3">Title</TableHead>
+                <TableHead className="text-muted-foreground">Priority</TableHead>
+                <TableHead className="text-muted-foreground">Status</TableHead>
+                <TableHead className="text-muted-foreground">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredFeedback.length > 0 ? (
                 filteredFeedback.map((feedback) => (
-                  <TableRow key={feedback.id} className="border-[#2a3349] hover:bg-[#2a3349]">
-                    <TableCell className="font-medium text-white">
+                  <TableRow key={feedback.id} className="border-border hover:bg-muted/50">
+                    <TableCell className="font-medium text-foreground">
                       <div className="flex items-center gap-2">
                         <Avatar>
-                          <AvatarFallback className="bg-[#2a3349] text-[#06b6d4]">
+                          <AvatarFallback className="bg-muted text-primary">
                             {getProfessionalName(feedback.professionalId)
                               .split(" ")
                               .map((n) => n[0])
@@ -293,10 +297,10 @@ export default function FeedbackPage() {
                         {getProfessionalName(feedback.professionalId)}
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-400">{getTeamName(feedback.teamId)}</TableCell>
+                    <TableCell className="text-muted-foreground">{getTeamName(feedback.teamId)}</TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1 text-gray-400">
-                        <Calendar className="h-3 w-3 text-gray-500" />
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <Calendar className="h-3 w-3" />
                         {new Date(feedback.date).toLocaleDateString()}
                       </div>
                     </TableCell>
@@ -308,7 +312,7 @@ export default function FeedbackPage() {
                         </div>
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-gray-400">
+                    <TableCell className="text-muted-foreground">
                       <div className="line-clamp-2">{feedback.title}</div>
                     </TableCell>
                     <TableCell>
@@ -343,19 +347,11 @@ export default function FeedbackPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-8 border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent"
-                        >
+                        <Button size="sm" variant="outline" className="h-8 bg-transparent">
                           View
                         </Button>
                         {feedback.status !== 2 && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-8 border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent"
-                          >
+                          <Button size="sm" variant="outline" className="h-8 bg-transparent">
                             Update
                           </Button>
                         )}
@@ -365,7 +361,7 @@ export default function FeedbackPage() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-6 text-gray-400">
+                  <TableCell colSpan={8} className="text-center py-6 text-muted-foreground">
                     No feedback found matching your search criteria
                   </TableCell>
                 </TableRow>

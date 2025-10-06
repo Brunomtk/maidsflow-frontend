@@ -74,9 +74,9 @@ export function AppointmentList({ appointments, onViewDetails, onEdit, onDelete 
   if (!appointments || appointments.length === 0) {
     return (
       <div className="text-center py-8">
-        <Calendar className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-        <h3 className="text-lg font-medium text-white mb-2">No appointments found</h3>
-        <p className="text-gray-400">Create your first appointment to get started.</p>
+        <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+        <h3 className="text-lg font-medium text-foreground mb-2">No appointments found</h3>
+        <p className="text-muted-foreground">Create your first appointment to get started.</p>
       </div>
     )
   }
@@ -84,14 +84,14 @@ export function AppointmentList({ appointments, onViewDetails, onEdit, onDelete 
   return (
     <div className="grid gap-4">
       {appointments.map((appointment) => (
-        <Card key={appointment.id} className="bg-[#1a2234] border-[#2a3349] hover:border-[#06b6d4] transition-colors">
+        <Card key={appointment.id} className="bg-card border-border hover:border-primary transition-colors">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div className="flex-1 space-y-3">
                 {/* Header */}
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-1">{appointment.title}</h3>
+                    <h3 className="text-lg font-semibold text-foreground mb-1">{appointment.title}</h3>
                     <div className="flex items-center gap-2">
                       {getStatusBadge(appointment.status)}
                       {getTypeBadge(appointment.type)}
@@ -102,7 +102,7 @@ export function AppointmentList({ appointments, onViewDetails, onEdit, onDelete 
                       variant="ghost"
                       size="sm"
                       onClick={() => onViewDetails(appointment)}
-                      className="text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                      className="text-muted-foreground hover:text-foreground hover:bg-accent"
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -110,7 +110,7 @@ export function AppointmentList({ appointments, onViewDetails, onEdit, onDelete 
                       variant="ghost"
                       size="sm"
                       onClick={() => onEdit(appointment)}
-                      className="text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                      className="text-muted-foreground hover:text-foreground hover:bg-accent"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -118,7 +118,7 @@ export function AppointmentList({ appointments, onViewDetails, onEdit, onDelete 
                       variant="ghost"
                       size="sm"
                       onClick={() => onDelete(appointment)}
-                      className="text-gray-400 hover:text-red-400 hover:bg-[#2a3349]"
+                      className="text-muted-foreground hover:text-destructive hover:bg-accent"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -129,13 +129,13 @@ export function AppointmentList({ appointments, onViewDetails, onEdit, onDelete 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {/* Date & Time */}
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-gray-400">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                       <Calendar className="h-4 w-4" />
                       <span className="text-sm font-medium">Date & Time</span>
                     </div>
-                    <div className="text-white">
+                    <div className="text-foreground">
                       <div className="text-sm">{format(new Date(appointment.start), "MMM dd, yyyy")}</div>
-                      <div className="text-xs text-gray-400 flex items-center gap-1">
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         {format(new Date(appointment.start), "HH:mm")} - {format(new Date(appointment.end), "HH:mm")}
                       </div>
@@ -144,47 +144,47 @@ export function AppointmentList({ appointments, onViewDetails, onEdit, onDelete 
 
                   {/* Customer */}
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-gray-400">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                       <User className="h-4 w-4" />
                       <span className="text-sm font-medium">Customer</span>
                     </div>
-                    <div className="text-white">
+                    <div className="text-foreground">
                       <div className="text-sm">{appointment.customer?.name || "N/A"}</div>
-                      <div className="text-xs text-gray-400">{appointment.customer?.phone || ""}</div>
+                      <div className="text-xs text-muted-foreground">{appointment.customer?.phone || ""}</div>
                     </div>
                   </div>
 
                   {/* Team & Professional */}
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-gray-400">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                       <Users className="h-4 w-4" />
                       <span className="text-sm font-medium">Team</span>
                     </div>
-                    <div className="text-white">
+                    <div className="text-foreground">
                       <div className="text-sm">{appointment.team?.name || "N/A"}</div>
-                      <div className="text-xs text-gray-400">{appointment.professional?.name || ""}</div>
+                      <div className="text-xs text-muted-foreground">{appointment.professional?.name || ""}</div>
                     </div>
                   </div>
 
                   {/* Address */}
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-gray-400">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                       <MapPin className="h-4 w-4" />
                       <span className="text-sm font-medium">Address</span>
                     </div>
-                    <div className="text-white">
+                    <div className="text-foreground">
                       <div className="text-sm truncate" title={appointment.address}>
                         {appointment.address}
                       </div>
-                      <div className="text-xs text-gray-400">{appointment.company?.name || ""}</div>
+                      <div className="text-xs text-muted-foreground">{appointment.company?.name || ""}</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Notes */}
                 {appointment.notes && (
-                  <div className="pt-2 border-t border-[#2a3349]">
-                    <p className="text-sm text-gray-400">
+                  <div className="pt-2 border-t border-border">
+                    <p className="text-sm text-muted-foreground">
                       <span className="font-medium">Notes:</span> {appointment.notes}
                     </p>
                   </div>

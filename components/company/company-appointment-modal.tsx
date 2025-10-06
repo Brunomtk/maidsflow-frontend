@@ -55,9 +55,8 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
     notes: "",
   })
   const [recurrenceEnabled, setRecurrenceEnabled] = useState(false)
-  const [recurrenceType, setRecurrenceType] = useState<"weekly" | "monthly" | "bimonthly">("weekly")
+  const [recurrenceType, setRecurrenceType] = useState<"weekly" | "bi-weekly" | "monthly">("weekly")
   const [repeatUntil, setRepeatUntil] = useState<string>("")
-
 
   const apiCall = async (endpoint: string, options: RequestInit = {}) => {
     const token = localStorage.getItem("noah_token")
@@ -115,10 +114,6 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
     } else {
       setFormData({
         title: "",
-        recurrenceEnabled: false,
-        recurrenceFrequency: "weekly",
-        recurrenceEndDate: "",
-        recurrenceDayOfMonth: "",
         address: "",
         companyId: "",
         customerId: "",
@@ -155,36 +150,53 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
     }
   }
 
-  
-  const buildOccurrences = (startDateStr: string, endDateStr: string, untilStr: string, type: "weekly" | "monthly" | "bimonthly") => {
+  const buildOccurrences = (
+    startDateStr: string,
+    endDateStr: string,
+    untilStr: string,
+    type: "weekly" | "bi-weekly" | "monthly",
+  ) => {
     const occurrences: { start: string; end: string }[] = []
     if (!startDateStr || !endDateStr || !untilStr) return occurrences
 
-    const [sh, sm] = (formData.startTime || "09:00").split(":").map((v) => parseInt(v, 10))
-    const [eh, em] = (formData.endTime || "10:00").split(":").map((v) => parseInt(v, 10))
+    const [sh, sm] = (formData.startTime || "09:00").split(":").map((v) => Number.parseInt(v, 10))
+    const [eh, em] = (formData.endTime || "10:00").split(":").map((v) => Number.parseInt(v, 10))
 
-    const baseParts = parseDateOnly(startDateStr); const base = baseParts ? new Date(baseParts.y, baseParts.m-1, baseParts.d) : new Date(startDateStr)
-    base.setHours(0,0,0,0)
-    const untilParts = parseDateOnly(untilStr); const until = untilParts ? new Date(untilParts.y, untilParts.m-1, untilParts.d) : new Date(untilStr)
-    until.setHours(23,59,59,999)
+    const baseParts = parseDateOnly(startDateStr)
+    const base = baseParts ? new Date(baseParts.y, baseParts.m - 1, baseParts.d) : new Date(startDateStr)
+    base.setHours(0, 0, 0, 0)
+    const untilParts = parseDateOnly(untilStr)
+    const until = untilParts ? new Date(untilParts.y, untilParts.m - 1, untilParts.d) : new Date(untilStr)
+    until.setHours(23, 59, 59, 999)
 
     let cur = new Date(base)
     const pushOccurrence = (d: Date) => {
       const s = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), sh, sm, 0, 0))
       const e = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), eh, em, 0, 0))
-      // push occurrence if still within range
-      if (s <= until) { const y=s.getUTCFullYear(), m=s.getUTCMonth()+1, d=s.getUTCDate(); const ye=e.getUTCFullYear(), me=e.getUTCMonth()+1, de=e.getUTCDate(); occurrences.push({ start: `${y}-${pad2(m)}-${pad2(d)}T${pad2(sh)}:${pad2(sm)}:00.000Z`, end: `${ye}-${pad2(me)}-${pad2(de)}T${pad2(eh)}:${pad2(em)}:00.000Z` }) }
+      if (s <= until) {
+        const y = s.getUTCFullYear(),
+          m = s.getUTCMonth() + 1,
+          d = s.getUTCDate()
+        const ye = e.getUTCFullYear(),
+          me = e.getUTCMonth() + 1,
+          de = e.getUTCDate()
+        occurrences.push({
+          start: `${y}-${pad2(m)}-${pad2(d)}T${pad2(sh)}:${pad2(sm)}:00.000Z`,
+          end: `${ye}-${pad2(me)}-${pad2(de)}T${pad2(eh)}:${pad2(em)}:00.000Z`,
+        })
+      }
     }
 
     const addInterval = (d: Date) => {
       const nd = new Date(d)
       if (type === "weekly") nd.setDate(nd.getDate() + 7)
-      else if (type === "monthly") { nd.setMonth(nd.getMonth() + 1) }
-      else { nd.setMonth(nd.getMonth() + 2) }
+      else if (type === "bi-weekly") nd.setDate(nd.getDate() + 14)
+      else if (type === "monthly") {
+        nd.setMonth(nd.getMonth() + 1)
+      }
       return nd
     }
 
-    // always include the first date (the selected one)
     pushOccurrence(cur)
     let guard = 0
     while (guard++ < 200) {
@@ -196,64 +208,62 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
     return occurrences
   }
 
-  
-  // --- robust local date helpers (avoid locale/UTC shifts) ---
   const parseDateOnly = (s?: string | null) => {
     if (!s) return null
     const iso = /^\d{4}-\d{2}-\d{2}$/.test(s)
     if (iso) {
-      const [y,m,d] = s.split("-").map((v) => parseInt(v, 10))
+      const [y, m, d] = s.split("-").map((v) => Number.parseInt(v, 10))
       return { y, m, d }
     }
     const m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
     if (m) {
-      const a = parseInt(m[1],10), b = parseInt(m[2],10), y = parseInt(m[3],10)
-      // if first part > 12 assume DD/MM/YYYY else MM/DD/YYYY
+      const a = Number.parseInt(m[1], 10),
+        b = Number.parseInt(m[2], 10),
+        y = Number.parseInt(m[3], 10)
       if (a > 12) return { y, m: b, d: a }
       return { y, m: a, d: b }
     }
     return null
   }
 
-  
-  // Build ISO in UTC keeping the selected clock time in Z (e.g., 08:30 -> 08:30Z)
-  
-  const pad2 = (n:number) => String(n).padStart(2, '0')
-  // Build ISO string with Z *without* using Date(), preserving the picked clock time exactly
+  const pad2 = (n: number) => String(n).padStart(2, "0")
   const composeISOZ = (dateStr: string, timeStr?: string) => {
     const parts = parseDateOnly(dateStr)
-    let y:number, m:number, d:number
-    if (parts) { y = parts.y; m = parts.m; d = parts.d }
-    else {
+    let y: number, m: number, d: number
+    if (parts) {
+      y = parts.y
+      m = parts.m
+      d = parts.d
+    } else {
       const dt = new Date(dateStr)
-      y = dt.getFullYear(); m = dt.getMonth()+1; d = dt.getDate()
+      y = dt.getFullYear()
+      m = dt.getMonth() + 1
+      d = dt.getDate()
     }
-    const [hh, mm] = (timeStr || "00:00").split(":").map((v) => parseInt(v || "0", 10))
+    const [hh, mm] = (timeStr || "00:00").split(":").map((v) => Number.parseInt(v || "0", 10))
     return `${y}-${pad2(m)}-${pad2(d)}T${pad2(hh)}:${pad2(mm)}:00.000Z`
   }
-const composeUTCISO = (dateStr: string, timeStr?: string) => {
+  const composeUTCISO = (dateStr: string, timeStr?: string) => {
     const parts = parseDateOnly(dateStr)
-    const [hh, mm] = (timeStr || "00:00").split(":").map((v) => parseInt(v || "0", 10))
+    const [hh, mm] = (timeStr || "00:00").split(":").map((v) => Number.parseInt(v || "0", 10))
     if (parts) {
       const ms = Date.UTC(parts.y, parts.m - 1, parts.d, hh, mm, 0, 0)
       return new Date(ms).toISOString()
     }
-    // Fallback: append Z
     const dt = new Date(`${dateStr}T${timeStr || "00:00"}:00Z`)
     return dt.toISOString()
   }
-const composeLocalISO = (dateStr: string, timeStr?: string) => {
+  const composeLocalISO = (dateStr: string, timeStr?: string) => {
     const parts = parseDateOnly(dateStr)
-    const [hh, mm] = (timeStr || "00:00").split(":").map((v) => parseInt(v || "0", 10))
+    const [hh, mm] = (timeStr || "00:00").split(":").map((v) => Number.parseInt(v || "0", 10))
     if (parts) {
-      const dt = new Date(parts.y, parts.m - 1, parts.d, hh, mm, 0, 0) // local time
+      const dt = new Date(parts.y, parts.m - 1, parts.d, hh, mm, 0, 0)
       return dt.toISOString()
     }
-    // Fallback: let Date parse, but this might be locale-dependent
     const dt = new Date(`${dateStr}T${timeStr || "00:00"}:00`)
     return dt.toISOString()
   }
-const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
@@ -340,6 +350,8 @@ const handleSubmit = async (e: React.FormEvent) => {
         description: appointment ? "Appointment updated successfully!" : "Appointment created successfully!",
         variant: "default",
       })
+
+      onClose()
     } catch (error) {
       console.error("Error submitting appointment:", error)
       toast({
@@ -360,7 +372,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         if (selected && (!prev.title || prev.title.trim() === "")) {
           next.title = selected.name || (selected as any).customerName || ""
         }
-      
+
         if (selected && (!prev.address || prev.address.trim() === "") && selected.address) {
           next.address = selected.address
         }
@@ -369,8 +381,6 @@ const handleSubmit = async (e: React.FormEvent) => {
     })
   }
 
-  
-  // Prefill companyId from Auth (fallback localStorage)
   useEffect(() => {
     try {
       const cidFromAuth = user?.companyId ?? null
@@ -381,12 +391,13 @@ const handleSubmit = async (e: React.FormEvent) => {
       }
     } catch {}
   }, [user?.companyId])
-return (
+
+  return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[700px] bg-[#1a2234] border-[#2a3349] text-white max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[700px] bg-card border-border text-foreground max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{appointment ? "Edit Appointment" : "New Appointment"}</DialogTitle>
-          <DialogDescription className="text-gray-400">
+          <DialogDescription className="text-muted-foreground">
             {appointment
               ? "Update the appointment information below."
               : "Fill in the information to create a new appointment."}
@@ -401,7 +412,7 @@ return (
                   id="title"
                   value={formData.title}
                   onChange={(e) => handleChange("title", e.target.value)}
-                  className="bg-[#0f172a] border-[#2a3349] text-white"
+                  className="bg-muted border-border text-foreground"
                   placeholder="Enter appointment title"
                   required
                 />
@@ -410,17 +421,17 @@ return (
               <div className="grid gap-2">
                 <Label htmlFor="type">Service Type</Label>
                 <Select value={formData.type} onValueChange={(value) => handleChange("type", value)}>
-                  <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white">
+                  <SelectTrigger className="bg-muted border-border text-foreground">
                     <SelectValue placeholder="Select service type" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
-                    <SelectItem value="0" className="hover:bg-[#2a3349]">
+                  <SelectContent className="bg-card border-border text-foreground">
+                    <SelectItem value="0" className="hover:bg-muted">
                       Residential
                     </SelectItem>
-                    <SelectItem value="1" className="hover:bg-[#2a3349]">
+                    <SelectItem value="1" className="hover:bg-muted">
                       Commercial
                     </SelectItem>
-                    <SelectItem value="2" className="hover:bg-[#2a3349]">
+                    <SelectItem value="2" className="hover:bg-muted">
                       Industrial
                     </SelectItem>
                   </SelectContent>
@@ -434,7 +445,7 @@ return (
                 id="address"
                 value={formData.address}
                 onChange={(e) => handleChange("address", e.target.value)}
-                className="bg-[#0f172a] border-[#2a3349] text-white"
+                className="bg-muted border-border text-foreground"
                 placeholder="Enter service address"
                 required
               />
@@ -443,7 +454,12 @@ return (
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="company">Company</Label>
-<Input id="company" value={(companies.find(c => String(c.id) === String(formData.companyId))?.name) || "Current company"} disabled className="bg-[#0f172a] border-[#2a3349] text-white" />
+                <Input
+                  id="company"
+                  value={companies.find((c) => String(c.id) === String(formData.companyId))?.name || "Current company"}
+                  disabled
+                  className="bg-muted border-border text-foreground"
+                />
               </div>
 
               <div className="grid gap-2">
@@ -453,12 +469,12 @@ return (
                   onValueChange={(value) => handleChange("customerId", value)}
                   disabled={loadingData}
                 >
-                  <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white">
+                  <SelectTrigger className="bg-muted border-border text-foreground">
                     <SelectValue placeholder={loadingData ? "Loading..." : "Select a customer"} />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white max-h-[200px]">
+                  <SelectContent className="bg-card border-border text-foreground max-h-[200px]">
                     {customers.map((customer) => (
-                      <SelectItem key={customer.id} value={customer.id.toString()} className="hover:bg-[#2a3349]">
+                      <SelectItem key={customer.id} value={customer.id.toString()} className="hover:bg-muted">
                         {customer.name || customer.customerName || `Customer #${customer.id}`}
                       </SelectItem>
                     ))}
@@ -475,15 +491,15 @@ return (
                   onValueChange={(value) => handleChange("teamId", value)}
                   disabled={loadingData}
                 >
-                  <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white">
+                  <SelectTrigger className="bg-muted border-border text-foreground">
                     <SelectValue placeholder={loadingData ? "Loading..." : "Select a team"} />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white max-h-[200px]">
-                    <SelectItem value="none" className="hover:bg-[#2a3349]">
+                  <SelectContent className="bg-card border-border text-foreground max-h-[200px]">
+                    <SelectItem value="none" className="hover:bg-muted">
                       No team
                     </SelectItem>
                     {teams.map((team) => (
-                      <SelectItem key={team.id} value={team.id.toString()} className="hover:bg-[#2a3349]">
+                      <SelectItem key={team.id} value={team.id.toString()} className="hover:bg-muted">
                         {team.name || `Team #${team.id}`}
                       </SelectItem>
                     ))}
@@ -498,19 +514,15 @@ return (
                   onValueChange={(value) => handleChange("professionalId", value)}
                   disabled={loadingData}
                 >
-                  <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white">
+                  <SelectTrigger className="bg-muted border-border text-foreground">
                     <SelectValue placeholder={loadingData ? "Loading..." : "Select a professional"} />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white max-h-[200px]">
-                    <SelectItem value="none" className="hover:bg-[#2a3349]">
+                  <SelectContent className="bg-card border-border text-foreground max-h-[200px]">
+                    <SelectItem value="none" className="hover:bg-muted">
                       No professional
                     </SelectItem>
                     {professionals.map((professional) => (
-                      <SelectItem
-                        key={professional.id}
-                        value={professional.id.toString()}
-                        className="hover:bg-[#2a3349]"
-                      >
+                      <SelectItem key={professional.id} value={professional.id.toString()} className="hover:bg-muted">
                         {professional.name || professional.professionalName || `Professional #${professional.id}`}
                       </SelectItem>
                     ))}
@@ -526,7 +538,7 @@ return (
                   type="date"
                   value={formData.date}
                   onChange={(e) => handleChange("date", e.target.value)}
-                  className="bg-[#0f172a] border-[#2a3349] text-white"
+                  className="bg-muted border-border text-foreground"
                   required
                 />
               </div>
@@ -538,7 +550,7 @@ return (
                   type="time"
                   value={formData.startTime}
                   onChange={(e) => handleChange("startTime", e.target.value)}
-                  className="bg-[#0f172a] border-[#2a3349] text-white"
+                  className="bg-muted border-border text-foreground"
                   required
                 />
               </div>
@@ -550,7 +562,7 @@ return (
                   type="time"
                   value={formData.endTime}
                   onChange={(e) => handleChange("endTime", e.target.value)}
-                  className="bg-[#0f172a] border-[#2a3349] text-white"
+                  className="bg-muted border-border text-foreground"
                   required
                 />
               </div>
@@ -559,20 +571,20 @@ return (
             <div className="grid gap-2">
               <Label htmlFor="status">Status</Label>
               <Select value={formData.status} onValueChange={(value) => handleChange("status", value)}>
-                <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white">
+                <SelectTrigger className="bg-muted border-border text-foreground">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
-                  <SelectItem value="0" className="hover:bg-[#2a3349]">
+                <SelectContent className="bg-card border-border text-foreground">
+                  <SelectItem value="0" className="hover:bg-muted">
                     Scheduled
                   </SelectItem>
-                  <SelectItem value="1" className="hover:bg-[#2a3349]">
+                  <SelectItem value="1" className="hover:bg-muted">
                     In Progress
                   </SelectItem>
-                  <SelectItem value="2" className="hover:bg-[#2a3349]">
+                  <SelectItem value="2" className="hover:bg-muted">
                     Completed
                   </SelectItem>
-                  <SelectItem value="3" className="hover:bg-[#2a3349]">
+                  <SelectItem value="3" className="hover:bg-muted">
                     Cancelled
                   </SelectItem>
                 </SelectContent>
@@ -585,7 +597,7 @@ return (
                 id="notes"
                 value={formData.notes}
                 onChange={(e) => handleChange("notes", e.target.value)}
-                className="bg-[#0f172a] border-[#2a3349] text-white min-h-[80px]"
+                className="bg-muted border-border text-foreground min-h-[80px]"
                 placeholder="Enter any additional notes"
               />
             </div>
@@ -595,7 +607,7 @@ return (
               type="button"
               variant="outline"
               onClick={onClose}
-              className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent"
+              className="border-border text-foreground hover:bg-muted bg-transparent"
             >
               Cancel
             </Button>
@@ -615,44 +627,80 @@ return (
             </Button>
           </DialogFooter>
         </form>
-      
-            <div className="mt-6 rounded-xl border border-[#2a3349] p-4">
-              <h4 className="mb-3 text-sm font-medium text-gray-200">Recurrence</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center gap-2">
-                  <input
-                    id="recurrenceEnabled"
-                    type="checkbox"
-                    checked={recurrenceEnabled}
-                    onChange={(e) => setRecurrenceEnabled(e.target.checked)}
-                    className="h-4 w-4"
-                  />
-                  <label htmlFor="recurrenceEnabled" className="text-sm text-gray-300">Enable recurrence</label>
-                </div>
-                <div>
-                  <Label htmlFor="recurrenceType">Frequency</Label>
-                  <Select value={recurrenceType} onValueChange={(v) => setRecurrenceType(v as any)} disabled={!recurrenceEnabled}>
-                    <SelectTrigger className="bg-transparent border-[#2a3349] text-white">
-                      <SelectValue placeholder="Select frequency" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                      <SelectItem value="bimonthly">Bimonthly</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="repeatUntil">Repeat until</Label>
-                  <Input id="repeatUntil" type="date" value={repeatUntil} onChange={(e) => setRepeatUntil(e.target.value)} disabled={!recurrenceEnabled} />
-                  <p className="text-xs text-gray-400 mt-1">We will create appointments from the selected Date, repeating until this date (inclusive).</p>
-                </div>
-              </div>
+        <div className="mt-6 rounded-xl border border-border p-4">
+          <h4 className="mb-3 text-sm font-medium text-foreground">Recurrence</h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center gap-2">
+              <input
+                id="recurrenceEnabled"
+                type="checkbox"
+                checked={recurrenceEnabled}
+                onChange={(e) => setRecurrenceEnabled(e.target.checked)}
+                className="h-4 w-4"
+              />
+              <label htmlFor="recurrenceEnabled" className="text-sm text-foreground">
+                Enable recurrence
+              </label>
             </div>
-
-        </DialogContent>
+            <div>
+              <Label htmlFor="recurrenceType">Frequency</Label>
+              <Select
+                value={recurrenceType}
+                onValueChange={(v) => setRecurrenceType(v as any)}
+                disabled={!recurrenceEnabled}
+              >
+                <SelectTrigger className="bg-transparent border-border text-foreground">
+                  <SelectValue placeholder="Select frequency" />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-border text-foreground">
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="bi-weekly">Bi-Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="repeatUntil">Repeat until</Label>
+              <Select
+                value={repeatUntil === "forever" ? "forever" : "date"}
+                onValueChange={(v) => {
+                  if (v === "forever") {
+                    setRepeatUntil("forever")
+                  } else {
+                    setRepeatUntil("")
+                  }
+                }}
+                disabled={!recurrenceEnabled}
+              >
+                <SelectTrigger className="bg-transparent border-border text-foreground">
+                  <SelectValue placeholder="Select option" />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-border text-foreground">
+                  <SelectItem value="date">Specific Date</SelectItem>
+                  <SelectItem value="forever">Forever</SelectItem>
+                </SelectContent>
+              </Select>
+              {repeatUntil !== "forever" && (
+                <Input
+                  id="repeatUntilDate"
+                  type="date"
+                  value={repeatUntil}
+                  onChange={(e) => setRepeatUntil(e.target.value)}
+                  disabled={!recurrenceEnabled}
+                  className="mt-2 bg-muted border-border text-foreground"
+                />
+              )}
+              <p className="text-xs text-muted-foreground mt-1">
+                {repeatUntil === "forever"
+                  ? "Appointments will repeat indefinitely"
+                  : "We will create appointments from the selected Date, repeating until this date (inclusive)."}
+              </p>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
     </Dialog>
   )
 }
 
-export default CompanyAppointmentModal;
+export default CompanyAppointmentModal

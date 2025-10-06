@@ -353,11 +353,11 @@ export default function AppointmentsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white mb-1">Appointment Management</h1>
-          <p className="text-gray-400">Schedule and manage all appointments.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-1">Appointment Management</h1>
+          <p className="text-muted-foreground">Schedule and manage all appointments.</p>
         </div>
         <Button
-          className="bg-[#06b6d4] hover:bg-[#0891b2] text-white"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground"
           onClick={() => {
             setSelectedAppointment(null)
             setIsModalOpen(true)
@@ -369,30 +369,32 @@ export default function AppointmentsPage() {
       </div>
 
       {/* Filters and View Toggle */}
-      <div className="flex flex-col gap-4 bg-[#1a2234] p-4 rounded-lg border border-[#2a3349]">
+      <div className="flex flex-col gap-4 bg-gradient-to-br from-card via-card to-muted/20 p-6 rounded-lg border border-border shadow-lg">
         <div className="flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-[#06b6d4]" />
-          <h2 className="text-lg font-medium text-white">Appointments</h2>
+          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/30 flex items-center justify-center">
+            <Calendar className="h-5 w-5 text-primary" />
+          </div>
+          <h2 className="text-lg font-semibold text-card-foreground">Appointments</h2>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Search and Filters */}
           <div className="flex flex-1 items-center gap-4 flex-wrap">
             <div className="relative flex-1 max-w-sm min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search appointments..."
                 value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="pl-10 bg-[#0f172a] border-[#2a3349] text-white placeholder-gray-400"
+                className="pl-10 bg-background border-border text-foreground placeholder-muted-foreground"
               />
             </div>
 
             <Select value={companyFilter?.toString() || "all"} onValueChange={handleCompanyFilterChange}>
-              <SelectTrigger className="w-[180px] bg-[#0f172a] border-[#2a3349] text-white">
+              <SelectTrigger className="w-[180px] bg-background border-border text-foreground">
                 <SelectValue placeholder={loadingCompanies ? "Loading..." : "All Companies"} />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+              <SelectContent className="bg-card border-border text-card-foreground">
                 <SelectItem value="all">All Companies</SelectItem>
                 {companies.map((company) => (
                   <SelectItem key={company.id} value={company.id.toString()}>
@@ -407,10 +409,10 @@ export default function AppointmentsPage() {
               onValueChange={handleProfessionalFilterChange}
               disabled={loadingProfessionals}
             >
-              <SelectTrigger className="w-[180px] bg-[#0f172a] border-[#2a3349] text-white">
+              <SelectTrigger className="w-[180px] bg-background border-border text-foreground">
                 <SelectValue placeholder={loadingProfessionals ? "Loading..." : "All Professionals"} />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+              <SelectContent className="bg-card border-border text-card-foreground">
                 <SelectItem value="all">All Professionals</SelectItem>
                 {filteredProfessionals.map((professional) => (
                   <SelectItem key={professional.id} value={professional.id.toString()}>
@@ -421,10 +423,10 @@ export default function AppointmentsPage() {
             </Select>
 
             <Select value={statusFilter?.toString() || "all"} onValueChange={handleStatusFilterChange}>
-              <SelectTrigger className="w-[140px] bg-[#0f172a] border-[#2a3349] text-white">
+              <SelectTrigger className="w-[140px] bg-background border-border text-foreground">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+              <SelectContent className="bg-card border-border text-card-foreground">
                 <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="0">Scheduled</SelectItem>
                 <SelectItem value="1">In Progress</SelectItem>
@@ -435,10 +437,10 @@ export default function AppointmentsPage() {
 
             {displayMode === "list" && (
               <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
-                <SelectTrigger className="w-[80px] bg-[#0f172a] border-[#2a3349] text-white">
+                <SelectTrigger className="w-[80px] bg-background border-border text-foreground">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+                <SelectContent className="bg-card border-border text-card-foreground">
                   <SelectItem value="5">5</SelectItem>
                   <SelectItem value="10">10</SelectItem>
                   <SelectItem value="20">20</SelectItem>
@@ -454,7 +456,7 @@ export default function AppointmentsPage() {
               <Button
                 variant="outline"
                 onClick={clearFilters}
-                className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent whitespace-nowrap"
+                className="border-border text-foreground hover:bg-accent whitespace-nowrap bg-transparent"
               >
                 Clear Filters
               </Button>
@@ -464,14 +466,17 @@ export default function AppointmentsPage() {
           {/* View Toggle */}
           <div className="flex items-center gap-4">
             <Tabs value={displayMode} onValueChange={handleDisplayModeChange}>
-              <TabsList className="bg-[#0f172a] border border-[#2a3349]">
-                <TabsTrigger value="list" className="data-[state=active]:bg-[#06b6d4] data-[state=active]:text-white">
+              <TabsList className="bg-background border border-border">
+                <TabsTrigger
+                  value="list"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
                   <List className="h-4 w-4 mr-2" />
                   List
                 </TabsTrigger>
                 <TabsTrigger
                   value="calendar"
-                  className="data-[state=active]:bg-[#06b6d4] data-[state=active]:text-white"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
                   <CalendarDays className="h-4 w-4 mr-2" />
                   Calendar
@@ -482,16 +487,22 @@ export default function AppointmentsPage() {
             {/* Calendar View Options */}
             {displayMode === "calendar" && (
               <Tabs value={calendarView} onValueChange={(value) => setCalendarView(value as "day" | "week" | "month")}>
-                <TabsList className="bg-[#0f172a] border border-[#2a3349]">
-                  <TabsTrigger value="day" className="data-[state=active]:bg-[#06b6d4] data-[state=active]:text-white">
+                <TabsList className="bg-background border border-border">
+                  <TabsTrigger
+                    value="day"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
                     Day
                   </TabsTrigger>
-                  <TabsTrigger value="week" className="data-[state=active]:bg-[#06b6d4] data-[state=active]:text-white">
+                  <TabsTrigger
+                    value="week"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
                     Week
                   </TabsTrigger>
                   <TabsTrigger
                     value="month"
-                    className="data-[state=active]:bg-[#06b6d4] data-[state=active]:text-white"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
                     Month
                   </TabsTrigger>
@@ -505,7 +516,7 @@ export default function AppointmentsPage() {
       {/* Content */}
       {isLoading ? (
         <div className="flex items-center justify-center py-8">
-          <div className="text-white">Loading appointments...</div>
+          <div className="text-foreground">Loading appointments...</div>
         </div>
       ) : (
         <>
@@ -521,7 +532,7 @@ export default function AppointmentsPage() {
               {/* Pagination */}
               {pagination.pageCount > 1 && (
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-400">
+                  <div className="text-sm text-muted-foreground">
                     Showing {pagination.firstRowOnPage || 1} to {pagination.lastRowOnPage || 0} of{" "}
                     {pagination.totalItems} appointments
                   </div>
@@ -531,11 +542,11 @@ export default function AppointmentsPage() {
                       size="sm"
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage <= 1}
-                      className="border-[#2a3349] text-white hover:bg-[#2a3349]"
+                      className="border-border text-foreground hover:bg-accent"
                     >
                       Previous
                     </Button>
-                    <span className="text-sm text-white">
+                    <span className="text-sm text-foreground">
                       Page {pagination.currentPage} of {pagination.pageCount}
                     </span>
                     <Button
@@ -543,7 +554,7 @@ export default function AppointmentsPage() {
                       size="sm"
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage >= pagination.pageCount}
-                      className="border-[#2a3349] text-white hover:bg-[#2a3349]"
+                      className="border-border text-foreground hover:bg-accent"
                     >
                       Next
                     </Button>
@@ -595,12 +606,12 @@ export default function AppointmentsPage() {
       />
 
       <AlertDialog open={!!appointmentToDelete} onOpenChange={() => setAppointmentToDelete(null)}>
-        <AlertDialogContent className="bg-[#1a2234] border-[#2a3349] text-white">
+        <AlertDialogContent className="bg-card border-border text-card-foreground">
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
+            <AlertDialogDescription className="text-muted-foreground">
               This action cannot be undone. This will permanently delete the appointment
-              <span className="font-semibold text-white block mt-1">
+              <span className="font-semibold text-foreground block mt-1">
                 {appointmentToDelete?.title} for {appointmentToDelete?.customer?.name}
               </span>
               scheduled for{" "}
@@ -608,12 +619,12 @@ export default function AppointmentsPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-transparent border-[#2a3349] text-white hover:bg-[#2a3349]">
+            <AlertDialogCancel className="bg-transparent border-border text-foreground hover:bg-accent">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteAppointment}
-              className="bg-red-600 hover:bg-red-700 text-white border-0"
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground border-0"
             >
               Delete
             </AlertDialogAction>
@@ -623,14 +634,14 @@ export default function AppointmentsPage() {
 
       <style jsx global>{`
         .swal-dark-popup {
-          background-color: #1a2234 !important;
-          border: 1px solid #2a3349 !important;
+          background-color: hsl(var(--card)) !important;
+          border: 1px solid hsl(var(--border)) !important;
         }
         .swal-dark-title {
-          color: #ffffff !important;
+          color: hsl(var(--card-foreground)) !important;
         }
         .swal-dark-content {
-          color: #d1d5db !important;
+          color: hsl(var(--muted-foreground)) !important;
         }
       `}</style>
     </div>

@@ -24,7 +24,7 @@ export default function CompanyReviewsPage() {
               <Input placeholder="Search reviews..." className="h-10 pl-10" />
             </div>
           </div>
-          <Button variant="outline" size="icon" className="h-10 w-10 sm:w-auto sm:px-3 bg-transparent">
+          <Button variant="outline" size="icon" className="h-10 w-10 sm:w-auto bg-transparent">
             <CalendarIcon className="h-4 w-4" />
             <span className="hidden sm:inline ml-2">Filter by date</span>
           </Button>
@@ -136,7 +136,7 @@ export default function CompanyReviewsPage() {
 
 function ReviewSummaryCard() {
   return (
-    <Card>
+    <Card className="bg-gradient-to-br from-yellow-500/10 via-card to-yellow-500/5 border-yellow-500/30 hover:shadow-lg hover:shadow-yellow-500/20 transition-all duration-300">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm sm:text-lg">Overall Rating</CardTitle>
       </CardHeader>
@@ -197,9 +197,9 @@ function ReviewSummaryCard() {
 
 function ReviewCard({ review }) {
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden border-border hover:shadow-md transition-all duration-300">
       <CardContent className="p-0">
-        <div className="border-b p-3 sm:p-4">
+        <div className="border-b border-border p-3 sm:p-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
             <div className="flex items-center space-x-2">
               <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-muted flex-shrink-0">

@@ -175,7 +175,7 @@ function CompanyRecurrenceContent() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-[#1a2234] border-[#2a3349]">
+      <Card className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300">
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
@@ -183,14 +183,14 @@ function CompanyRecurrenceContent() {
                 placeholder="Search recurrences..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-[#0f172a] border-[#2a3349] text-white placeholder:text-gray-400"
+                className="bg-muted border-border text-white placeholder:text-gray-400"
               />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-[200px] bg-[#0f172a] border-[#2a3349] text-white">
+              <SelectTrigger className="w-full sm:w-[200px] bg-muted border-border text-white">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+              <SelectContent className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 text-white">
                 <SelectItem value="all" className="hover:bg-[#2a3349]">
                   All Status
                 </SelectItem>
@@ -203,10 +203,10 @@ function CompanyRecurrenceContent() {
               </SelectContent>
             </Select>
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-full sm:w-[200px] bg-[#0f172a] border-[#2a3349] text-white">
+              <SelectTrigger className="w-full sm:w-[200px] bg-muted border-border text-white">
                 <SelectValue placeholder="Filter by type" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+              <SelectContent className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 text-white">
                 <SelectItem value="all" className="hover:bg-[#2a3349]">
                   All Types
                 </SelectItem>
@@ -240,7 +240,7 @@ function CompanyRecurrenceContent() {
       </Card>
 
       {/* Recurrences Table */}
-      <Card className="bg-[#1a2234] border-[#2a3349]">
+      <Card className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300">
         <CardHeader>
           <CardTitle className="text-white">Recurrences ({pagination.totalItems})</CardTitle>
         </CardHeader>
@@ -248,7 +248,7 @@ function CompanyRecurrenceContent() {
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-[#2a3349] hover:bg-[#2a3349]/50">
+                <TableRow className="border-blue-500/30 hover:bg-[#2a3349]/50">
                   <TableHead className="text-gray-300">Title</TableHead>
                   <TableHead className="text-gray-300">Customer</TableHead>
                   <TableHead className="text-gray-300">Team</TableHead>
@@ -261,7 +261,7 @@ function CompanyRecurrenceContent() {
               </TableHeader>
               <TableBody>
                 {recurrences.map((recurrence) => (
-                  <TableRow key={recurrence.id} className="border-[#2a3349] hover:bg-[#2a3349]/50">
+                  <TableRow key={recurrence.id} className="border-blue-500/30 hover:bg-[#2a3349]/50">
                     <TableCell className="text-white">
                       <div>
                         <div className="font-medium">{recurrence.title}</div>

@@ -23,11 +23,11 @@ import {
   Users,
   UserCog,
   X,
+  Flame,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea as UIScrollArea } from "@/components/ui/scroll-area"
-import { NoahLogo } from "@/components/noah-logo"
 import { useAuth } from "@/contexts/auth-context"
 
 type SidebarContextType = {
@@ -127,24 +127,26 @@ export function AdminSidebar() {
       <>
         {isOpen && (
           <div className="fixed inset-0 z-50 lg:hidden">
-            <div className="fixed inset-0 bg-black/50" onClick={toggleSidebar} />
-            <div className="fixed left-0 top-0 h-full w-64 bg-[#0f172a] border-r border-[#2a3349] flex flex-col">
-              <div className="flex h-16 items-center justify-between px-4">
-                <Link href="/admin/dashboard" className="flex items-center space-x-2" onClick={toggleSidebar}>
-                  <NoahLogo className="h-8 w-8" />
-                  <span className="text-lg md:text-xl font-bold text-white">Maids Flow Admin</span>
+            <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" onClick={toggleSidebar} />
+            <div className="fixed left-0 top-0 h-full w-72 bg-card border-r border-border flex flex-col shadow-2xl">
+              <div className="flex h-16 items-center justify-between px-6 border-b border-border">
+                <Link href="/admin/dashboard" className="flex items-center space-x-3" onClick={toggleSidebar}>
+                  <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+                    <Flame className="h-5 w-5 text-primary-foreground" />
+                  </div>
+                  <span className="text-lg font-bold text-foreground">Maids Flow</span>
                 </Link>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={toggleSidebar}
-                  className="h-8 w-8 text-gray-400 hover:text-white hover:bg-[#1a2234]"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
 
-              <UIScrollArea className="flex-1 px-3">
+              <UIScrollArea className="flex-1 px-4">
                 <div className="space-y-1 py-4">
                   {navItems.map((item) => {
                     const Icon = item.icon
@@ -156,8 +158,10 @@ export function AdminSidebar() {
                         href={item.href}
                         onClick={toggleSidebar}
                         className={cn(
-                          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                          isActive ? "bg-[#06b6d4] text-white" : "text-gray-400 hover:bg-[#1a2234] hover:text-white",
+                          "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all",
+                          isActive
+                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                            : "text-muted-foreground hover:bg-accent hover:text-foreground",
                         )}
                       >
                         <Icon className="h-5 w-5 flex-shrink-0" />
@@ -168,18 +172,18 @@ export function AdminSidebar() {
                 </div>
               </UIScrollArea>
 
-              <div className="border-t border-[#2a3349] p-4">
+              <div className="border-t border-border p-4">
                 <Link
                   href="/admin/settings"
                   onClick={toggleSidebar}
-                  className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-[#1a2234]"
+                  className="flex items-center gap-3 rounded-xl p-3 transition-colors hover:bg-accent"
                 >
-                  <div className="h-8 w-8 rounded-full bg-[#06b6d4] flex items-center justify-center text-white font-semibold text-sm">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-semibold text-sm shadow-lg">
                     {user?.avatar ? (
                       <img
                         src={user.avatar || "/placeholder.svg"}
                         alt={user.name}
-                        className="h-8 w-8 rounded-full object-cover"
+                        className="h-10 w-10 rounded-full object-cover"
                       />
                     ) : (
                       getUserInitials(user?.name || "User")
@@ -187,10 +191,8 @@ export function AdminSidebar() {
                   </div>
                   {user && (
                     <div className="flex-1 overflow-hidden">
-                      <p className="text-sm font-medium text-white truncate">{user.name}</p>
-                      <p className="text-xs text-gray-400 truncate">
-                        {getRoleDisplayName(user.role)} • {user.email}
-                      </p>
+                      <p className="text-sm font-semibold text-foreground truncate">{user.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{getRoleDisplayName(user.role)}</p>
                     </div>
                   )}
                 </Link>
@@ -205,32 +207,36 @@ export function AdminSidebar() {
   return (
     <div
       className={cn(
-        "relative flex h-screen flex-col border-r border-[#2a3349] bg-[#0f172a] transition-all duration-300",
-        isOpen ? "w-64" : "w-[70px]",
+        "relative flex h-screen flex-col border-r border-border bg-card transition-all duration-300",
+        isOpen ? "w-72" : "w-20",
       )}
     >
-      <div className="flex h-16 items-center justify-between px-4">
+      <div className="flex h-16 items-center justify-between px-6 border-b border-border">
         {!isOpen ? (
           <Link href="/admin/dashboard" className="flex items-center justify-center w-full">
-            <NoahLogo className="h-8 w-8" />
+            <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
+              <Flame className="h-5 w-5 text-primary-foreground" />
+            </div>
           </Link>
         ) : (
-          <Link href="/admin/dashboard" className="flex items-center space-x-2">
-            <NoahLogo className="h-8 w-8" />
-            <span className="text-xl font-bold text-white">Maids Flow Admin</span>
+          <Link href="/admin/dashboard" className="flex items-center space-x-3">
+            <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
+              <Flame className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="text-lg font-bold text-foreground">Maids Flow</span>
           </Link>
         )}
         <Button
           variant="ghost"
           size="icon"
           onClick={toggleSidebar}
-          className="absolute right-[-12px] top-8 h-6 w-6 rounded-full bg-[#0f172a] border border-[#2a3349] text-gray-400 hover:text-white hover:bg-[#1a2234] z-10"
+          className="absolute right-[-12px] top-8 h-6 w-6 rounded-full bg-card border border-border text-muted-foreground hover:text-foreground hover:bg-accent z-10 shadow-md"
         >
           {isOpen ? <ChevronLeft className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
         </Button>
       </div>
 
-      <UIScrollArea className="flex-1 px-3">
+      <UIScrollArea className="flex-1 px-4">
         <div className="space-y-1 py-4">
           {navItems.map((item) => {
             const Icon = item.icon
@@ -241,9 +247,11 @@ export function AdminSidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  isActive ? "bg-[#06b6d4] text-white" : "text-gray-400 hover:bg-[#1a2234] hover:text-white",
-                  !isOpen && "justify-center",
+                  "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all",
+                  isActive
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                  !isOpen && "justify-center px-0",
                 )}
                 title={!isOpen ? item.label : undefined}
               >
@@ -255,21 +263,21 @@ export function AdminSidebar() {
         </div>
       </UIScrollArea>
 
-      <div className="border-t border-[#2a3349] p-4">
+      <div className="border-t border-border p-4">
         <Link
           href="/admin/settings"
           className={cn(
-            "flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-[#1a2234]",
+            "flex items-center gap-3 rounded-xl p-3 transition-colors hover:bg-accent",
             !isOpen && "justify-center",
           )}
           title={!isOpen ? user?.name || "Profile" : undefined}
         >
-          <div className="h-8 w-8 rounded-full bg-[#06b6d4] flex items-center justify-center text-white font-semibold text-sm">
+          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-semibold text-sm shadow-lg">
             {user?.avatar ? (
               <img
                 src={user.avatar || "/placeholder.svg"}
                 alt={user.name}
-                className="h-8 w-8 rounded-full object-cover"
+                className="h-10 w-10 rounded-full object-cover"
               />
             ) : (
               getUserInitials(user?.name || "User")
@@ -277,10 +285,8 @@ export function AdminSidebar() {
           </div>
           {isOpen && user && (
             <div className="flex-1 overflow-hidden">
-              <p className="text-sm font-medium text-white truncate">{user.name}</p>
-              <p className="text-xs text-gray-400 truncate">
-                {getRoleDisplayName(user.role)} • {user.email}
-              </p>
+              <p className="text-sm font-semibold text-foreground truncate">{user.name}</p>
+              <p className="text-xs text-muted-foreground truncate">{getRoleDisplayName(user.role)}</p>
             </div>
           )}
         </Link>

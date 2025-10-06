@@ -211,7 +211,7 @@ export default function CheckRecordsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Check Records</h1>
+          <h1 className="text-3xl font-bold text-foreground">Check Records</h1>
           <p className="text-muted-foreground">Manage and track service check records</p>
         </div>
         <Button onClick={() => setIsCreateModalOpen(true)}>
@@ -220,9 +220,9 @@ export default function CheckRecordsPage() {
         </Button>
       </div>
 
-      <Card>
+      <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle>Filters</CardTitle>
+          <CardTitle className="text-foreground">Filters</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-4">
@@ -233,12 +233,12 @@ export default function CheckRecordsPage() {
                   placeholder="Search check records..."
                   value={searchTerm}
                   onChange={(e) => handleSearch(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-background border-border"
                 />
               </div>
             </div>
             <Select value={statusFilter || "all"} onValueChange={handleStatusFilter}>
-              <SelectTrigger className="w-full sm:w-48">
+              <SelectTrigger className="w-full sm:w-48 bg-background border-border">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
@@ -250,7 +250,7 @@ export default function CheckRecordsPage() {
               </SelectContent>
             </Select>
             <Select value={serviceTypeFilter || "all"} onValueChange={handleServiceTypeFilter}>
-              <SelectTrigger className="w-full sm:w-48">
+              <SelectTrigger className="w-full sm:w-48 bg-background border-border">
                 <SelectValue placeholder="Filter by service type" />
               </SelectTrigger>
               <SelectContent>
@@ -264,9 +264,9 @@ export default function CheckRecordsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle>Check Records ({totalItems})</CardTitle>
+          <CardTitle className="text-foreground">Check Records ({totalItems})</CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -275,7 +275,7 @@ export default function CheckRecordsPage() {
             </div>
           ) : error ? (
             <div className="flex items-center justify-center h-32">
-              <p className="text-red-500">{error}</p>
+              <p className="text-destructive">{error}</p>
             </div>
           ) : checkRecords.length === 0 ? (
             <div className="flex items-center justify-center h-32">
@@ -286,29 +286,33 @@ export default function CheckRecordsPage() {
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>Professional</TableHead>
-                      <TableHead>Customer</TableHead>
-                      <TableHead>Address</TableHead>
-                      <TableHead>Team</TableHead>
-                      <TableHead>Service Type</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Check In</TableHead>
-                      <TableHead>Check Out</TableHead>
-                      <TableHead>Actions</TableHead>
+                    <TableRow className="border-border">
+                      <TableHead className="text-muted-foreground">Professional</TableHead>
+                      <TableHead className="text-muted-foreground">Customer</TableHead>
+                      <TableHead className="text-muted-foreground">Address</TableHead>
+                      <TableHead className="text-muted-foreground">Team</TableHead>
+                      <TableHead className="text-muted-foreground">Service Type</TableHead>
+                      <TableHead className="text-muted-foreground">Status</TableHead>
+                      <TableHead className="text-muted-foreground">Check In</TableHead>
+                      <TableHead className="text-muted-foreground">Check Out</TableHead>
+                      <TableHead className="text-muted-foreground">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {checkRecords.map((record) => (
-                      <TableRow key={record.id}>
-                        <TableCell className="font-medium">{record.professionalName || "N/A"}</TableCell>
-                        <TableCell>{record.customerName || "N/A"}</TableCell>
-                        <TableCell className="max-w-xs truncate">{record.address || "N/A"}</TableCell>
-                        <TableCell>{record.teamName || "N/A"}</TableCell>
-                        <TableCell>{record.serviceType || "N/A"}</TableCell>
+                      <TableRow key={record.id} className="border-border hover:bg-muted/50">
+                        <TableCell className="font-medium text-foreground">
+                          {record.professionalName || "N/A"}
+                        </TableCell>
+                        <TableCell className="text-foreground">{record.customerName || "N/A"}</TableCell>
+                        <TableCell className="max-w-xs truncate text-muted-foreground">
+                          {record.address || "N/A"}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">{record.teamName || "N/A"}</TableCell>
+                        <TableCell className="text-muted-foreground">{record.serviceType || "N/A"}</TableCell>
                         <TableCell>{getStatusBadge(record.status)}</TableCell>
-                        <TableCell>{formatDateTime(record.checkInTime)}</TableCell>
-                        <TableCell>{formatDateTime(record.checkOutTime)}</TableCell>
+                        <TableCell className="text-muted-foreground">{formatDateTime(record.checkInTime)}</TableCell>
+                        <TableCell className="text-muted-foreground">{formatDateTime(record.checkOutTime)}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             {record.status === 0 && (
@@ -341,7 +345,7 @@ export default function CheckRecordsPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => handleDelete(record.id)}
-                              className="text-red-600 hover:text-red-700"
+                              className="text-destructive hover:text-destructive"
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
@@ -368,7 +372,7 @@ export default function CheckRecordsPage() {
                     >
                       Previous
                     </Button>
-                    <span className="text-sm">
+                    <span className="text-sm text-foreground">
                       Page {currentPage} of {totalPages}
                     </span>
                     <Button

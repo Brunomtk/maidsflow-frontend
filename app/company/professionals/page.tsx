@@ -204,8 +204,8 @@ export default function ProfessionalsPage() {
     <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">Professionals</h1>
-          <p className="text-sm sm:text-base text-gray-400">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-1">Professionals</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Manage your cleaning professionals and track their performance
           </p>
         </div>
@@ -219,82 +219,82 @@ export default function ProfessionalsPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm sm:text-lg">Active Professionals</CardTitle>
+            <CardTitle className="text-foreground text-sm sm:text-lg">Active Professionals</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <div className="bg-[#2a3349] p-2 rounded-full">
+              <div className="bg-muted p-2 rounded-full">
                 <User className="h-4 w-4 sm:h-5 sm:w-5 text-[#06b6d4]" />
               </div>
-              <span className="text-2xl sm:text-3xl font-bold text-white">{activeCount}</span>
+              <span className="text-2xl sm:text-3xl font-bold text-foreground">{activeCount}</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm sm:text-lg">Average Rating</CardTitle>
+            <CardTitle className="text-foreground text-sm sm:text-lg">Average Rating</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <div className="bg-[#2a3349] p-2 rounded-full">
+              <div className="bg-muted p-2 rounded-full">
                 <Star className="h-4 w-4 sm:h-5 sm:w-5 text-[#06b6d4]" />
               </div>
               <div className="flex items-center">
-                <span className="text-2xl sm:text-3xl font-bold text-white">{averageRating.toFixed(1)}</span>
+                <span className="text-2xl sm:text-3xl font-bold text-foreground">{averageRating.toFixed(1)}</span>
                 <Star className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 ml-1" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-sm sm:text-lg">Completed Services</CardTitle>
+            <CardTitle className="text-foreground text-sm sm:text-lg">Completed Services</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <div className="bg-[#2a3349] p-2 rounded-full">
+              <div className="bg-muted p-2 rounded-full">
                 <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-[#06b6d4]" />
               </div>
-              <span className="text-2xl sm:text-3xl font-bold text-white">{totalCompleted}</span>
+              <span className="text-2xl sm:text-3xl font-bold text-foreground">{totalCompleted}</span>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="bg-[#1a2234] border-[#2a3349]">
+      <Card className="bg-card border-border">
         <CardHeader>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-3 mb-4 bg-[#0f172a] border border-[#2a3349] w-full">
-              <TabsTrigger value="all" className="data-[state=active]:bg-[#2a3349] text-xs sm:text-sm">
+            <TabsList className="grid grid-cols-3 mb-4 bg-muted border border-border w-full">
+              <TabsTrigger value="all" className="data-[state=active]:bg-card text-xs sm:text-sm">
                 All
               </TabsTrigger>
-              <TabsTrigger value="Active" className="data-[state=active]:bg-[#2a3349] text-xs sm:text-sm">
+              <TabsTrigger value="Active" className="data-[state=active]:bg-card text-xs sm:text-sm">
                 Active
               </TabsTrigger>
-              <TabsTrigger value="Inactive" className="data-[state=active]:bg-[#2a3349] text-xs sm:text-sm">
+              <TabsTrigger value="Inactive" className="data-[state=active]:bg-card text-xs sm:text-sm">
                 Inactive
               </TabsTrigger>
             </TabsList>
           </Tabs>
           <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 sm:justify-between">
             <div className="relative w-full sm:w-64">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search professionals..."
-                className="pl-8 bg-[#2a3349] border-0 text-white placeholder:text-gray-500 focus-visible:ring-[#06b6d4]"
+                className="pl-8 bg-muted border-0 text-foreground placeholder:text-muted-foreground focus-visible:ring-[#06b6d4]"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <Select value={teamFilter} onValueChange={setTeamFilter}>
-              <SelectTrigger className="w-full sm:w-40 bg-[#2a3349] border-0 text-white focus:ring-[#06b6d4]">
+              <SelectTrigger className="w-full sm:w-40 bg-muted border-0 text-foreground focus:ring-[#06b6d4]">
                 <SelectValue placeholder="Filter by team" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+              <SelectContent className="bg-card border-border text-foreground">
                 <SelectItem value="all">All Teams</SelectItem>
                 {teams.map((team) => (
                   <SelectItem key={team.id} value={team.id.toString()}>
@@ -308,7 +308,7 @@ export default function ProfessionalsPage() {
         <CardContent className="p-0 sm:p-6">
           {isLoading ? (
             <div className="flex justify-center items-center py-8">
-              <div className="text-white">Loading professionals...</div>
+              <div className="text-foreground">Loading professionals...</div>
             </div>
           ) : (
             <>
@@ -318,16 +318,16 @@ export default function ProfessionalsPage() {
                     filteredProfessionals.map((professional) => {
                       const team = teams.find((t) => t.id === professional.teamId)
                       return (
-                        <Card key={professional.id} className="bg-[#2a3349] border-[#3a4359]">
+                        <Card key={professional.id} className="bg-muted border-border">
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between mb-3">
                               <div className="flex items-center gap-3 min-w-0 flex-1">
                                 <Avatar className="h-10 w-10">
                                   <AvatarImage
-                                    src={`/placeholder.svg?height=40&width=40&query=${professional.name}`}
+                                    src={`/.jpg?key=a5m04&height=40&width=40&query=${professional.name}`}
                                     alt={professional.name}
                                   />
-                                  <AvatarFallback className="bg-[#1a2234] text-[#06b6d4] text-sm">
+                                  <AvatarFallback className="bg-card text-[#06b6d4] text-sm">
                                     {professional.name
                                       .split(" ")
                                       .map((n) => n[0])
@@ -335,8 +335,10 @@ export default function ProfessionalsPage() {
                                   </AvatarFallback>
                                 </Avatar>
                                 <div className="min-w-0 flex-1">
-                                  <div className="font-medium text-white text-sm truncate">{professional.name}</div>
-                                  <div className="text-xs text-gray-400 truncate">{professional.cpf}</div>
+                                  <div className="font-medium text-foreground text-sm truncate">
+                                    {professional.name}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground truncate">{professional.cpf}</div>
                                 </div>
                               </div>
                               <Badge
@@ -351,20 +353,20 @@ export default function ProfessionalsPage() {
                             </div>
 
                             <div className="space-y-2 mb-3">
-                              <div className="flex items-center gap-2 text-xs text-gray-400">
-                                <Phone className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <Phone className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                                 <span className="truncate">{professional.phone}</span>
                               </div>
-                              <div className="flex items-center gap-2 text-xs text-gray-400">
-                                <Mail className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <Mail className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                                 <span className="truncate">{professional.email}</span>
                               </div>
-                              <div className="flex items-center gap-2 text-xs text-gray-400">
-                                <Users className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <Users className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                                 <span className="truncate">{team?.name || `Team ${professional.teamId}`}</span>
                               </div>
                               {professional.rating && (
-                                <div className="flex items-center gap-2 text-xs text-gray-400">
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                   <Star className="h-3 w-3 text-yellow-500 flex-shrink-0" />
                                   <span>{professional.rating}</span>
                                 </div>
@@ -375,7 +377,7 @@ export default function ProfessionalsPage() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="flex-1 h-8 text-xs border-[#3a4359] text-white hover:bg-[#3a4359] bg-transparent"
+                                className="flex-1 h-8 text-xs border-border text-foreground hover:bg-muted bg-transparent"
                                 onClick={() => handleOpenDetailsModal(professional)}
                               >
                                 View
@@ -383,10 +385,18 @@ export default function ProfessionalsPage() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="flex-1 h-8 text-xs border-[#3a4359] text-white hover:bg-[#3a4359] bg-transparent"
+                                className="flex-1 h-8 text-xs border-border text-foreground hover:bg-muted bg-transparent"
                                 onClick={() => handleOpenEditModal(professional)}
                               >
                                 Edit
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex-1 h-8 text-xs border-border text-foreground hover:bg-muted bg-transparent"
+                                onClick={() => handleDeleteProfessional(professional.id)}
+                              >
+                                Delete
                               </Button>
                             </div>
                           </CardContent>
@@ -394,7 +404,7 @@ export default function ProfessionalsPage() {
                       )
                     })
                   ) : (
-                    <div className="text-center py-8 text-gray-400">
+                    <div className="text-center py-8 text-muted-foreground">
                       No professionals found matching your search criteria
                     </div>
                   )}
@@ -404,13 +414,13 @@ export default function ProfessionalsPage() {
               <div className="hidden sm:block overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-[#2a3349] hover:bg-[#2a3349]">
-                      <TableHead className="text-gray-400">Professional</TableHead>
-                      <TableHead className="text-gray-400">Contact</TableHead>
-                      <TableHead className="text-gray-400">Team</TableHead>
-                      <TableHead className="text-gray-400">Status</TableHead>
-                      <TableHead className="text-gray-400">Rating</TableHead>
-                      <TableHead className="text-gray-400">Actions</TableHead>
+                    <TableRow className="border-border hover:bg-muted">
+                      <TableHead className="text-muted-foreground">Professional</TableHead>
+                      <TableHead className="text-muted-foreground">Contact</TableHead>
+                      <TableHead className="text-muted-foreground">Team</TableHead>
+                      <TableHead className="text-muted-foreground">Status</TableHead>
+                      <TableHead className="text-muted-foreground">Rating</TableHead>
+                      <TableHead className="text-muted-foreground">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -418,15 +428,15 @@ export default function ProfessionalsPage() {
                       filteredProfessionals.map((professional) => {
                         const team = teams.find((t) => t.id === professional.teamId)
                         return (
-                          <TableRow key={professional.id} className="border-[#2a3349] hover:bg-[#2a3349]">
-                            <TableCell className="font-medium text-white">
+                          <TableRow key={professional.id} className="border-border hover:bg-muted">
+                            <TableCell className="font-medium text-foreground">
                               <div className="flex items-center gap-2">
                                 <Avatar>
                                   <AvatarImage
-                                    src={`/placeholder.svg?height=40&width=40&query=${professional.name}`}
+                                    src={`/.jpg?key=7obfv&height=40&width=40&query=${professional.name}`}
                                     alt={professional.name}
                                   />
-                                  <AvatarFallback className="bg-[#2a3349] text-[#06b6d4]">
+                                  <AvatarFallback className="bg-muted text-[#06b6d4]">
                                     {professional.name
                                       .split(" ")
                                       .map((n) => n[0])
@@ -435,25 +445,25 @@ export default function ProfessionalsPage() {
                                 </Avatar>
                                 <div>
                                   <div>{professional.name}</div>
-                                  <div className="text-xs text-gray-400">{professional.cpf}</div>
+                                  <div className="text-xs text-muted-foreground">{professional.cpf}</div>
                                 </div>
                               </div>
                             </TableCell>
                             <TableCell>
-                              <div className="text-gray-400 text-sm">
+                              <div className="text-muted-foreground text-sm">
                                 <div className="flex items-center gap-1">
-                                  <Phone className="h-3 w-3 text-gray-500" />
+                                  <Phone className="h-3 w-3 text-muted-foreground" />
                                   {professional.phone}
                                 </div>
                                 <div className="flex items-center gap-1 mt-1">
-                                  <Mail className="h-3 w-3 text-gray-500" />
+                                  <Mail className="h-3 w-3 text-muted-foreground" />
                                   {professional.email}
                                 </div>
                               </div>
                             </TableCell>
                             <TableCell>
-                              <div className="flex items-center gap-1 text-gray-400">
-                                <Users className="h-3 w-3 text-gray-500" />
+                              <div className="flex items-center gap-1 text-muted-foreground">
+                                <Users className="h-3 w-3 text-muted-foreground" />
                                 {team?.name || `Team ${professional.teamId}`}
                               </div>
                             </TableCell>
@@ -470,7 +480,7 @@ export default function ProfessionalsPage() {
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center">
-                                <span className="text-white font-medium">{professional.rating || "N/A"}</span>
+                                <span className="text-foreground font-medium">{professional.rating || "N/A"}</span>
                                 {professional.rating && <Star className="h-3 w-3 text-yellow-500 ml-1" />}
                               </div>
                             </TableCell>
@@ -479,7 +489,7 @@ export default function ProfessionalsPage() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-8 border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent"
+                                  className="h-8 border-border text-foreground hover:bg-muted bg-transparent"
                                   onClick={() => handleOpenDetailsModal(professional)}
                                 >
                                   View
@@ -487,10 +497,18 @@ export default function ProfessionalsPage() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-8 border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent"
+                                  className="h-8 border-border text-foreground hover:bg-muted bg-transparent"
                                   onClick={() => handleOpenEditModal(professional)}
                                 >
                                   Edit
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-8 border-border text-foreground hover:bg-muted bg-transparent"
+                                  onClick={() => handleDeleteProfessional(professional.id)}
+                                >
+                                  Delete
                                 </Button>
                               </div>
                             </TableCell>
@@ -499,7 +517,7 @@ export default function ProfessionalsPage() {
                       })
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-6 text-gray-400">
+                        <TableCell colSpan={6} className="text-center py-6 text-muted-foreground">
                           No professionals found matching your search criteria
                         </TableCell>
                       </TableRow>

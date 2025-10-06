@@ -169,11 +169,11 @@ export default function InternalFeedbackPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Internal Feedback</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Internal Feedback</h1>
           <p className="text-muted-foreground">Manage internal feedback from professionals</p>
         </div>
         <InternalFeedbackModal onSuccess={() => loadFeedbacks(pagination.currentPage)}>
-          <Button className="bg-[#06b6d4] hover:bg-[#0891b2] text-white">
+          <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
             <Plus className="mr-2 h-4 w-4" />
             Add Feedback
           </Button>
@@ -181,9 +181,9 @@ export default function InternalFeedbackPage() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-[#1a2234] border-[#2a3349]">
+      <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-foreground flex items-center gap-2">
             <Filter className="h-5 w-5" />
             Filters
           </CardTitle>
@@ -191,25 +191,25 @@ export default function InternalFeedbackPage() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-white">Search</label>
+              <label className="text-sm font-medium text-foreground">Search</label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search feedbacks..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-[#0f172a] border-[#2a3349] text-white"
+                  className="pl-10 bg-background border-input text-foreground"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-white">Category</label>
+              <label className="text-sm font-medium text-foreground">Category</label>
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white">
+                <SelectTrigger className="bg-background border-input text-foreground">
                   <SelectValue placeholder="All categories" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+                <SelectContent className="bg-popover border-border text-popover-foreground">
                   <SelectItem value="all">All Categories</SelectItem>
                   <SelectItem value="Equipment">Equipment</SelectItem>
                   <SelectItem value="Scheduling">Scheduling</SelectItem>
@@ -225,12 +225,12 @@ export default function InternalFeedbackPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-white">Priority</label>
+              <label className="text-sm font-medium text-foreground">Priority</label>
               <Select value={selectedPriority} onValueChange={setSelectedPriority}>
-                <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white">
+                <SelectTrigger className="bg-background border-input text-foreground">
                   <SelectValue placeholder="All priorities" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+                <SelectContent className="bg-popover border-border text-popover-foreground">
                   <SelectItem value="all">All Priorities</SelectItem>
                   <SelectItem value="0">Low</SelectItem>
                   <SelectItem value="1">Medium</SelectItem>
@@ -244,25 +244,25 @@ export default function InternalFeedbackPage() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-[#1a2234] border-[#2a3349]">
-          <TabsTrigger value="all" className="data-[state=active]:bg-[#06b6d4] data-[state=active]:text-white">
+        <TabsList className="bg-card border-border">
+          <TabsTrigger value="all" className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
             All ({pagination.totalItems})
           </TabsTrigger>
-          <TabsTrigger value="0" className="data-[state=active]:bg-[#06b6d4] data-[state=active]:text-white">
+          <TabsTrigger value="0" className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
             Pending ({getStatusCount(0)})
           </TabsTrigger>
-          <TabsTrigger value="1" className="data-[state=active]:bg-[#06b6d4] data-[state=active]:text-white">
+          <TabsTrigger value="1" className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
             In Progress ({getStatusCount(1)})
           </TabsTrigger>
-          <TabsTrigger value="2" className="data-[state=active]:bg-[#06b6d4] data-[state=active]:text-white">
+          <TabsTrigger value="2" className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
             Resolved ({getStatusCount(2)})
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab} className="space-y-4">
-          <Card className="bg-[#1a2234] border-[#2a3349]">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-white">
+              <CardTitle className="text-foreground">
                 {activeTab === "all"
                   ? "All Feedbacks"
                   : activeTab === "0"
@@ -276,7 +276,7 @@ export default function InternalFeedbackPage() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#06b6d4]"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
                 </div>
               ) : feedbacks.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">No internal feedbacks found</div>
@@ -284,35 +284,40 @@ export default function InternalFeedbackPage() {
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow className="border-[#2a3349]">
-                        <TableHead className="text-white">Title</TableHead>
-                        <TableHead className="text-white">Professional</TableHead>
-                        <TableHead className="text-white">Team</TableHead>
-                        <TableHead className="text-white">Category</TableHead>
-                        <TableHead className="text-white">Status</TableHead>
-                        <TableHead className="text-white">Priority</TableHead>
-                        <TableHead className="text-white">Date</TableHead>
-                        <TableHead className="text-white">Actions</TableHead>
+                      <TableRow className="border-border">
+                        <TableHead className="text-foreground">Title</TableHead>
+                        <TableHead className="text-foreground">Professional</TableHead>
+                        <TableHead className="text-foreground">Team</TableHead>
+                        <TableHead className="text-foreground">Category</TableHead>
+                        <TableHead className="text-foreground">Status</TableHead>
+                        <TableHead className="text-foreground">Priority</TableHead>
+                        <TableHead className="text-foreground">Date</TableHead>
+                        <TableHead className="text-foreground">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {feedbacks.map((feedback) => (
-                        <TableRow key={feedback.id} className="border-[#2a3349]">
-                          <TableCell className="text-white font-medium">{feedback.title}</TableCell>
-                          <TableCell className="text-white">Professional #{feedback.professionalId}</TableCell>
-                          <TableCell className="text-white">Team #{feedback.teamId}</TableCell>
-                          <TableCell className="text-white">{feedback.category}</TableCell>
+                        <TableRow key={feedback.id} className="border-border">
+                          <TableCell className="text-foreground font-medium">{feedback.title}</TableCell>
+                          <TableCell className="text-foreground">Professional #{feedback.professionalId}</TableCell>
+                          <TableCell className="text-foreground">Team #{feedback.teamId}</TableCell>
+                          <TableCell className="text-foreground">{feedback.category}</TableCell>
                           <TableCell>{getStatusBadge(feedback.status)}</TableCell>
                           <TableCell>{getPriorityBadge(feedback.priority)}</TableCell>
-                          <TableCell className="text-white">{new Date(feedback.date).toLocaleDateString()}</TableCell>
+                          <TableCell className="text-foreground">
+                            {new Date(feedback.date).toLocaleDateString()}
+                          </TableCell>
                           <TableCell>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0 text-white hover:bg-[#2a3349]">
+                                <Button variant="ghost" className="h-8 w-8 p-0 text-foreground hover:bg-accent">
                                   <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="bg-[#1a2234] border-[#2a3349] text-white">
+                              <DropdownMenuContent
+                                align="end"
+                                className="bg-popover border-border text-popover-foreground"
+                              >
                                 <InternalFeedbackDetailsModal feedback={feedback}>
                                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                                     <Eye className="mr-2 h-4 w-4" />
@@ -362,11 +367,11 @@ export default function InternalFeedbackPage() {
                       size="sm"
                       onClick={() => loadFeedbacks(pagination.currentPage - 1)}
                       disabled={pagination.currentPage <= 1}
-                      className="border-[#2a3349] bg-[#0f172a] text-white hover:bg-[#2a3349]"
+                      className="border-border bg-background text-foreground hover:bg-accent"
                     >
                       Previous
                     </Button>
-                    <span className="text-sm text-white">
+                    <span className="text-sm text-foreground">
                       Page {pagination.currentPage} of {pagination.totalPages}
                     </span>
                     <Button
@@ -374,7 +379,7 @@ export default function InternalFeedbackPage() {
                       size="sm"
                       onClick={() => loadFeedbacks(pagination.currentPage + 1)}
                       disabled={pagination.currentPage >= pagination.totalPages}
-                      className="border-[#2a3349] bg-[#0f172a] text-white hover:bg-[#2a3349]"
+                      className="border-border bg-background text-foreground hover:bg-accent"
                     >
                       Next
                     </Button>
@@ -388,7 +393,7 @@ export default function InternalFeedbackPage() {
 
       {/* Delete Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent className="bg-[#1a2234] border-[#2a3349] text-white">
+        <AlertDialogContent className="bg-card border-border text-foreground">
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground">
@@ -397,7 +402,7 @@ export default function InternalFeedbackPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-[#2a3349] bg-[#0f172a] text-white hover:bg-[#2a3349]">
+            <AlertDialogCancel className="border-border bg-background text-foreground hover:bg-accent">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white">

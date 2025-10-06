@@ -145,8 +145,8 @@ function CompanyGpsTrackingContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white mb-1">GPS Tracking</h1>
-          <p className="text-gray-400">Track your cleaning professionals in real-time</p>
+          <h1 className="text-2xl font-bold text-foreground mb-1">GPS Tracking</h1>
+          <p className="text-muted-foreground">Track your cleaning professionals in real-time</p>
         </div>
         <Button onClick={() => setIsCreateModalOpen(true)} className="bg-[#06b6d4] hover:bg-[#0891b2] text-white">
           <Plus className="h-4 w-4 mr-2" />
@@ -158,20 +158,20 @@ function CompanyGpsTrackingContent() {
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="Search by professional, vehicle, or location..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-[#2a3349] border-0 text-white focus:ring-[#06b6d4]"
+              className="pl-10 bg-muted border-0 text-foreground focus:ring-[#06b6d4]"
             />
           </div>
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full sm:w-40 bg-[#2a3349] border-0 text-white focus:ring-[#06b6d4]">
+          <SelectTrigger className="w-full sm:w-40 bg-muted border-0 text-foreground focus:ring-[#06b6d4]">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
-          <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+          <SelectContent className="bg-card border-border text-foreground">
             <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="1">Active</SelectItem>
             <SelectItem value="2">Inactive</SelectItem>
@@ -180,7 +180,7 @@ function CompanyGpsTrackingContent() {
         <Button
           variant="outline"
           onClick={resetFilters}
-          className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent"
+          className="border-border text-foreground hover:bg-muted bg-transparent"
         >
           <Filter className="h-4 w-4 mr-2" />
           Reset
@@ -189,12 +189,12 @@ function CompanyGpsTrackingContent() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <Card className="bg-[#1a2234] border-[#2a3349] h-[500px]">
+          <Card className="bg-card border-border h-[500px]">
             <CardHeader>
-              <CardTitle className="text-white text-lg">Live Map</CardTitle>
+              <CardTitle className="text-foreground text-lg">Live Map</CardTitle>
             </CardHeader>
-            <CardContent className="flex items-center justify-center h-[400px] bg-[#2a3349] rounded-md">
-              <div className="text-center text-gray-400">
+            <CardContent className="flex items-center justify-center h-[400px] bg-muted rounded-md">
+              <div className="text-center text-muted-foreground">
                 <MapPin className="h-12 w-12 mx-auto mb-4 text-[#06b6d4]" />
                 <p>Map view would be displayed here</p>
                 <p className="text-sm mt-2">Showing {gpsRecords.length} professionals</p>
@@ -204,21 +204,21 @@ function CompanyGpsTrackingContent() {
         </div>
 
         <div>
-          <Card className="bg-[#1a2234] border-[#2a3349]">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-white text-lg">Professionals ({pagination.totalItems})</CardTitle>
+              <CardTitle className="text-foreground text-lg">Professionals ({pagination.totalItems})</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 max-h-[420px] overflow-y-auto">
               {isLoading ? (
-                <div className="text-center py-6 text-gray-400">Loading...</div>
+                <div className="text-center py-6 text-muted-foreground">Loading...</div>
               ) : gpsRecords.length > 0 ? (
                 gpsRecords.map((record) => (
                   <div
                     key={record.id}
                     className={`p-3 rounded-lg cursor-pointer transition-colors ${
                       selectedProfessional === record.id
-                        ? "bg-[#2a3349] border border-[#06b6d4]"
-                        : "bg-[#2a3349] hover:bg-[#343e59]"
+                        ? "bg-muted border border-[#06b6d4]"
+                        : "bg-muted hover:bg-muted/80"
                     }`}
                     onClick={() => setSelectedProfessional(record.id)}
                   >
@@ -226,7 +226,7 @@ function CompanyGpsTrackingContent() {
                       <div className="flex items-center gap-2">
                         <Avatar>
                           <AvatarImage src="/placeholder.svg" alt={record.professionalName || "Professional"} />
-                          <AvatarFallback className="bg-[#2a3349] text-[#06b6d4]">
+                          <AvatarFallback className="bg-muted text-[#06b6d4]">
                             {(record.professionalName || "P")
                               .split(" ")
                               .map((n) => n[0])
@@ -234,25 +234,25 @@ function CompanyGpsTrackingContent() {
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <div className="font-medium text-white">
+                          <div className="font-medium text-foreground">
                             {record.professionalName || `Professional ${record.professionalId}`}
                           </div>
-                          <div className="text-xs text-gray-400">{record.vehicle}</div>
+                          <div className="text-xs text-muted-foreground">{record.vehicle}</div>
                         </div>
                       </div>
                       <Badge className={getStatusColor(record.status)}>{getStatusLabel(record.status)}</Badge>
                     </div>
                     <div className="space-y-1 text-sm">
-                      <div className="flex items-center gap-1 text-gray-400">
-                        <MapPin className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <MapPin className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                         <span className="truncate">{record.location.address}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-gray-400">
-                        <Clock className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <Clock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                         <span>Updated {formatDate(record.timestamp)}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-gray-400">
-                        <Route className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <Route className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                         <span>
                           {record.speed} km/h • {record.battery}% battery
                         </span>
@@ -266,7 +266,7 @@ function CompanyGpsTrackingContent() {
                           e.stopPropagation()
                           handleViewDetails(record)
                         }}
-                        className="flex-1 h-8 border-[#2a3349] text-white hover:bg-[#343e59]"
+                        className="flex-1 h-8 border-border text-foreground hover:bg-muted/80"
                       >
                         View Details
                       </Button>
@@ -277,7 +277,7 @@ function CompanyGpsTrackingContent() {
                           e.stopPropagation()
                           handleEditRecord(record)
                         }}
-                        className="flex-1 h-8 border-[#2a3349] text-white hover:bg-[#343e59]"
+                        className="flex-1 h-8 border-border text-foreground hover:bg-muted/80"
                       >
                         Edit
                       </Button>
@@ -285,7 +285,7 @@ function CompanyGpsTrackingContent() {
                   </div>
                 ))
               ) : (
-                <div className="text-center py-6 text-gray-400">No GPS tracking records found</div>
+                <div className="text-center py-6 text-muted-foreground">No GPS tracking records found</div>
               )}
             </CardContent>
           </Card>

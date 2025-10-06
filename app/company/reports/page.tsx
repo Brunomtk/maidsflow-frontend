@@ -167,44 +167,44 @@ export default function CompanyReportsPage() {
 
         <TabsContent value="financial" className="space-y-4">
           <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
-            <Card>
+            <Card className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Receita Total</CardTitle>
-                <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Receita Total</CardTitle>
+                <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg sm:text-2xl font-bold">R$ 45.231,89</div>
-                <p className="text-xs text-muted-foreground">+20,1% em relação ao período anterior</p>
+                <div className="text-lg sm:text-2xl font-bold text-white">R$ 45.231,89</div>
+                <p className="text-xs text-white">+20,1% em relação ao período anterior</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-gradient-to-br from-green-500/10 via-card to-green-500/5 border-green-500/30 hover:shadow-lg hover:shadow-green-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Ticket Médio</CardTitle>
-                <BarChart className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Ticket Médio</CardTitle>
+                <BarChart className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg sm:text-2xl font-bold">R$ 320,50</div>
-                <p className="text-xs text-muted-foreground">+2,5% em relação ao período anterior</p>
+                <div className="text-lg sm:text-2xl font-bold text-white">R$ 320,50</div>
+                <p className="text-xs text-white">+2,5% em relação ao período anterior</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-gradient-to-br from-purple-500/10 via-card to-purple-500/5 border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Taxa de Conversão</CardTitle>
-                <PieChart className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Taxa de Conversão</CardTitle>
+                <PieChart className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg sm:text-2xl font-bold">24,8%</div>
-                <p className="text-xs text-muted-foreground">+4,1% em relação ao período anterior</p>
+                <div className="text-lg sm:text-2xl font-bold text-white">24,8%</div>
+                <p className="text-xs text-white">+4,1% em relação ao período anterior</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-gradient-to-br from-orange-500/10 via-card to-orange-500/5 border-orange-500/30 hover:shadow-lg hover:shadow-orange-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Cancelamentos</CardTitle>
-                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Cancelamentos</CardTitle>
+                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg sm:text-2xl font-bold">3,2%</div>
-                <p className="text-xs text-muted-foreground">-1,1% em relação ao período anterior</p>
+                <div className="text-lg sm:text-2xl font-bold text-white">3,2%</div>
+                <p className="text-xs text-white">-1,1% em relação ao período anterior</p>
               </CardContent>
             </Card>
           </div>
@@ -245,44 +245,44 @@ export default function CompanyReportsPage() {
 
         <TabsContent value="operational" className="space-y-4">
           <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
-            <Card>
+            <Card className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Total de Agendamentos</CardTitle>
-                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Total de Agendamentos</CardTitle>
+                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg sm:text-2xl font-bold">1.248</div>
-                <p className="text-xs text-muted-foreground">+12,3% em relação ao período anterior</p>
+                <div className="text-lg sm:text-2xl font-bold text-white">1.248</div>
+                <p className="text-xs text-white">+12,3% em relação ao período anterior</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-gradient-to-br from-green-500/10 via-card to-green-500/5 border-green-500/30 hover:shadow-lg hover:shadow-green-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Taxa de Ocupação</CardTitle>
-                <BarChart className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Taxa de Ocupação</CardTitle>
+                <BarChart className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg sm:text-2xl font-bold">78,5%</div>
-                <p className="text-xs text-muted-foreground">+5,2% em relação ao período anterior</p>
+                <div className="text-lg sm:text-2xl font-bold text-white">78,5%</div>
+                <p className="text-xs text-white">+5,2% em relação ao período anterior</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-gradient-to-br from-purple-500/10 via-card to-purple-500/5 border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Tempo Médio</CardTitle>
-                <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Tempo Médio</CardTitle>
+                <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg sm:text-2xl font-bold">42 min</div>
-                <p className="text-xs text-muted-foreground">-3,1% em relação ao período anterior</p>
+                <div className="text-lg sm:text-2xl font-bold text-white">42 min</div>
+                <p className="text-xs text-white">-3,1% em relação ao período anterior</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-gradient-to-br from-orange-500/10 via-card to-orange-500/5 border-orange-500/30 hover:shadow-lg hover:shadow-orange-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Satisfação</CardTitle>
-                <Star className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Satisfação</CardTitle>
+                <Star className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg sm:text-2xl font-bold">4,8/5</div>
-                <p className="text-xs text-muted-foreground">+0,2 em relação ao período anterior</p>
+                <div className="text-lg sm:text-2xl font-bold text-white">4,8/5</div>
+                <p className="text-xs text-white">+0,2 em relação ao período anterior</p>
               </CardContent>
             </Card>
           </div>
@@ -321,44 +321,44 @@ export default function CompanyReportsPage() {
 
         <TabsContent value="customers" className="space-y-4">
           <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
-            <Card>
+            <Card className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Novos Clientes</CardTitle>
-                <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Novos Clientes</CardTitle>
+                <Users className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg sm:text-2xl font-bold">842</div>
-                <p className="text-xs text-muted-foreground">+18,2% em relação ao período anterior</p>
+                <div className="text-lg sm:text-2xl font-bold text-white">842</div>
+                <p className="text-xs text-white">+18,2% em relação ao período anterior</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-gradient-to-br from-green-500/10 via-card to-green-500/5 border-green-500/30 hover:shadow-lg hover:shadow-green-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Clientes Ativos</CardTitle>
-                <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Clientes Ativos</CardTitle>
+                <Users className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg sm:text-2xl font-bold">3.427</div>
-                <p className="text-xs text-muted-foreground">+7,4% em relação ao período anterior</p>
+                <div className="text-lg sm:text-2xl font-bold text-white">3.427</div>
+                <p className="text-xs text-white">+7,4% em relação ao período anterior</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-gradient-to-br from-purple-500/10 via-card to-purple-500/5 border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Taxa de Retenção</CardTitle>
-                <PieChart className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Taxa de Retenção</CardTitle>
+                <PieChart className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg sm:text-2xl font-bold">76,3%</div>
-                <p className="text-xs text-muted-foreground">+2,1% em relação ao período anterior</p>
+                <div className="text-lg sm:text-2xl font-bold text-white">76,3%</div>
+                <p className="text-xs text-white">+2,1% em relação ao período anterior</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-gradient-to-br from-orange-500/10 via-card to-orange-500/5 border-orange-500/30 hover:shadow-lg hover:shadow-orange-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Avaliações</CardTitle>
-                <Star className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Avaliações</CardTitle>
+                <Star className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg sm:text-2xl font-bold">4,7/5</div>
-                <p className="text-xs text-muted-foreground">+0,3 em relação ao período anterior</p>
+                <div className="text-lg sm:text-2xl font-bold text-white">4,7/5</div>
+                <p className="text-xs text-white">+0,3 em relação ao período anterior</p>
               </CardContent>
             </Card>
           </div>
@@ -399,44 +399,44 @@ export default function CompanyReportsPage() {
 
         <TabsContent value="services" className="space-y-4">
           <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
-            <Card>
+            <Card className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Serviços Realizados</CardTitle>
-                <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Serviços Realizados</CardTitle>
+                <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg sm:text-2xl font-bold">3.842</div>
-                <p className="text-xs text-muted-foreground">+15,2% em relação ao período anterior</p>
+                <div className="text-lg sm:text-2xl font-bold text-white">3.842</div>
+                <p className="text-xs text-white">+15,2% em relação ao período anterior</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-gradient-to-br from-green-500/10 via-card to-green-500/5 border-green-500/30 hover:shadow-lg hover:shadow-green-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Serviço Mais Popular</CardTitle>
-                <Star className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Serviço Mais Popular</CardTitle>
+                <Star className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-base sm:text-2xl font-bold">Limpeza Residencial</div>
-                <p className="text-xs text-muted-foreground">42% do total de serviços</p>
+                <div className="text-base sm:text-2xl font-bold text-white">Limpeza Residencial</div>
+                <p className="text-xs text-white">42% do total de serviços</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-gradient-to-br from-purple-500/10 via-card to-purple-500/5 border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Tempo Médio de Serviço</CardTitle>
-                <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Tempo Médio de Serviço</CardTitle>
+                <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg sm:text-2xl font-bold">2h 15min</div>
-                <p className="text-xs text-muted-foreground">-10 min em relação ao período anterior</p>
+                <div className="text-lg sm:text-2xl font-bold text-white">2h 15min</div>
+                <p className="text-xs text-white">-10 min em relação ao período anterior</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-gradient-to-br from-orange-500/10 via-card to-orange-500/5 border-orange-500/30 hover:shadow-lg hover:shadow-orange-500/20 hover:scale-105 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">Áreas Atendidas</CardTitle>
-                <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <CardTitle className="text-xs sm:text-sm font-medium text-white">Áreas Atendidas</CardTitle>
+                <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg sm:text-2xl font-bold">27</div>
-                <p className="text-xs text-muted-foreground">+3 em relação ao período anterior</p>
+                <div className="text-lg sm:text-2xl font-bold text-white">27</div>
+                <p className="text-xs text-white">+3 em relação ao período anterior</p>
               </CardContent>
             </Card>
           </div>
@@ -470,19 +470,19 @@ export default function CompanyReportsPage() {
             <CardContent>
               <div className="space-y-6 sm:space-y-8">
                 <div>
-                  <h3 className="text-base sm:text-lg font-medium mb-4">Limpeza Residencial</h3>
+                  <h3 className="text-base sm:text-lg font-medium mb-4 text-white">Limpeza Residencial</h3>
                   <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
                     <div className="space-y-2">
-                      <p className="text-xs sm:text-sm font-medium">Total de Serviços</p>
-                      <p className="text-xl sm:text-2xl font-bold">1.624</p>
+                      <p className="text-xs sm:text-sm font-medium text-white">Total de Serviços</p>
+                      <p className="text-xl sm:text-2xl font-bold text-white">1.624</p>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-xs sm:text-sm font-medium">Receita Gerada</p>
-                      <p className="text-xl sm:text-2xl font-bold">R$ 19.488,00</p>
+                      <p className="text-xs sm:text-sm font-medium text-white">Receita Gerada</p>
+                      <p className="text-xl sm:text-2xl font-bold text-white">R$ 19.488,00</p>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-xs sm:text-sm font-medium">Avaliação Média</p>
-                      <p className="text-xl sm:text-2xl font-bold">4,8/5</p>
+                      <p className="text-xs sm:text-sm font-medium text-white">Avaliação Média</p>
+                      <p className="text-xl sm:text-2xl font-bold text-white">4,8/5</p>
                     </div>
                   </div>
                 </div>
@@ -490,19 +490,19 @@ export default function CompanyReportsPage() {
                 <Separator />
 
                 <div>
-                  <h3 className="text-base sm:text-lg font-medium mb-4">Limpeza Comercial</h3>
+                  <h3 className="text-base sm:text-lg font-medium mb-4 text-white">Limpeza Comercial</h3>
                   <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
                     <div className="space-y-2">
-                      <p className="text-xs sm:text-sm font-medium">Total de Serviços</p>
-                      <p className="text-xl sm:text-2xl font-bold">968</p>
+                      <p className="text-xs sm:text-sm font-medium text-white">Total de Serviços</p>
+                      <p className="text-xl sm:text-2xl font-bold text-white">968</p>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-xs sm:text-sm font-medium">Receita Gerada</p>
-                      <p className="text-xl sm:text-2xl font-bold">R$ 14.520,00</p>
+                      <p className="text-xs sm:text-sm font-medium text-white">Receita Gerada</p>
+                      <p className="text-xl sm:text-2xl font-bold text-white">R$ 14.520,00</p>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-xs sm:text-sm font-medium">Avaliação Média</p>
-                      <p className="text-xl sm:text-2xl font-bold">4,6/5</p>
+                      <p className="text-xs sm:text-sm font-medium text-white">Avaliação Média</p>
+                      <p className="text-xl sm:text-2xl font-bold text-white">4,6/5</p>
                     </div>
                   </div>
                 </div>
@@ -510,19 +510,19 @@ export default function CompanyReportsPage() {
                 <Separator />
 
                 <div>
-                  <h3 className="text-base sm:text-lg font-medium mb-4">Limpeza Pós-obra</h3>
+                  <h3 className="text-base sm:text-lg font-medium mb-4 text-white">Limpeza Pós-obra</h3>
                   <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
                     <div className="space-y-2">
-                      <p className="text-xs sm:text-sm font-medium">Total de Serviços</p>
-                      <p className="text-xl sm:text-2xl font-bold">576</p>
+                      <p className="text-xs sm:text-sm font-medium text-white">Total de Serviços</p>
+                      <p className="text-xl sm:text-2xl font-bold text-white">576</p>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-xs sm:text-sm font-medium">Receita Gerada</p>
-                      <p className="text-xl sm:text-2xl font-bold">R$ 8.640,00</p>
+                      <p className="text-xs sm:text-sm font-medium text-white">Receita Gerada</p>
+                      <p className="text-xl sm:text-2xl font-bold text-white">R$ 8.640,00</p>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-xs sm:text-sm font-medium">Avaliação Média</p>
-                      <p className="text-xl sm:text-2xl font-bold">4,7/5</p>
+                      <p className="text-xs sm:text-sm font-medium text-white">Avaliação Média</p>
+                      <p className="text-xl sm:text-2xl font-bold text-white">4,7/5</p>
                     </div>
                   </div>
                 </div>
@@ -556,10 +556,13 @@ export default function CompanyReportsPage() {
 
                 <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
                   {[1, 2, 3, 4].map((i) => (
-                    <Card key={i}>
+                    <Card
+                      key={i}
+                      className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300"
+                    >
                       <CardHeader className="pb-2">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                          <CardTitle className="text-sm sm:text-base">Relatório Personalizado {i}</CardTitle>
+                          <CardTitle className="text-sm sm:text-base text-white">Relatório Personalizado {i}</CardTitle>
                           <div className="flex gap-1">
                             <Button variant="ghost" size="icon">
                               <Share2 className="h-4 w-4" />
@@ -569,25 +572,25 @@ export default function CompanyReportsPage() {
                             </Button>
                           </div>
                         </div>
-                        <CardDescription className="text-xs">
+                        <CardDescription className="text-xs text-white">
                           Criado em {new Date().toLocaleDateString()}
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-xs sm:text-sm">
+                        <p className="text-xs sm:text-sm text-white">
                           {i === 1 && "Análise de desempenho dos profissionais por região"}
                           {i === 2 && "Comparação de receita por serviço nos últimos 6 meses"}
                           {i === 3 && "Relatório de satisfação do cliente por categoria de serviço"}
                           {i === 4 && "Análise de tendência de agendamentos por horário do dia"}
                         </p>
                         <div className="flex flex-wrap gap-2 mt-2">
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge variant="secondary" className="text-xs text-white">
                             {i === 1 && "Profissionais"}
                             {i === 2 && "Financeiro"}
                             {i === 3 && "Clientes"}
                             {i === 4 && "Agendamentos"}
                           </Badge>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs text-white">
                             Atualizado semanalmente
                           </Badge>
                         </div>
@@ -598,7 +601,7 @@ export default function CompanyReportsPage() {
 
                 <div className="flex flex-col gap-4 mt-6">
                   <div>
-                    <h3 className="text-base sm:text-lg font-medium">Relatórios Agendados</h3>
+                    <h3 className="font-medium text-sm sm:text-base">Relatórios Agendados</h3>
                     <p className="text-xs sm:text-sm text-muted-foreground">Relatórios enviados automaticamente</p>
                   </div>
                   <Button variant="outline" onClick={handleScheduleReport} className="w-full sm:w-auto bg-transparent">
@@ -613,18 +616,18 @@ export default function CompanyReportsPage() {
                   {[1, 2].map((i) => (
                     <div
                       key={i}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border rounded-lg"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border rounded-lg bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300"
                     >
                       <div>
-                        <h4 className="font-medium text-sm sm:text-base">
+                        <h4 className="font-medium text-sm sm:text-base text-white">
                           {i === 1 ? "Relatório Financeiro Mensal" : "Relatório de Desempenho Semanal"}
                         </h4>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
+                        <p className="text-xs sm:text-sm text-white text-muted-foreground">
                           {i === 1 ? "Enviado todo dia 1º do mês" : "Enviado toda segunda-feira"}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs text-white">
                           {i === 1 ? "Mensal" : "Semanal"}
                         </Badge>
                         <Button variant="ghost" size="sm">

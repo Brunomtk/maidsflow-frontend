@@ -11,13 +11,14 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
-import { NoahLogo } from "./noah-logo"
+import { Checkbox } from "@/components/ui/checkbox"
 
 export function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
   const { login } = useAuth()
   const router = useRouter()
 
@@ -58,76 +59,88 @@ export function LoginForm() {
   }
 
   return (
-    <div className=" flex items-center justify-center from-slate-900 via-blue-900 to-slate-900 p-4">
-      <Card className="w-full max-w-md bg-white/10 backdrop-blur-md border-white/20">
-        <CardHeader className="space-y-4 text-center">
-          <div>
-            <CardTitle className="text-2xl font-bold text-white">Welcome back</CardTitle>
-            <CardDescription className="text-gray-300">Sign in to your account to continue</CardDescription>
+    <Card className="w-full bg-[#0f1729]/80 backdrop-blur-xl border-white/10 shadow-2xl">
+      <CardHeader className="space-y-2 pb-6">
+        <CardTitle className="text-3xl font-bold text-white">Sign In</CardTitle>
+        <CardDescription className="text-gray-400 text-base">
+          Enter your credentials to access your account
+        </CardDescription>
+      </CardHeader>
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-5">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-white font-medium">
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="your@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-cyan-400 focus:ring-cyan-400/50 h-11 transition-all"
+            />
           </div>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-white">
-                Email
-              </Label>
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-white font-medium">
+              Password
+            </Label>
+            <div className="relative">
               <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
-                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-cyan-400 focus:ring-cyan-400"
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-cyan-400 focus:ring-cyan-400/50 pr-11 h-11 transition-all"
               />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 hover:bg-white/5 text-gray-400 hover:text-cyan-400 transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-white">
-                Password
+          </div>
+          <div className="flex items-center justify-between pt-1">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="remember"
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                className="border-white/20 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500"
+              />
+              <Label htmlFor="remember" className="text-sm text-gray-400 cursor-pointer select-none font-normal">
+                Remember me
               </Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-cyan-400 focus:ring-cyan-400 pr-10"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-gray-400 hover:text-white"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-              </div>
             </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full bg-cyan-600 hover:bg-cyan-700 text-white" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                "Sign in"
-              )}
-            </Button>
-            <div className="text-center text-sm text-gray-300">
-              Don't have an account?{" "}
-              <Link href="/register" className="text-cyan-400 hover:text-cyan-300 underline">
-                Sign up
-              </Link>
-            </div>
-          </CardFooter>
-        </form>
-      </Card>
-    </div>
+            <Link href="/forgot-password" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">
+              Forgot password?
+            </Link>
+          </div>
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-4 pt-2">
+          <Button
+            type="submit"
+            className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold h-11 shadow-lg shadow-cyan-500/30 transition-all"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              "Sign in"
+            )}
+          </Button>
+        </CardFooter>
+      </form>
+    </Card>
   )
 }

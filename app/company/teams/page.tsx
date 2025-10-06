@@ -79,8 +79,8 @@ export default function CompanyTeamsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white mb-1">Teams</h1>
-          <p className="text-gray-400">Manage your work teams</p>
+          <h1 className="text-2xl font-bold text-foreground mb-1">Teams</h1>
+          <p className="text-muted-foreground">Manage your work teams</p>
         </div>
         <Button className="bg-[#06b6d4] hover:bg-[#0891b2] text-white" onClick={handleCreateTeam}>
           <Plus className="h-4 w-4 mr-2" />
@@ -89,77 +89,77 @@ export default function CompanyTeamsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-lg">Active Teams</CardTitle>
+            <CardTitle className="text-foreground text-lg">Active Teams</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="bg-[#2a3349] p-2 rounded-full">
+                <div className="bg-muted p-2 rounded-full">
                   <Users className="h-5 w-5 text-[#06b6d4]" />
                 </div>
               </div>
-              <span className="text-3xl font-bold text-white">{activeTeams}</span>
+              <span className="text-3xl font-bold text-foreground">{activeTeams}</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-lg">Total Services</CardTitle>
+            <CardTitle className="text-foreground text-lg">Total Services</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="bg-[#2a3349] p-2 rounded-full">
+                <div className="bg-muted p-2 rounded-full">
                   <Calendar className="h-5 w-5 text-[#06b6d4]" />
                 </div>
               </div>
-              <span className="text-3xl font-bold text-white">{totalServices}</span>
+              <span className="text-3xl font-bold text-foreground">{totalServices}</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-lg">Average Rating</CardTitle>
+            <CardTitle className="text-foreground text-lg">Average Rating</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="bg-[#2a3349] p-2 rounded-full">
+                <div className="bg-muted p-2 rounded-full">
                   <Star className="h-5 w-5 text-[#06b6d4]" />
                 </div>
               </div>
-              <span className="text-3xl font-bold text-white">{averageRating.toFixed(1)}</span>
+              <span className="text-3xl font-bold text-foreground">{averageRating.toFixed(1)}</span>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="bg-[#1a2234] border-[#2a3349]">
+      <Card className="bg-card border-border">
         <CardHeader>
           <div className="flex flex-col md:flex-row gap-4 justify-between">
             <div className="relative w-full md:w-64">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search teams..."
-                className="pl-8 bg-[#2a3349] border-0 text-white placeholder:text-gray-500 focus-visible:ring-[#06b6d4]"
+                className="pl-8 bg-muted border-0 text-foreground placeholder:text-muted-foreground focus-visible:ring-[#06b6d4]"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
             <div className="flex gap-2">
               <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-400">Filters:</span>
+                <Filter className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Filters:</span>
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[130px] bg-[#2a3349] border-0 text-white focus:ring-[#06b6d4]">
+                <SelectTrigger className="w-[130px] bg-muted border-0 text-foreground focus:ring-[#06b6d4]">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+                <SelectContent className="bg-card border-border text-foreground">
                   <SelectItem value="all">All</SelectItem>
                   <SelectItem value="1">Active</SelectItem>
                   <SelectItem value="0">Inactive</SelectItem>
@@ -171,52 +171,54 @@ export default function CompanyTeamsPage() {
         <CardContent>
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="text-gray-400">Loading teams...</div>
+              <div className="text-muted-foreground">Loading teams...</div>
             </div>
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="border-[#2a3349] hover:bg-[#2a3349]">
-                  <TableHead className="text-gray-400">Team Name</TableHead>
-                  <TableHead className="text-gray-400">Region</TableHead>
-                  <TableHead className="text-gray-400">Services</TableHead>
-                  <TableHead className="text-gray-400">Rating</TableHead>
-                  <TableHead className="text-gray-400">Status</TableHead>
-                  <TableHead className="text-gray-400">Actions</TableHead>
+                <TableRow className="border-border hover:bg-muted">
+                  <TableHead className="text-muted-foreground">Team Name</TableHead>
+                  <TableHead className="text-muted-foreground">Region</TableHead>
+                  <TableHead className="text-muted-foreground">Services</TableHead>
+                  <TableHead className="text-muted-foreground">Rating</TableHead>
+                  <TableHead className="text-muted-foreground">Status</TableHead>
+                  <TableHead className="text-muted-foreground">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {teams.length > 0 ? (
                   teams.map((team) => (
-                    <TableRow key={team.id} className="border-[#2a3349] hover:bg-[#2a3349]">
-                      <TableCell className="font-medium text-white">
+                    <TableRow key={team.id} className="border-border hover:bg-muted">
+                      <TableCell className="font-medium text-foreground">
                         <div className="flex items-center gap-2">
-                          <div className="bg-[#2a3349] p-2 rounded-full">
+                          <div className="bg-muted p-2 rounded-full">
                             <Users className="h-4 w-4 text-[#06b6d4]" />
                           </div>
                           <div>
                             <div>{team.name}</div>
-                            <div className="text-xs text-gray-400 truncate max-w-[200px]">{team.description}</div>
+                            <div className="text-xs text-muted-foreground truncate max-w-[200px]">
+                              {team.description}
+                            </div>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2 text-gray-400">
-                          <MapPin className="h-4 w-4 text-gray-500" />
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <MapPin className="h-4 w-4 text-muted-foreground" />
                           {team.region}
                         </div>
                       </TableCell>
-                      <TableCell className="text-gray-400">{team.completedServices}</TableCell>
+                      <TableCell className="text-muted-foreground">{team.completedServices}</TableCell>
                       <TableCell>
                         {team.rating > 0 ? (
                           <div className="flex items-center">
-                            <div className="bg-[#2a3349] px-1.5 py-0.5 rounded flex items-center">
-                              <span className="text-white mr-1">{team.rating.toFixed(1)}</span>
+                            <div className="bg-muted px-1.5 py-0.5 rounded flex items-center">
+                              <span className="text-foreground mr-1">{team.rating.toFixed(1)}</span>
                               <Star className="w-3 h-3 text-yellow-500 fill-current" />
                             </div>
                           </div>
                         ) : (
-                          <span className="text-gray-500">N/A</span>
+                          <span className="text-muted-foreground">N/A</span>
                         )}
                       </TableCell>
                       <TableCell>{getStatusBadge(team.status)}</TableCell>
@@ -225,7 +227,7 @@ export default function CompanyTeamsPage() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-8 border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent"
+                            className="h-8 border-border text-foreground hover:bg-muted bg-transparent"
                             onClick={() => handleViewTeamDetails(team)}
                           >
                             View
@@ -233,7 +235,7 @@ export default function CompanyTeamsPage() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-8 border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent"
+                            className="h-8 border-border text-foreground hover:bg-muted bg-transparent"
                             onClick={() => handleEditTeam(team)}
                           >
                             Edit
@@ -252,7 +254,7 @@ export default function CompanyTeamsPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-6 text-gray-400">
+                    <TableCell colSpan={6} className="text-center py-6 text-muted-foreground">
                       No teams found
                     </TableCell>
                   </TableRow>

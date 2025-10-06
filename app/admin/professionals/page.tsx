@@ -213,7 +213,7 @@ export default function ProfessionalsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white">Loading professionals...</div>
+        <div className="text-foreground">Loading professionals...</div>
       </div>
     )
   }
@@ -222,11 +222,11 @@ export default function ProfessionalsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white mb-1">Professional Management</h1>
-            <p className="text-gray-400">Manage all cleaning professionals in the system.</p>
+            <h1 className="text-2xl font-bold text-foreground mb-1">Professional Management</h1>
+            <p className="text-muted-foreground">Manage all cleaning professionals in the system.</p>
           </div>
           <Button
-            className="bg-[#06b6d4] hover:bg-[#0891b2] text-white"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
             onClick={() => {
               setSelectedProfessional(null)
               setIsModalOpen(true)
@@ -239,47 +239,29 @@ export default function ProfessionalsPage() {
 
         <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
           <div className="relative w-full lg:w-auto">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by name, CPF or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 w-full lg:w-[300px] bg-[#1a2234] border-[#2a3349] text-white focus-visible:ring-[#06b6d4]"
+              className="pl-10 w-full lg:w-[300px]"
             />
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
             <div className="flex gap-2">
-              <Button
-                variant={statusFilter === "all" ? "default" : "outline"}
-                onClick={() => setStatusFilter("all")}
-                className={
-                  statusFilter === "all"
-                    ? "bg-[#06b6d4] hover:bg-[#0891b2] text-white"
-                    : "border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent"
-                }
-              >
+              <Button variant={statusFilter === "all" ? "default" : "outline"} onClick={() => setStatusFilter("all")}>
                 All Status
               </Button>
               <Button
                 variant={statusFilter === "Active" ? "default" : "outline"}
                 onClick={() => setStatusFilter("Active")}
-                className={
-                  statusFilter === "Active"
-                    ? "bg-[#06b6d4] hover:bg-[#0891b2] text-white"
-                    : "border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent"
-                }
               >
                 Active
               </Button>
               <Button
                 variant={statusFilter === "Inactive" ? "default" : "outline"}
                 onClick={() => setStatusFilter("Inactive")}
-                className={
-                  statusFilter === "Inactive"
-                    ? "bg-[#06b6d4] hover:bg-[#0891b2] text-white"
-                    : "border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent"
-                }
               >
                 Inactive
               </Button>
@@ -288,7 +270,7 @@ export default function ProfessionalsPage() {
             <select
               value={teamFilter}
               onChange={(e) => setTeamFilter(e.target.value)}
-              className="px-3 py-2 bg-[#1a2234] border border-[#2a3349] text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#06b6d4]"
+              className="px-3 py-2 bg-background border border-border text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
               disabled={isLoadingFilters}
             >
               <option value="all">All Teams</option>
@@ -302,7 +284,7 @@ export default function ProfessionalsPage() {
             <select
               value={companyFilter}
               onChange={(e) => setCompanyFilter(e.target.value)}
-              className="px-3 py-2 bg-[#1a2234] border border-[#2a3349] text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#06b6d4]"
+              className="px-3 py-2 bg-background border border-border text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
               disabled={isLoadingFilters}
             >
               <option value="all">All Companies</option>
@@ -315,34 +297,33 @@ export default function ProfessionalsPage() {
           </div>
         </div>
 
-        {/* Debug info */}
-        <div className="text-xs text-gray-500">
+        <div className="text-xs text-muted-foreground">
           Teams loaded: {teams.length} | Companies loaded: {companies.length} | Professionals: {professionals.length} |
           Filtered: {filteredProfessionals.length}
         </div>
 
-        <div className="rounded-md border border-[#2a3349] overflow-hidden">
+        <div className="rounded-md border border-border overflow-hidden shadow-lg bg-gradient-to-br from-card via-card to-muted/20">
           <Table>
-            <TableHeader className="bg-[#1a2234]">
-              <TableRow className="border-[#2a3349] hover:bg-[#2a3349]">
-                <TableHead className="text-white">Professional</TableHead>
-                <TableHead className="text-white">CPF</TableHead>
-                <TableHead className="text-white">Team</TableHead>
-                <TableHead className="text-white">Company</TableHead>
-                <TableHead className="text-white">Phone</TableHead>
-                <TableHead className="text-white">Status</TableHead>
-                <TableHead className="text-white text-center">Rating</TableHead>
-                <TableHead className="text-white text-center">Actions</TableHead>
+            <TableHeader className="bg-gradient-to-r from-muted/50 to-muted/30">
+              <TableRow className="border-border hover:bg-muted/70">
+                <TableHead className="text-foreground">Professional</TableHead>
+                <TableHead className="text-foreground">CPF</TableHead>
+                <TableHead className="text-foreground">Team</TableHead>
+                <TableHead className="text-foreground">Company</TableHead>
+                <TableHead className="text-foreground">Phone</TableHead>
+                <TableHead className="text-foreground">Status</TableHead>
+                <TableHead className="text-foreground text-center">Rating</TableHead>
+                <TableHead className="text-foreground text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredProfessionals.map((professional) => (
-                <TableRow key={professional.id} className="border-[#2a3349] hover:bg-[#1a2234] bg-[#0f172a]">
-                  <TableCell className="font-medium text-white">
+                <TableRow key={professional.id} className="border-border hover:bg-muted/30 transition-colors">
+                  <TableCell className="font-medium text-foreground">
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10 border border-[#2a3349]">
+                      <Avatar className="h-10 w-10 border-2 border-primary/30 shadow-md">
                         <AvatarImage src="/placeholder.svg" />
-                        <AvatarFallback className="bg-[#2a3349] text-[#06b6d4]">
+                        <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-semibold">
                           {professional.name
                             .split(" ")
                             .map((n) => n[0])
@@ -351,14 +332,14 @@ export default function ProfessionalsPage() {
                       </Avatar>
                       <div>
                         <p className="font-medium">{professional.name}</p>
-                        <p className="text-xs text-gray-400">{professional.email}</p>
+                        <p className="text-xs text-muted-foreground">{professional.email}</p>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-gray-400">{professional.cpf}</TableCell>
-                  <TableCell className="text-gray-400">{getTeamName(professional.teamId)}</TableCell>
-                  <TableCell className="text-gray-400">{getCompanyName(professional.companyId)}</TableCell>
-                  <TableCell className="text-gray-400">{professional.phone}</TableCell>
+                  <TableCell className="text-muted-foreground">{professional.cpf}</TableCell>
+                  <TableCell className="text-muted-foreground">{getTeamName(professional.teamId)}</TableCell>
+                  <TableCell className="text-muted-foreground">{getCompanyName(professional.companyId)}</TableCell>
+                  <TableCell className="text-muted-foreground">{professional.phone}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className={getStatusBadge(professional.status).className}>
                       {getStatusBadge(professional.status).label}
@@ -367,7 +348,7 @@ export default function ProfessionalsPage() {
                   <TableCell className="text-center">
                     <div className="flex items-center justify-center">
                       <span className="text-yellow-500 mr-1">★</span>
-                      <span className="text-white">{professional.rating || "N/A"}</span>
+                      <span className="text-foreground">{professional.rating || "N/A"}</span>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -378,7 +359,7 @@ export default function ProfessionalsPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleViewDetails(professional)}
-                            className="h-8 w-8 text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                            className="h-8 w-8"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -394,7 +375,7 @@ export default function ProfessionalsPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleEdit(professional)}
-                            className="h-8 w-8 text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                            className="h-8 w-8"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -410,7 +391,7 @@ export default function ProfessionalsPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleViewSchedule(professional)}
-                            className="h-8 w-8 text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                            className="h-8 w-8"
                           >
                             <Calendar className="h-4 w-4" />
                           </Button>
@@ -426,7 +407,7 @@ export default function ProfessionalsPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => setProfessionalToDelete(professional)}
-                            className="h-8 w-8 text-gray-400 hover:text-red-500 hover:bg-[#2a3349]"
+                            className="h-8 w-8 text-destructive hover:text-destructive"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -444,43 +425,23 @@ export default function ProfessionalsPage() {
         </div>
 
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-400">
-            Showing <span className="font-medium text-white">{filteredProfessionals.length}</span> professionals
+          <p className="text-sm text-muted-foreground">
+            Showing <span className="font-medium text-foreground">{filteredProfessionals.length}</span> professionals
           </p>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent"
-            >
+            <Button variant="outline" size="sm">
               Previous
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-[#2a3349] bg-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white"
-            >
+            <Button variant="default" size="sm">
               1
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent"
-            >
+            <Button variant="outline" size="sm">
               2
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent"
-            >
+            <Button variant="outline" size="sm">
               3
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent"
-            >
+            <Button variant="outline" size="sm">
               Next
             </Button>
           </div>
@@ -506,21 +467,19 @@ export default function ProfessionalsPage() {
         />
 
         <AlertDialog open={!!professionalToDelete} onOpenChange={() => setProfessionalToDelete(null)}>
-          <AlertDialogContent className="bg-[#1a2234] border-[#2a3349] text-white">
+          <AlertDialogContent className="bg-card border-border text-card-foreground">
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription className="text-gray-400">
+              <AlertDialogDescription className="text-muted-foreground">
                 This action cannot be undone. This will permanently delete the professional{" "}
-                <span className="font-semibold text-white">{professionalToDelete?.name}</span> from the system.
+                <span className="font-semibold text-foreground">{professionalToDelete?.name}</span> from the system.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="bg-transparent border-[#2a3349] text-white hover:bg-[#2a3349]">
-                Cancel
-              </AlertDialogCancel>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDeleteProfessional}
-                className="bg-red-600 hover:bg-red-700 text-white border-0"
+                className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
               >
                 Delete
               </AlertDialogAction>

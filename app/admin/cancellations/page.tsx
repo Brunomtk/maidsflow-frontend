@@ -260,13 +260,13 @@ export default function CancellationsPage() {
     return (
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-white">Cancellation Management</h1>
-          <Button onClick={refreshCancellations} className="bg-[#06b6d4] hover:bg-[#0891b2]">
+          <h1 className="text-3xl font-bold text-foreground">Cancellation Management</h1>
+          <Button onClick={refreshCancellations} className="bg-accent hover:bg-accent/90 text-accent-foreground">
             <RefreshCw className="mr-2 h-4 w-4" />
             Try Again
           </Button>
         </div>
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-card border-border">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 text-red-400">
               <AlertTriangle className="h-5 w-5" />
@@ -281,18 +281,18 @@ export default function CancellationsPage() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">Cancellation Management</h1>
+        <h1 className="text-3xl font-bold text-foreground">Cancellation Management</h1>
         <div className="flex gap-2">
           <Button
             variant="outline"
             onClick={refreshCancellations}
             disabled={loading}
-            className="border-[#2a3349] text-gray-400 hover:text-white hover:bg-[#2a3349] bg-transparent"
+            className="border-border text-muted-foreground hover:text-foreground hover:bg-accent bg-transparent"
           >
             <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </Button>
-          <Button onClick={handleAddCancellation} className="bg-[#06b6d4] hover:bg-[#0891b2]">
+          <Button onClick={handleAddCancellation} className="bg-accent hover:bg-accent/90 text-accent-foreground">
             <Plus className="mr-2 h-4 w-4" />
             Add Cancellation
           </Button>
@@ -301,17 +301,17 @@ export default function CancellationsPage() {
 
       {/* Dashboard Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-lg">Pending</CardTitle>
+            <CardTitle className="text-foreground text-lg">Pending</CardTitle>
             <CardDescription>Awaiting processing</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               {loading ? (
-                <Skeleton className="h-8 w-16 bg-[#2a3349]" />
+                <Skeleton className="h-8 w-16 bg-muted" />
               ) : (
-                <span className="text-3xl font-bold text-white">{pendingCount}</span>
+                <span className="text-3xl font-bold text-foreground">{pendingCount}</span>
               )}
               <Badge variant="outline" className="border-yellow-500 text-yellow-500">
                 <AlertTriangle className="h-4 w-4 mr-1" />
@@ -321,17 +321,17 @@ export default function CancellationsPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-lg">Processed</CardTitle>
+            <CardTitle className="text-foreground text-lg">Processed</CardTitle>
             <CardDescription>Refunds approved</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               {loading ? (
-                <Skeleton className="h-8 w-16 bg-[#2a3349]" />
+                <Skeleton className="h-8 w-16 bg-muted" />
               ) : (
-                <span className="text-3xl font-bold text-white">{processedCount}</span>
+                <span className="text-3xl font-bold text-foreground">{processedCount}</span>
               )}
               <Badge variant="outline" className="border-green-500 text-green-500">
                 <CheckCircle className="h-4 w-4 mr-1" />
@@ -341,17 +341,17 @@ export default function CancellationsPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-lg">Rejected</CardTitle>
+            <CardTitle className="text-foreground text-lg">Rejected</CardTitle>
             <CardDescription>Refunds denied</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               {loading ? (
-                <Skeleton className="h-8 w-16 bg-[#2a3349]" />
+                <Skeleton className="h-8 w-16 bg-muted" />
               ) : (
-                <span className="text-3xl font-bold text-white">{rejectedCount}</span>
+                <span className="text-3xl font-bold text-foreground">{rejectedCount}</span>
               )}
               <Badge variant="outline" className="border-red-500 text-red-500">
                 <XCircle className="h-4 w-4 mr-1" />
@@ -361,19 +361,19 @@ export default function CancellationsPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1a2234] border-[#2a3349]">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-lg">Total</CardTitle>
+            <CardTitle className="text-foreground text-lg">Total</CardTitle>
             <CardDescription>All cancellations</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               {loading ? (
-                <Skeleton className="h-8 w-24 bg-[#2a3349]" />
+                <Skeleton className="h-8 w-24 bg-muted" />
               ) : (
-                <span className="text-3xl font-bold text-white">{cancellations.length}</span>
+                <span className="text-3xl font-bold text-foreground">{cancellations.length}</span>
               )}
-              <Badge variant="outline" className="border-[#06b6d4] text-[#06b6d4]">
+              <Badge variant="outline" className="border-accent text-accent">
                 <DollarSign className="h-4 w-4 mr-1" />
                 Overview
               </Badge>
@@ -384,35 +384,47 @@ export default function CancellationsPage() {
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <TabsList className="bg-[#1a2234] border border-[#2a3349]">
-            <TabsTrigger value="all" className="data-[state=active]:bg-[#2a3349]">
+          <TabsList className="bg-card border border-border">
+            <TabsTrigger
+              value="all"
+              className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground"
+            >
               All
             </TabsTrigger>
-            <TabsTrigger value="pending" className="data-[state=active]:bg-[#2a3349]">
+            <TabsTrigger
+              value="pending"
+              className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground"
+            >
               Pending
             </TabsTrigger>
-            <TabsTrigger value="processed" className="data-[state=active]:bg-[#2a3349]">
+            <TabsTrigger
+              value="processed"
+              className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground"
+            >
               Processed
             </TabsTrigger>
-            <TabsTrigger value="rejected" className="data-[state=active]:bg-[#2a3349]">
+            <TabsTrigger
+              value="rejected"
+              className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground"
+            >
               Rejected
             </TabsTrigger>
           </TabsList>
 
           <div className="flex items-center gap-2">
             <div className="relative w-full sm:w-auto">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search cancellation..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-[#1a2234] border-[#2a3349] text-white w-full sm:w-[250px]"
+                className="pl-10 bg-background border-input text-foreground w-full sm:w-[250px]"
               />
             </div>
             <Button
               variant="outline"
               size="icon"
-              className={`border-[#2a3349] ${showFilters ? "bg-[#2a3349] text-white" : "text-gray-400"} bg-transparent`}
+              className={`border-border ${showFilters ? "bg-accent text-accent-foreground" : "text-muted-foreground"} bg-transparent`}
               onClick={() => setShowFilters(!showFilters)}
             >
               <Filter className="h-4 w-4" />
@@ -422,15 +434,15 @@ export default function CancellationsPage() {
 
         {/* Advanced filters */}
         {showFilters && (
-          <Card className="bg-[#1a2234] border-[#2a3349] p-4">
+          <Card className="bg-card border-border p-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <label className="text-sm text-gray-400">Period</label>
+                <label className="text-sm text-muted-foreground">Period</label>
                 <Select value={dateFilter} onValueChange={setDateFilter}>
-                  <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white">
+                  <SelectTrigger className="bg-background border-input text-foreground">
                     <SelectValue placeholder="Select a period" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a2234] border-[#2a3349]">
+                  <SelectContent className="bg-popover border-border">
                     <SelectItem value="all">All periods</SelectItem>
                     <SelectItem value="today">Today</SelectItem>
                     <SelectItem value="yesterday">Yesterday</SelectItem>
@@ -441,12 +453,12 @@ export default function CancellationsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm text-gray-400">Cancelled by</label>
+                <label className="text-sm text-muted-foreground">Cancelled by</label>
                 <Select value={cancelledByFilter} onValueChange={setCancelledByFilter}>
-                  <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white">
+                  <SelectTrigger className="bg-background border-input text-foreground">
                     <SelectValue placeholder="Select who cancelled" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a2234] border-[#2a3349]">
+                  <SelectContent className="bg-popover border-border">
                     <SelectItem value="all">All</SelectItem>
                     <SelectItem value="customer">Customer</SelectItem>
                     <SelectItem value="professional">Professional</SelectItem>
@@ -457,12 +469,12 @@ export default function CancellationsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm text-gray-400">Refund Status</label>
+                <label className="text-sm text-muted-foreground">Refund Status</label>
                 <Select value={refundStatusFilter} onValueChange={setRefundStatusFilter}>
-                  <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white">
+                  <SelectTrigger className="bg-background border-input text-foreground">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a2234] border-[#2a3349]">
+                  <SelectContent className="bg-popover border-border">
                     <SelectItem value="all">All</SelectItem>
                     <SelectItem value="0">Pending</SelectItem>
                     <SelectItem value="1">Processed</SelectItem>
@@ -476,74 +488,71 @@ export default function CancellationsPage() {
         )}
 
         <TabsContent value={selectedTab} className="space-y-4">
-          <div className="rounded-lg border border-[#2a3349] overflow-hidden">
+          <div className="rounded-lg border border-border overflow-hidden">
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#1a2234] hover:bg-[#1a2234]">
-                  <TableHead className="text-gray-400">ID</TableHead>
-                  <TableHead className="text-gray-400">Appointment</TableHead>
-                  <TableHead className="text-gray-400">Customer</TableHead>
-                  <TableHead className="text-gray-400">Cancelled At</TableHead>
-                  <TableHead className="text-gray-400">Cancelled By</TableHead>
-                  <TableHead className="text-gray-400">Refund Status</TableHead>
-                  <TableHead className="text-gray-400">Reason</TableHead>
-                  <TableHead className="text-gray-400 text-right">Actions</TableHead>
+                <TableRow className="bg-muted hover:bg-muted">
+                  <TableHead className="text-muted-foreground">ID</TableHead>
+                  <TableHead className="text-muted-foreground">Appointment</TableHead>
+                  <TableHead className="text-muted-foreground">Customer</TableHead>
+                  <TableHead className="text-muted-foreground">Cancelled At</TableHead>
+                  <TableHead className="text-muted-foreground">Cancelled By</TableHead>
+                  <TableHead className="text-muted-foreground">Refund Status</TableHead>
+                  <TableHead className="text-muted-foreground">Reason</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   Array.from({ length: 5 }).map((_, index) => (
-                    <TableRow key={index} className="bg-[#0f172a] hover:bg-[#1a2234] border-b border-[#2a3349]">
+                    <TableRow key={index} className="bg-background hover:bg-muted border-b border-border">
                       <TableCell>
-                        <Skeleton className="h-4 w-16 bg-[#2a3349]" />
+                        <Skeleton className="h-4 w-16 bg-muted" />
                       </TableCell>
                       <TableCell>
-                        <Skeleton className="h-4 w-32 bg-[#2a3349]" />
+                        <Skeleton className="h-4 w-32 bg-muted" />
                       </TableCell>
                       <TableCell>
-                        <Skeleton className="h-4 w-24 bg-[#2a3349]" />
+                        <Skeleton className="h-4 w-24 bg-muted" />
                       </TableCell>
                       <TableCell>
-                        <Skeleton className="h-4 w-20 bg-[#2a3349]" />
+                        <Skeleton className="h-4 w-20 bg-muted" />
                       </TableCell>
                       <TableCell>
-                        <Skeleton className="h-4 w-20 bg-[#2a3349]" />
+                        <Skeleton className="h-4 w-20 bg-muted" />
                       </TableCell>
                       <TableCell>
-                        <Skeleton className="h-4 w-16 bg-[#2a3349]" />
+                        <Skeleton className="h-4 w-16 bg-muted" />
                       </TableCell>
                       <TableCell>
-                        <Skeleton className="h-4 w-16 bg-[#2a3349]" />
+                        <Skeleton className="h-4 w-16 bg-muted" />
                       </TableCell>
                       <TableCell>
-                        <Skeleton className="h-4 w-16 bg-[#2a3349]" />
+                        <Skeleton className="h-4 w-16 bg-muted" />
                       </TableCell>
                     </TableRow>
                   ))
                 ) : filteredCancellations.length === 0 ? (
-                  <TableRow className="bg-[#0f172a] hover:bg-[#1a2234] border-b border-[#2a3349]">
-                    <TableCell colSpan={8} className="text-center py-6 text-gray-400">
+                  <TableRow className="bg-background hover:bg-muted border-b border-border">
+                    <TableCell colSpan={8} className="text-center py-6 text-muted-foreground">
                       No cancellations found with the selected filters
                     </TableCell>
                   </TableRow>
                 ) : (
                   filteredCancellations.map((cancellation) => (
-                    <TableRow
-                      key={cancellation.id}
-                      className="bg-[#0f172a] hover:bg-[#1a2234] border-b border-[#2a3349]"
-                    >
-                      <TableCell className="text-white font-medium">#{cancellation.id}</TableCell>
-                      <TableCell className="text-white">#{cancellation.appointmentId}</TableCell>
+                    <TableRow key={cancellation.id} className="bg-background hover:bg-muted border-b border-border">
+                      <TableCell className="text-foreground font-medium">#{cancellation.id}</TableCell>
+                      <TableCell className="text-foreground">#{cancellation.appointmentId}</TableCell>
                       <TableCell>
                         <div className="flex flex-col">
-                          <span className="text-white">
+                          <span className="text-foreground">
                             {cancellation.customerName || `Customer #${cancellation.customerId}`}
                           </span>
-                          <span className="text-xs text-gray-400">ID: {cancellation.customerId}</span>
+                          <span className="text-xs text-muted-foreground">ID: {cancellation.customerId}</span>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2 text-gray-400">
+                        <div className="flex items-center gap-2 text-muted-foreground">
                           <Clock className="h-4 w-4" />
                           {formatDate(cancellation.cancelledAt)}
                         </div>
@@ -551,7 +560,7 @@ export default function CancellationsPage() {
                       <TableCell>{getCancelledByBadge(cancellation.cancelledByRole)}</TableCell>
                       <TableCell>{getRefundBadge(cancellation.refundStatus)}</TableCell>
                       <TableCell>
-                        <div className="max-w-[200px] truncate text-white" title={cancellation.reason}>
+                        <div className="max-w-[200px] truncate text-foreground" title={cancellation.reason}>
                           {cancellation.reason}
                         </div>
                       </TableCell>
@@ -580,7 +589,7 @@ export default function CancellationsPage() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-8 text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                            className="h-8 text-muted-foreground hover:text-foreground hover:bg-accent"
                             onClick={() => handleViewDetails(cancellation.id)}
                           >
                             <Eye className="h-4 w-4" />
@@ -588,7 +597,7 @@ export default function CancellationsPage() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-8 text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                            className="h-8 text-muted-foreground hover:text-foreground hover:bg-accent"
                             onClick={() => handleEditCancellation(cancellation.id)}
                           >
                             <Edit className="h-4 w-4" />
@@ -615,10 +624,20 @@ export default function CancellationsPage() {
               Showing {filteredCancellations.length} of {cancellations.length} cancellations
             </p>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" disabled className="border-[#2a3349] text-gray-400 bg-transparent">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled
+                className="border-border text-muted-foreground bg-transparent"
+              >
                 Previous
               </Button>
-              <Button variant="outline" size="sm" disabled className="border-[#2a3349] text-gray-400 bg-transparent">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled
+                className="border-border text-muted-foreground bg-transparent"
+              >
                 Next
               </Button>
             </div>

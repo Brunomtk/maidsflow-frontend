@@ -16,7 +16,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { MoreHorizontal, Plus, Search, Eye, Edit, Trash2, RefreshCw } from "lucide-react"
+import { Plus, Search, Eye, Edit, Trash2, RefreshCw } from "lucide-react"
 import { CustomerModal } from "@/components/admin/customer-modal"
 import { CustomerDetailsModal } from "@/components/admin/customer-details-modal"
 import { useCustomers } from "@/hooks/use-customers"
@@ -42,39 +42,6 @@ export default function CustomersPage() {
     fetchCompanies()
   }, [fetchCompanies])
 
-  
-  const normalizePhone = (raw?: string | null) => {
-    const digits = (raw || "").replace(/\D/g, "")
-    if (!digits) return null
-    let d = digits.replace(/^0+/, "")
-    if (!d.startsWith("55") && d.length <= 12) d = "55" + d
-    return d
-  }
-
-  const handleOnMyWay = (customer: any) => {
-    const phone = normalizePhone(customer.phone)
-    if (!phone) {
-      alert("Client phone not available."); 
-      return
-    }
-    const companyName = customer.company?.name || (typeof window !== "undefined" ? (localStorage.getItem("company_name") || "our") : "our")
-    const eta = typeof window !== "undefined" ? (window.prompt("Inform the ETA (e.g., 15 minutes):") || "") : ""
-    const name = customer.name || ""
-    const message = `Hi ${name}, hope your having a nice day. Your ${companyName} team is on the way, ${eta} from your house`
-    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
-    if (typeof window !== "undefined") window.open(url, "_blank")
-  }
-// Handle filter changes with debounce
-  useEffect(() => {
-    const delayedSearch = setTimeout(() => {
-      setFilters({
-        search: searchTerm,
-        status: statusFilter,
-        companyId: companyFilter === "all" ? undefined : Number(companyFilter),
-      })
-    }, 500)
-
-    
   const normalizePhone = (raw?: string | null) => {
     const digits = (raw || "").replace(/\D/g, "")
     if (!digits) return null
@@ -85,19 +52,33 @@ export default function CustomersPage() {
 
   const buildOnMyWayMessage = (customer: any) => {
     const name = customer?.name || ""
-    const companyName = customer?.company?.name || (typeof window !== "undefined" ? (localStorage.getItem("company_name") || "our") : "our")
+    const companyName =
+      customer?.company?.name || (typeof window !== "undefined" ? localStorage.getItem("company_name") || "our" : "our")
     const etaText = "a few minutes" // fixed text, no prompt
     return `Hi ${name}, hope your having a nice day. Your ${companyName} team is on the way, ${etaText} from your house`
   }
 
   const handleOnMyWay = (customer: any) => {
     const phone = normalizePhone(customer?.phone)
-    if (!phone) { alert("Client phone not available."); return }
+    if (!phone) {
+      alert("Client phone not available.")
+      return
+    }
     const message = buildOnMyWayMessage(customer)
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
     if (typeof window !== "undefined") window.open(url, "_blank")
   }
-return () => clearTimeout(delayedSearch)
+
+  useEffect(() => {
+    const delayedSearch = setTimeout(() => {
+      setFilters({
+        search: searchTerm,
+        status: statusFilter,
+        companyId: companyFilter === "all" ? undefined : Number(companyFilter),
+      })
+    }, 500)
+
+    return () => clearTimeout(delayedSearch)
   }, [searchTerm, statusFilter, companyFilter, setFilters])
 
   const handleEdit = (customer: Customer) => {
@@ -145,15 +126,11 @@ return () => clearTimeout(delayedSearch)
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Customers</h1>
-          <p className="text-gray-400">Manage system customers</p>
+          <h1 className="text-3xl font-bold text-foreground">Customers</h1>
+          <p className="text-muted-foreground">Manage system customers</p>
         </div>
         <div className="flex gap-2">
-          <Button
-            onClick={handleRefresh}
-            variant="outline"
-            className="bg-[#0f172a] border-[#2a3349] text-white hover:bg-[#2a3349]"
-          >
+          <Button onClick={handleRefresh} variant="outline">
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
@@ -162,7 +139,7 @@ return () => clearTimeout(delayedSearch)
               setSelectedCustomer(null)
               setModalOpen(true)
             }}
-            className="bg-[#06b6d4] hover:bg-[#0891b2]"
+            className="bg-primary hover:bg-primary/90"
           >
             <Plus className="mr-2 h-4 w-4" />
             New Customer
@@ -170,28 +147,30 @@ return () => clearTimeout(delayedSearch)
         </div>
       </div>
 
-      <Card className="bg-[#1a2234] border-[#2a3349]">
+      <Card className="bg-gradient-to-br from-card via-card to-muted/20 border-border shadow-lg">
         <CardHeader>
-          <CardTitle className="text-white">Filters</CardTitle>
-          <CardDescription className="text-gray-400">Use the filters below to find specific customers</CardDescription>
+          <CardTitle className="text-card-foreground">Filters</CardTitle>
+          <CardDescription className="text-muted-foreground">
+            Use the filters below to find specific customers
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex gap-4">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search by name, document or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-[#0f172a] border-[#2a3349] text-white"
+                  className="pl-10"
                 />
               </div>
             </div>
             <select
               value={companyFilter}
               onChange={(e) => setCompanyFilter(e.target.value)}
-              className="w-[200px] flex h-10 rounded-md border border-[#2a3349] bg-[#0f172a] px-3 py-2 text-sm text-white ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-[200px] flex h-10 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <option value="all">All companies</option>
               {companies.map((company) => (
@@ -203,7 +182,7 @@ return () => clearTimeout(delayedSearch)
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-[150px] flex h-10 rounded-md border border-[#2a3349] bg-[#0f172a] px-3 py-2 text-sm text-white ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-[150px] flex h-10 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <option value="all">All</option>
               <option value="1">Active</option>
@@ -213,77 +192,67 @@ return () => clearTimeout(delayedSearch)
         </CardContent>
       </Card>
 
-      <Card className="bg-[#1a2234] border-[#2a3349]">
+      <Card className="bg-gradient-to-br from-card via-card to-muted/20 border-border shadow-lg">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow className="border-[#2a3349] hover:bg-[#1a2234]">
-                <TableHead className="text-gray-300">Name</TableHead>
-                <TableHead className="text-gray-300">SSN</TableHead>
-                <TableHead className="text-gray-300">Email</TableHead>
-                <TableHead className="text-gray-300">Phone</TableHead>
-                <TableHead className="text-gray-300">Company</TableHead>
-                <TableHead className="text-gray-300">Status</TableHead>
-                <TableHead className="text-gray-300">Created at</TableHead>
-                <TableHead className="text-gray-300 text-right">Actions</TableHead>
+              <TableRow className="border-border hover:bg-muted/50">
+                <TableHead className="text-muted-foreground">Name</TableHead>
+                <TableHead className="text-muted-foreground">SSN</TableHead>
+                <TableHead className="text-muted-foreground">Email</TableHead>
+                <TableHead className="text-muted-foreground">Phone</TableHead>
+                <TableHead className="text-muted-foreground">Company</TableHead>
+                <TableHead className="text-muted-foreground">Status</TableHead>
+                <TableHead className="text-muted-foreground">Created at</TableHead>
+                <TableHead className="text-muted-foreground text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {state.loading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-gray-400">
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                     Loading customers...
                   </TableCell>
                 </TableRow>
               ) : state.error ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-red-400">
+                  <TableCell colSpan={8} className="text-center py-8 text-destructive">
                     Error: {state.error}
                   </TableCell>
                 </TableRow>
               ) : state.customers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-gray-400">
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                     No customers found
                   </TableCell>
                 </TableRow>
               ) : (
                 state.customers.map((customer) => (
-                  <TableRow key={customer.id} className="border-[#2a3349] hover:bg-[#0f172a]">
-                    <TableCell className="text-white font-medium">{customer.name}</TableCell>
-                    <TableCell className="text-gray-300">{customer.ssn || "—"}</TableCell>
-                    <TableCell className="text-gray-300">{customer.email}</TableCell>
-                    <TableCell className="text-gray-300">{customer.phone || "N/A"}</TableCell>
-                    <TableCell className="text-gray-300">{customer.company?.name || "N/A"}</TableCell>
+                  <TableRow key={customer.id} className="border-border hover:bg-muted/50">
+                    <TableCell className="text-foreground font-medium">{customer.name}</TableCell>
+                    <TableCell className="text-muted-foreground">{customer.ssn || "—"}</TableCell>
+                    <TableCell className="text-muted-foreground">{customer.email}</TableCell>
+                    <TableCell className="text-muted-foreground">{customer.phone || "N/A"}</TableCell>
+                    <TableCell className="text-muted-foreground">{customer.company?.name || "N/A"}</TableCell>
                     <TableCell>
                       <Badge variant={customer.status === 1 ? "default" : "secondary"}>
                         {customer.status === 1 ? "Active" : "Inactive"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-gray-300">{formatDate(customer.createdDate)}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatDate(customer.createdDate)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleView(customer)}
-                          className="text-gray-400 hover:text-white hover:bg-[#2a3349]"
-                        >
+                        <Button variant="ghost" size="sm" onClick={() => handleView(customer)}>
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(customer)}
-                          className="text-gray-400 hover:text-white hover:bg-[#2a3349]"
-                        >
+                        <Button variant="ghost" size="sm" onClick={() => handleEdit(customer)}>
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDelete(customer)}
-                          className="text-gray-400 hover:text-red-400 hover:bg-[#2a3349]"
+                          className="text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -306,18 +275,19 @@ return () => clearTimeout(delayedSearch)
       />
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent className="bg-[#1a2234] border-[#2a3349]">
+        <AlertDialogContent className="bg-card border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Confirm deletion</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
+            <AlertDialogTitle className="text-card-foreground">Confirm deletion</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
               Are you sure you want to delete the customer "{customerToDelete?.name}"? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-[#0f172a] border-[#2a3349] text-white hover:bg-[#2a3349]">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

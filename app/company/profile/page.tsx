@@ -12,7 +12,7 @@ export default function CompanyProfilePage() {
           <p className="text-muted-foreground">Manage your company information and settings.</p>
         </div>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300">
           <CardHeader>
             <CardTitle>Company Information</CardTitle>
             <CardDescription>Update your company details and contact information.</CardDescription>

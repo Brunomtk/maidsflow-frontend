@@ -16,45 +16,69 @@ function DashboardContent() {
       icon: Calendar,
       label: "New Appointment",
       path: "/admin/appointments",
+      color: "text-blue-500",
+      bgGradient: "from-blue-500/20 via-blue-500/10 to-transparent",
+      borderColor: "border-blue-500/30",
+      hoverShadow: "hover:shadow-blue-500/20",
     },
     {
       icon: Building2,
       label: "New Company",
       path: "/admin/companies",
+      color: "text-purple-500",
+      bgGradient: "from-purple-500/20 via-purple-500/10 to-transparent",
+      borderColor: "border-purple-500/30",
+      hoverShadow: "hover:shadow-purple-500/20",
     },
     {
       icon: UserCheck,
       label: "New Customer",
       path: "/admin/customers",
+      color: "text-green-500",
+      bgGradient: "from-green-500/20 via-green-500/10 to-transparent",
+      borderColor: "border-green-500/30",
+      hoverShadow: "hover:shadow-green-500/20",
     },
     {
       icon: BarChart,
       label: "Reports",
       path: "/admin/reports",
+      color: "text-orange-500",
+      bgGradient: "from-orange-500/20 via-orange-500/10 to-transparent",
+      borderColor: "border-orange-500/30",
+      hoverShadow: "hover:shadow-orange-500/20",
     },
     {
       icon: Users,
       label: "New Team",
       path: "/admin/teams",
+      color: "text-cyan-500",
+      bgGradient: "from-cyan-500/20 via-cyan-500/10 to-transparent",
+      borderColor: "border-cyan-500/30",
+      hoverShadow: "hover:shadow-cyan-500/20",
     },
     {
       icon: ClipboardCheck,
       label: "Check-in",
       path: "/admin/check-in",
+      color: "text-pink-500",
+      bgGradient: "from-pink-500/20 via-pink-500/10 to-transparent",
+      borderColor: "border-pink-500/30",
+      hoverShadow: "hover:shadow-pink-500/20",
     },
   ]
 
   return (
-    <div className="space-y-4 md:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-white mb-1">Dashboard</h1>
-          <p className="text-sm md:text-base text-gray-400">Welcome to Noah's administrative panel.</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
+          <p className="text-muted-foreground">Welcome back! Here's what's happening today.</p>
         </div>
         <Button
           variant="outline"
-          size="sm"
-          className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent w-full sm:w-auto"
+          size="default"
+          className="w-full sm:w-auto bg-transparent"
           onClick={refresh}
           disabled={isLoading}
         >
@@ -66,29 +90,33 @@ function DashboardContent() {
       {/* Main Dashboard Overview */}
       <DashboardOverview />
 
-      {/* Quick Actions */}
-      <Card className="bg-[#1a2234] border-[#2a3349] text-white">
-        <CardContent className="p-4 md:p-6">
-          <div className="mb-4">
-            <h3 className="text-base md:text-lg font-medium">Quick Actions</h3>
-            <p className="text-gray-400 text-xs md:text-sm">Quick access to main features</p>
+      <Card className="border-border bg-gradient-to-br from-card via-card to-muted/20 shadow-lg">
+        <CardContent className="p-6">
+          <div className="mb-6">
+            <h3 className="text-xl font-semibold text-foreground mb-1">Quick Actions</h3>
+            <p className="text-muted-foreground text-sm">Quick access to frequently used features</p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {quickActions.map((action, index) => (
-              <Card
+              <button
                 key={index}
-                className="bg-[#0f172a] border-[#2a3349] hover:border-[#06b6d4] transition-colors cursor-pointer"
                 onClick={() => router.push(action.path)}
+                className={`group relative overflow-hidden rounded-2xl border ${action.borderColor} bg-gradient-to-br ${action.bgGradient} backdrop-blur-sm hover:scale-105 transition-all duration-300 p-6 flex flex-col items-center justify-center text-center min-h-[140px] ${action.hoverShadow} hover:shadow-xl`}
               >
-                <CardContent className="p-3 md:p-4 flex flex-col items-center justify-center text-center min-h-[80px] md:min-h-[90px]">
-                  <action.icon className="h-5 w-5 md:h-6 md:w-6 text-[#06b6d4] mb-1 md:mb-2" />
-                  <span className="text-xs leading-tight">{action.label}</span>
-                </CardContent>
-              </Card>
+                <div
+                  className={`h-14 w-14 rounded-xl bg-gradient-to-br ${action.bgGradient} border ${action.borderColor} flex items-center justify-center mb-3 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6`}
+                >
+                  <action.icon className={`h-7 w-7 ${action.color}`} />
+                </div>
+                <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                  {action.label}
+                </span>
+              </button>
             ))}
           </div>
         </CardContent>
       </Card>
+      {/* </CHANGE> */}
     </div>
   )
 }

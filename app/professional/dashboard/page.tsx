@@ -5,23 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import {
-  Calendar,
-  Users,
-  CheckCircle2,
-  Clock,
-  RefreshCw,
-  User,
-  FileText,
-  ClipboardList,
-  Phone,
-  Mail,
-} from "lucide-react"
+import { Calendar, CheckCircle2, Clock, RefreshCw, User, FileText, ClipboardList, Phone, Mail } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "@/hooks/use-toast"
 import { fetchApi } from "@/lib/api/utils"
 import { format } from "date-fns"
+import { useRouter } from "next/navigation"
 
 interface Appointment {
   id: number
@@ -74,6 +64,11 @@ interface InternalFeedback {
   updatedDate: string
 }
 
+const normalizePhone = (phone: string) => {
+  // Implement phone normalization logic here
+  return phone.replace(/\D/g, "")
+}
+
 export default function ProfessionalDashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [stats, setStats] = useState({
@@ -98,6 +93,8 @@ export default function ProfessionalDashboardPage() {
     cancelled: 0,
   })
   const { user } = useAuth()
+  const router = useRouter()
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -269,16 +266,37 @@ export default function ProfessionalDashboardPage() {
     }
   }
 
+  const handleOnMyWay = () => {
+    if (!selectedAppointment) return
+    const phone = normalizePhone(selectedAppointment.customer?.phone as any)
+    if (!phone) {
+      toast({ title: "Phone not available", description: "This client has no phone number.", variant: "destructive" })
+      return
+    }
+    const name = selectedAppointment.customer?.name || ""
+    const companyName =
+      selectedAppointment.company?.name ||
+      (typeof window !== "undefined" ? localStorage.getItem("company_name") || "our" : "our")
+    const eta = "15 minutes"
+    const message = `Hi ${name}, hope your having a nice day. Your ${companyName} team is on the way, ${eta} from your house`
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+    if (typeof window !== "undefined") window.open(url, "_blank")
+  }
+
+  const handleCheckIn = () => {
+    router.push("/professional/check-in")
+  }
+
   if (isLoading) {
     return (
       <div className="space-y-4 p-4 md:p-6">
         <div className="animate-pulse">
-          <div className="h-6 md:h-8 bg-gray-300 rounded w-32 md:w-48 mb-2"></div>
-          <div className="h-3 md:h-4 bg-gray-300 rounded w-48 md:w-64"></div>
+          <div className="h-6 md:h-8 bg-muted rounded w-32 md:w-48 mb-2"></div>
+          <div className="h-3 md:h-4 bg-muted rounded w-48 md:w-64"></div>
         </div>
         <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-24 md:h-32 bg-gray-200 rounded-lg animate-pulse"></div>
+            <div key={i} className="h-24 md:h-32 bg-muted rounded-lg animate-pulse"></div>
           ))}
         </div>
       </div>
@@ -289,10 +307,10 @@ export default function ProfessionalDashboardPage() {
     <div className="space-y-4 md:space-y-6 p-4 md:p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
-          <p className="text-sm md:text-base text-gray-600">Welcome back! Here's your professional overview.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-sm md:text-base text-muted-foreground">Welcome back! Here's your professional overview.</p>
           {user && (
-            <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4 text-xs md:text-sm text-gray-500">
+            <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4 text-xs md:text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <User className="h-3 w-3 md:h-4 md:w-4" />
                 <span className="truncate">{user.name}</span>
@@ -319,11 +337,9 @@ export default function ProfessionalDashboardPage() {
             {isLoading ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
             Refresh
           </Button>
-          <Button asChild size="sm" className="w-full md:w-auto">
-            <Link href="/professional/check-in">
-              <CheckCircle2 className="mr-2 h-4 w-4" />
-              Check-in/out
-            </Link>
+          <Button onClick={handleCheckIn} size="sm" className="w-full md:w-auto">
+            <CheckCircle2 className="mr-2 h-4 w-4" />
+            Check-in/out
           </Button>
         </div>
       </div>
@@ -392,30 +408,38 @@ export default function ProfessionalDashboardPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-blue-500"></div>
-                  <span className="text-xs md:text-sm">Scheduled</span>
+                  <span className="text-xs md:text-sm text-foreground">Scheduled</span>
                 </div>
-                <span className="text-sm md:text-base font-semibold">{appointmentStatus.scheduled}</span>
+                <span className="text-sm md:text-base font-semibold text-foreground">
+                  {appointmentStatus.scheduled}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-green-500"></div>
-                  <span className="text-xs md:text-sm">Confirmed</span>
+                  <span className="text-xs md:text-sm text-foreground">Confirmed</span>
                 </div>
-                <span className="text-sm md:text-base font-semibold">{appointmentStatus.confirmed}</span>
+                <span className="text-sm md:text-base font-semibold text-foreground">
+                  {appointmentStatus.confirmed}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-gray-500"></div>
-                  <span className="text-xs md:text-sm">Completed</span>
+                  <span className="text-xs md:text-sm text-foreground">Completed</span>
                 </div>
-                <span className="text-sm md:text-base font-semibold">{appointmentStatus.completed}</span>
+                <span className="text-sm md:text-base font-semibold text-foreground">
+                  {appointmentStatus.completed}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-red-500"></div>
-                  <span className="text-xs md:text-sm">Cancelled</span>
+                  <span className="text-xs md:text-sm text-foreground">Cancelled</span>
                 </div>
-                <span className="text-sm md:text-base font-semibold">{appointmentStatus.cancelled}</span>
+                <span className="text-sm md:text-base font-semibold text-foreground">
+                  {appointmentStatus.cancelled}
+                </span>
               </div>
             </div>
           </CardContent>
@@ -431,31 +455,27 @@ export default function ProfessionalDashboardPage() {
           <CardContent>
             <div className="grid gap-3 grid-cols-1 md:grid-cols-2">
               <Button
-                asChild
+                onClick={handleOnMyWay}
                 variant="outline"
-                className="h-auto p-3 md:p-4 flex flex-col items-center gap-2 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-blue-200"
+                className="h-auto p-3 md:p-4 flex flex-col items-center gap-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950 dark:hover:bg-blue-900 border-blue-200 dark:border-blue-800"
               >
-                <Link href="/professional/check-in">
-                  <CheckCircle2 className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
-                  <div className="text-center">
-                    <div className="text-sm md:text-base font-semibold text-blue-900">Check-in/out</div>
-                    <div className="text-xs text-blue-700">Track attendance</div>
-                  </div>
-                </Link>
+                <Phone className="h-5 w-5 md:h-6 md:w-6 text-blue-600 dark:text-blue-400" />
+                <div className="text-center">
+                  <div className="text-sm md:text-base font-semibold text-blue-900 dark:text-blue-100">On My Way</div>
+                  <div className="text-xs text-blue-700 dark:text-blue-300">Send WhatsApp message</div>
+                </div>
               </Button>
 
               <Button
-                asChild
+                onClick={handleCheckIn}
                 variant="outline"
-                className="h-auto p-3 md:p-4 flex flex-col items-center gap-2 bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 border-green-200"
+                className="h-auto p-3 md:p-4 flex flex-col items-center gap-2 bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900 border-green-200 dark:border-green-800"
               >
-                <Link href="/professional/chat">
-                  <Users className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
-                  <div className="text-center">
-                    <div className="text-sm md:text-base font-semibold text-green-900">Chat</div>
-                    <div className="text-xs text-green-700">Team communication</div>
-                  </div>
-                </Link>
+                <CheckCircle2 className="h-5 w-5 md:h-6 md:w-6 text-green-600 dark:text-green-400" />
+                <div className="text-center">
+                  <div className="text-sm md:text-base font-semibold text-green-900 dark:text-green-100">Check-in</div>
+                  <div className="text-xs text-green-700 dark:text-green-300">Track attendance</div>
+                </div>
               </Button>
             </div>
           </CardContent>
@@ -483,7 +503,7 @@ export default function ProfessionalDashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {appointments.map((appointment) => (
-                    <TableRow key={appointment.id}>
+                    <TableRow key={appointment.id} onClick={() => setSelectedAppointment(appointment)}>
                       <TableCell className="font-medium text-xs md:text-sm">{appointment.title}</TableCell>
                       <TableCell className="text-xs md:text-sm">{appointment.customer?.name || "N/A"}</TableCell>
                       <TableCell className="text-xs md:text-sm whitespace-nowrap">

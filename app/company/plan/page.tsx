@@ -122,17 +122,15 @@ export default function CompanyPlanPage() {
           <h1 className="text-3xl font-bold">Current Plan</h1>
           <p className="text-muted-foreground">Manage your subscription and view plan details</p>
         </div>
-        <Badge variant={plan.status === 1 ? "default" : "secondary"}>
-          {plan.status === 1 ? "Active" : "Inactive"}
-        </Badge>
+        <Badge variant={plan.status === 1 ? "default" : "secondary"}>{plan.status === 1 ? "Active" : "Inactive"}</Badge>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Plan Overview */}
-        <Card>
+        <Card className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Building2 className="h-5 w-5" />
+              <Building2 className="h-5 w-5 text-blue-500" />
               {plan.name}
             </CardTitle>
             <CardDescription>Your current subscription plan</CardDescription>
@@ -161,43 +159,51 @@ export default function CompanyPlanPage() {
         </Card>
 
         {/* Plan Limits */}
-        <Card>
+        <Card className="bg-gradient-to-br from-purple-500/10 via-card to-purple-500/5 border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300">
           <CardHeader>
             <CardTitle>Plan Limits</CardTitle>
             <CardDescription>Current usage limits for your plan</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-4">
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-500/5 to-transparent rounded-lg border border-blue-500/20">
                 <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
+                  <Users className="h-4 w-4 text-blue-500" />
                   <span className="font-medium">Professionals</span>
                 </div>
-                <Badge variant="outline">{plan.professionalsLimit}</Badge>
+                <Badge variant="outline" className="border-blue-500/30">
+                  {plan.professionalsLimit}
+                </Badge>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-500/5 to-transparent rounded-lg border border-purple-500/20">
                 <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4" />
+                  <Building2 className="h-4 w-4 text-purple-500" />
                   <span className="font-medium">Teams</span>
                 </div>
-                <Badge variant="outline">{plan.teamsLimit}</Badge>
+                <Badge variant="outline" className="border-purple-500/30">
+                  {plan.teamsLimit}
+                </Badge>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-500/5 to-transparent rounded-lg border border-green-500/20">
                 <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
+                  <Users className="h-4 w-4 text-green-500" />
                   <span className="font-medium">Customers</span>
                 </div>
-                <Badge variant="outline">{plan.customersLimit}</Badge>
+                <Badge variant="outline" className="border-green-500/30">
+                  {plan.customersLimit}
+                </Badge>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-500/5 to-transparent rounded-lg border border-orange-500/20">
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
+                  <Calendar className="h-4 w-4 text-orange-500" />
                   <span className="font-medium">Appointments</span>
                 </div>
-                <Badge variant="outline">{plan.appointmentsLimit}</Badge>
+                <Badge variant="outline" className="border-orange-500/30">
+                  {plan.appointmentsLimit}
+                </Badge>
               </div>
             </div>
           </CardContent>

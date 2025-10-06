@@ -23,7 +23,6 @@ import {
   Clock,
   DollarSign,
   MapPin,
-  FileText,
   ClipboardList,
   Pencil,
   Trash2,
@@ -55,6 +54,10 @@ interface Client {
   status: "active" | "inactive"
   createdAt: string
   notes?: string
+  ssn?: string
+  ticket?: string
+  frequency?: string
+  paymentMethod?: string
 }
 
 interface ClientDetailsModalProps {
@@ -98,7 +101,6 @@ export default function ClientDetailsModal({ isOpen, onClose, client, onEdit }: 
     }
   }
 
-  
   const normalizePhone = (raw?: string | null) => {
     const digits = (raw || "").replace(/\D/g, "")
     if (!digits) return null
@@ -109,15 +111,20 @@ export default function ClientDetailsModal({ isOpen, onClose, client, onEdit }: 
 
   const handleOnMyWay = () => {
     const phone = normalizePhone(client?.phone as any)
-    if (!phone) { alert("Client phone not available."); return }
+    if (!phone) {
+      alert("Client phone not available.")
+      return
+    }
     const name = client?.name || ""
-    const companyName = client?.company?.name || (typeof window !== "undefined" ? (localStorage.getItem("company_name") || "our") : "our")
+    const companyName =
+      client?.company?.name || (typeof window !== "undefined" ? localStorage.getItem("company_name") || "our" : "our")
     const eta = "15 minutes"
     const message = `Hi ${name}, hope your having a nice day. Your ${companyName} team is on the way, ${eta} from your house`
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
     if (typeof window !== "undefined") window.open(url, "_blank")
   }
-return (
+
+  return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="bg-[#1a2234] text-white border-[#2a3349] max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -143,7 +150,11 @@ return (
               </Badge>
             </DialogTitle>
             <div className="mt-2 flex justify-end">
-              <Button variant="outline" className="border-[#2a3349] text-white hover:bg-[#2a3349]" onClick={handleOnMyWay}>
+              <Button
+                variant="outline"
+                className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent"
+                onClick={handleOnMyWay}
+              >
                 On my way
               </Button>
             </div>
@@ -173,18 +184,6 @@ return (
                   <h3 className="text-lg font-medium text-white border-b border-[#2a3349] pb-2">Client Information</h3>
 
                   <div className="space-y-3">
-                    <div className="flex items-start">
-                      <div className="w-8 h-8 rounded-full bg-[#2a3349] flex items-center justify-center mr-3 mt-0.5">
-                        <FileText className="h-4 w-4 text-[#06b6d4]" />
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-sm">
-                          SSN ({client.type === "business" ? "CNPJ" : "SSN"})
-                        </p>
-                        <p className="text-white">{client.document}</p>
-                      </div>
-                    </div>
-
                     <div className="flex items-start">
                       <div className="w-8 h-8 rounded-full bg-[#2a3349] flex items-center justify-center mr-3 mt-0.5">
                         <Mail className="h-4 w-4 text-[#06b6d4]" />
@@ -285,23 +284,19 @@ return (
             <TabsContent value="addresses" className="space-y-4">
               {client.addresses.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-1">
-          <div className="text-sm text-gray-400">SSN</div>
-          <div className="text-white">{client?.ssn || "—"}</div>
-        </div>
-        <div className="space-y-1">
-          <div className="text-sm text-gray-400">Ticket</div>
-          <div className="text-white">{client?.ticket ?? "—"}</div>
-        </div>
-        <div className="space-y-1">
-          <div className="text-sm text-gray-400">Frequency</div>
-          <div className="text-white">{client?.frequency || "—"}</div>
-        </div>
-        <div className="space-y-1">
-          <div className="text-sm text-gray-400">Payment Method</div>
-          <div className="text-white">{client?.paymentMethod || "—"}</div>
-        </div>
-    
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-400">Ticket</div>
+                    <div className="text-white">{client?.ticket ?? "—"}</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-400">Frequency</div>
+                    <div className="text-white">{client?.frequency || "—"}</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-400">Payment Method</div>
+                    <div className="text-white">{client?.paymentMethod || "—"}</div>
+                  </div>
+
                   {client.addresses.map((address, index) => (
                     <div
                       key={address.id || index}
@@ -378,8 +373,19 @@ return (
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white">Delete Client</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-400">
-              Are you sure you want to delete <span className="font-medium text-white">{client.name}</span>? This action
-              cannot be undone and will permanently remove all client data.
+              {client.appointments > 0 ? (
+                <>
+                  <span className="font-medium text-yellow-500">Warning:</span> This client still has{" "}
+                  {client.appointments} appointment(s). Do you really want to delete{" "}
+                  <span className="font-medium text-white">{client.name}</span>? This action cannot be undone and will
+                  permanently remove all client data.
+                </>
+              ) : (
+                <>
+                  Are you sure you want to delete <span className="font-medium text-white">{client.name}</span>? This
+                  action cannot be undone and will permanently remove all client data.
+                </>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

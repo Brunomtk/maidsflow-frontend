@@ -95,7 +95,7 @@ function CompanyScheduleContent() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white">Loading appointments...</div>
+        <div className="text-foreground">Loading appointments...</div>
       </div>
     )
   }
@@ -104,8 +104,8 @@ function CompanyScheduleContent() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white mb-1">Schedule</h1>
-          <p className="text-gray-400">View and manage your scheduled services</p>
+          <h1 className="text-2xl font-bold text-foreground mb-1">Schedule</h1>
+          <p className="text-muted-foreground">View and manage your scheduled services</p>
         </div>
         <Button onClick={() => handleAddAppointment()} className="bg-[#06b6d4] hover:bg-[#0891b2] text-white">
           <Plus className="h-4 w-4 mr-2" />
@@ -114,63 +114,63 @@ function CompanyScheduleContent() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-[#1a2234] border-[#2a3349]">
+      <Card className="bg-card border-border">
         <CardContent className="pt-6">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
             <div className="flex flex-col sm:flex-row gap-4 flex-1">
               <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="w-full sm:w-[160px] bg-[#0f172a] border-[#2a3349] text-white">
+                <SelectTrigger className="w-full sm:w-[160px] bg-muted border-border text-foreground">
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
-                  <SelectItem value="all" className="hover:bg-[#2a3349]">
+                <SelectContent className="bg-card border-border text-foreground">
+                  <SelectItem value="all" className="hover:bg-muted">
                     All Status
                   </SelectItem>
-                  <SelectItem value="0" className="hover:bg-[#2a3349]">
+                  <SelectItem value="0" className="hover:bg-muted">
                     Scheduled
                   </SelectItem>
-                  <SelectItem value="1" className="hover:bg-[#2a3349]">
+                  <SelectItem value="1" className="hover:bg-muted">
                     In Progress
                   </SelectItem>
-                  <SelectItem value="2" className="hover:bg-[#2a3349]">
+                  <SelectItem value="2" className="hover:bg-muted">
                     Completed
                   </SelectItem>
-                  <SelectItem value="3" className="hover:bg-[#2a3349]">
+                  <SelectItem value="3" className="hover:bg-muted">
                     Cancelled
                   </SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-full sm:w-[160px] bg-[#0f172a] border-[#2a3349] text-white">
+                <SelectTrigger className="w-full sm:w-[160px] bg-muted border-border text-foreground">
                   <SelectValue placeholder="Filter by type" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
-                  <SelectItem value="all" className="hover:bg-[#2a3349]">
+                <SelectContent className="bg-card border-border text-foreground">
+                  <SelectItem value="all" className="hover:bg-muted">
                     All Types
                   </SelectItem>
-                  <SelectItem value="0" className="hover:bg-[#2a3349]">
+                  <SelectItem value="0" className="hover:bg-muted">
                     Residential
                   </SelectItem>
-                  <SelectItem value="1" className="hover:bg-[#2a3349]">
+                  <SelectItem value="1" className="hover:bg-muted">
                     Commercial
                   </SelectItem>
-                  <SelectItem value="2" className="hover:bg-[#2a3349]">
+                  <SelectItem value="2" className="hover:bg-muted">
                     Industrial
                   </SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={filterProfessional} onValueChange={setFilterProfessional}>
-                <SelectTrigger className="w-full sm:w-[180px] bg-[#0f172a] border-[#2a3349] text-white">
+                <SelectTrigger className="w-full sm:w-[180px] bg-muted border-border text-foreground">
                   <SelectValue placeholder="Filter by professional" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
-                  <SelectItem value="all" className="hover:bg-[#2a3349]">
+                <SelectContent className="bg-card border-border text-foreground">
+                  <SelectItem value="all" className="hover:bg-muted">
                     All Professionals
                   </SelectItem>
                   {uniqueProfessionals.map((professional) => (
-                    <SelectItem key={professional.id} value={professional.id.toString()} className="hover:bg-[#2a3349]">
+                    <SelectItem key={professional.id} value={professional.id.toString()} className="hover:bg-muted">
                       {professional.name}
                     </SelectItem>
                   ))}
@@ -181,7 +181,7 @@ function CompanyScheduleContent() {
                 <Button
                   variant="outline"
                   onClick={handleClearFilters}
-                  className="border-[#2a3349] text-white bg-transparent hover:bg-[#2a3349] whitespace-nowrap"
+                  className="border-border text-foreground bg-transparent hover:bg-muted whitespace-nowrap"
                 >
                   Clear Filters
                 </Button>
@@ -189,16 +189,16 @@ function CompanyScheduleContent() {
             </div>
 
             <Tabs defaultValue="week" className="w-full sm:w-auto" onValueChange={(value) => setViewMode(value as any)}>
-              <TabsList className="bg-[#0f172a] border border-[#2a3349]">
-                <TabsTrigger value="day" className="data-[state=active]:bg-[#2a3349] text-white">
+              <TabsList className="bg-muted border border-border">
+                <TabsTrigger value="day" className="data-[state=active]:bg-card text-foreground">
                   <Calendar className="h-4 w-4 mr-2" />
                   Day
                 </TabsTrigger>
-                <TabsTrigger value="week" className="data-[state=active]:bg-[#2a3349] text-white">
+                <TabsTrigger value="week" className="data-[state=active]:bg-card text-foreground">
                   <Calendar className="h-4 w-4 mr-2" />
                   Week
                 </TabsTrigger>
-                <TabsTrigger value="month" className="data-[state=active]:bg-[#2a3349] text-white">
+                <TabsTrigger value="month" className="data-[state=active]:bg-card text-foreground">
                   <Calendar className="h-4 w-4 mr-2" />
                   Month
                 </TabsTrigger>
@@ -209,7 +209,7 @@ function CompanyScheduleContent() {
       </Card>
 
       {/* Calendar View */}
-      <Card className="bg-[#1a2234] border-[#2a3349]">
+      <Card className="bg-card border-border">
         <CardContent className="p-0">
           <CompanyScheduleCalendar
             appointments={filteredAppointments}

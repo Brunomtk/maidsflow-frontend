@@ -98,13 +98,13 @@ export function CompanyTeamModal({ isOpen, onClose, onSubmit, team }: CompanyTea
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] bg-[#1a2234] border-[#2a3349] text-white">
+      <DialogContent className="sm:max-w-[500px] bg-card border-border text-foreground">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Users className="h-5 w-5 text-[#06b6d4]" />
             {team ? "Edit Team" : "New Team"}
           </DialogTitle>
-          <DialogDescription className="text-gray-400">
+          <DialogDescription className="text-muted-foreground">
             {team ? "Update the team information below." : "Fill in the information to create a new team."}
           </DialogDescription>
         </DialogHeader>
@@ -116,7 +116,7 @@ export function CompanyTeamModal({ isOpen, onClose, onSubmit, team }: CompanyTea
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleChange("name", e.target.value)}
-                className="bg-[#0f172a] border-[#2a3349] text-white"
+                className="bg-muted border-border text-foreground"
                 placeholder="Enter team name"
                 required
               />
@@ -125,12 +125,12 @@ export function CompanyTeamModal({ isOpen, onClose, onSubmit, team }: CompanyTea
             <div className="grid gap-2">
               <Label htmlFor="region">Region</Label>
               <Select value={formData.region} onValueChange={(value) => handleChange("region", value)}>
-                <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white">
+                <SelectTrigger className="bg-muted border-border text-foreground">
                   <SelectValue placeholder="Select a region" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+                <SelectContent className="bg-card border-border text-foreground">
                   {regions.map((region) => (
-                    <SelectItem key={region} value={region} className="hover:bg-[#2a3349]">
+                    <SelectItem key={region} value={region} className="hover:bg-muted">
                       {region}
                     </SelectItem>
                   ))}
@@ -144,7 +144,7 @@ export function CompanyTeamModal({ isOpen, onClose, onSubmit, team }: CompanyTea
                 id="description"
                 value={formData.description}
                 onChange={(e) => handleChange("description", e.target.value)}
-                className="bg-[#0f172a] border-[#2a3349] text-white min-h-[80px]"
+                className="bg-muted border-border text-foreground min-h-[80px]"
                 placeholder="Describe the team's responsibilities and specialties"
                 required
               />
@@ -156,7 +156,7 @@ export function CompanyTeamModal({ isOpen, onClose, onSubmit, team }: CompanyTea
               type="button"
               variant="outline"
               onClick={onClose}
-              className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent"
+              className="border-border text-foreground hover:bg-muted bg-transparent"
             >
               Cancel
             </Button>

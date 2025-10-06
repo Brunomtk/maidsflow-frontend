@@ -227,7 +227,7 @@ export default function CheckManagementPage() {
     if (isLoading) {
       return (
         <div className="flex items-center justify-center py-8">
-          <div className="text-white">Loading check records...</div>
+          <div className="text-foreground">Loading check records...</div>
         </div>
       )
     }
@@ -235,9 +235,9 @@ export default function CheckManagementPage() {
     if (!records.length) {
       return (
         <div className="flex flex-col items-center justify-center py-8 text-center">
-          <Calendar className="h-8 w-8 sm:h-12 sm:w-12 text-gray-400 mb-2" />
-          <h3 className="text-base sm:text-lg font-medium text-white">No check records found</h3>
-          <p className="text-sm text-gray-400 mt-1">Try adjusting your filters or create a new check record.</p>
+          <Calendar className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground mb-2" />
+          <h3 className="text-base sm:text-lg font-medium text-foreground">No check records found</h3>
+          <p className="text-sm text-muted-foreground mt-1">Try adjusting your filters or create a new check record.</p>
         </div>
       )
     }
@@ -245,7 +245,7 @@ export default function CheckManagementPage() {
     return (
       <div className="space-y-3 sm:space-y-4">
         {records.map((record) => (
-          <Card key={record.id} className="bg-[#1a2234] border-[#2a3349] overflow-hidden">
+          <Card key={record.id} className="bg-card border-border overflow-hidden">
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -257,18 +257,18 @@ export default function CheckManagementPage() {
                   </Avatar>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
-                      <p className="text-sm font-medium text-white truncate">{record.professionalName}</p>
+                      <p className="text-sm font-medium text-foreground truncate">{record.professionalName}</p>
                       {getStatusBadge(record.status)}
                     </div>
-                    <div className="text-xs text-gray-400 mt-1 truncate">{record.address}</div>
+                    <div className="text-xs text-muted-foreground mt-1 truncate">{record.address}</div>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mt-1">
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-muted-foreground">
                         {record.checkInTime
                           ? `Check-in: ${format(new Date(record.checkInTime), "MMM d, HH:mm")}`
                           : "Not checked in"}
                       </div>
                       {record.checkOutTime && (
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-muted-foreground">
                           Check-out: {format(new Date(record.checkOutTime), "MMM d, HH:mm")}
                         </div>
                       )}
@@ -304,7 +304,7 @@ export default function CheckManagementPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent flex-1 sm:flex-none text-xs"
+                    className="border-border text-foreground hover:bg-muted bg-transparent flex-1 sm:flex-none text-xs"
                     onClick={() => {
                       setSelectedCheckRecord(record)
                       if (activeTab === "check-in") {
@@ -312,7 +312,6 @@ export default function CheckManagementPage() {
                       } else if (activeTab === "check-out") {
                         setIsCheckOutDetailsModalOpen(true)
                       } else {
-                        // For history tab, show check-in details by default
                         setIsCheckInDetailsModalOpen(true)
                       }
                     }}
@@ -328,7 +327,7 @@ export default function CheckManagementPage() {
         {/* Pagination */}
         {pagination.pageCount > 1 && (
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4">
-            <div className="text-xs sm:text-sm text-gray-400 text-center sm:text-left">
+            <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
               Showing {pagination.firstRowOnPage || 1} to {pagination.lastRowOnPage || 0} of {pagination.totalItems}{" "}
               records
             </div>
@@ -338,11 +337,11 @@ export default function CheckManagementPage() {
                 size="sm"
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage <= 1}
-                className="border-[#2a3349] text-white hover:bg-[#2a3349] text-xs"
+                className="border-border text-foreground hover:bg-muted text-xs"
               >
                 Previous
               </Button>
-              <span className="text-xs sm:text-sm text-white">
+              <span className="text-xs sm:text-sm text-foreground">
                 Page {pagination.currentPage} of {pagination.pageCount}
               </span>
               <Button
@@ -350,7 +349,7 @@ export default function CheckManagementPage() {
                 size="sm"
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage >= pagination.pageCount}
-                className="border-[#2a3349] text-white hover:bg-[#2a3349] text-xs"
+                className="border-border text-foreground hover:bg-muted text-xs"
               >
                 Next
               </Button>
@@ -365,8 +364,10 @@ export default function CheckManagementPage() {
     <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">Check Management</h1>
-          <p className="text-sm sm:text-base text-gray-400">Manage check-ins and check-outs for professionals.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-1">Check Management</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            Manage check-ins and check-outs for professionals.
+          </p>
         </div>
         <Button
           className="bg-[#06b6d4] hover:bg-[#0891b2] text-white w-full sm:w-auto"
@@ -381,34 +382,36 @@ export default function CheckManagementPage() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-[#1a2234] border-[#2a3349]">
+      <Card className="bg-card border-border">
         <CardHeader className="pb-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-              <CardTitle className="text-white text-base sm:text-lg">Check Records</CardTitle>
-              <CardDescription className="text-gray-400 text-sm">View and manage all check records.</CardDescription>
+              <CardTitle className="text-foreground text-base sm:text-lg">Check Records</CardTitle>
+              <CardDescription className="text-muted-foreground text-sm">
+                View and manage all check records.
+              </CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col space-y-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search by professional name or address..."
                 value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="pl-10 bg-[#0f172a] border-[#2a3349] text-white placeholder-gray-400"
+                className="pl-10 bg-muted border-border text-foreground placeholder-muted-foreground"
               />
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
               <div className="flex-1">
                 <Select value={statusFilter?.toString() || "all"} onValueChange={handleStatusFilterChange}>
-                  <SelectTrigger className="w-full bg-[#0f172a] border-[#2a3349] text-white">
+                  <SelectTrigger className="w-full bg-muted border-border text-foreground">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+                  <SelectContent className="bg-card border-border text-foreground">
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="0">Pending</SelectItem>
                     <SelectItem value="1">Checked In</SelectItem>
@@ -424,15 +427,15 @@ export default function CheckManagementPage() {
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className={`w-full justify-start text-left font-normal border-[#2a3349] bg-[#0f172a] hover:bg-[#2a3349] ${
-                        !dateFilter ? "text-gray-400" : "text-white"
+                      className={`w-full justify-start text-left font-normal border-border bg-muted hover:bg-muted ${
+                        !dateFilter ? "text-muted-foreground" : "text-foreground"
                       }`}
                     >
                       <Calendar className="mr-2 h-4 w-4" />
                       <span className="truncate">{dateFilter ? format(dateFilter, "PPP") : "Pick a date"}</span>
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-[#1a2234] border-[#2a3349]">
+                  <PopoverContent className="w-auto p-0 bg-card border-border">
                     <DatePicker mode="single" selected={dateFilter} onSelect={handleDateFilterChange} initialFocus />
                   </PopoverContent>
                 </Popover>
@@ -440,7 +443,7 @@ export default function CheckManagementPage() {
 
               <Button
                 variant="outline"
-                className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent w-full sm:w-auto"
+                className="border-border text-foreground hover:bg-muted bg-transparent w-full sm:w-auto"
                 onClick={clearFilters}
               >
                 <X className="h-4 w-4 mr-2" />
@@ -449,7 +452,7 @@ export default function CheckManagementPage() {
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid grid-cols-3 bg-[#0f172a] border border-[#2a3349] w-full">
+              <TabsList className="grid grid-cols-3 bg-muted border border-border w-full">
                 <TabsTrigger
                   value="check-in"
                   className="data-[state=active]:bg-[#06b6d4] data-[state=active]:text-white text-xs sm:text-sm"

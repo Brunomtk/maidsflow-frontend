@@ -85,42 +85,42 @@ export function ProfessionalModal({ isOpen, onClose, onSubmit, professional, tea
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-[#1a2234] border-[#2a3349] text-white max-w-md">
+      <DialogContent className="bg-card border-border text-foreground max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-white">
+          <DialogTitle className="text-foreground">
             {professional ? "Edit Professional" : "Add New Professional"}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-white">
+            <Label htmlFor="name" className="text-foreground">
               Name
             </Label>
             <Input
               id="name"
               {...register("name", { required: "Name is required" })}
-              className="bg-[#2a3349] border-0 text-white placeholder:text-gray-500 focus-visible:ring-[#06b6d4]"
+              className="bg-muted border-0 text-foreground placeholder:text-muted-foreground focus-visible:ring-[#06b6d4]"
               placeholder="Enter professional name"
             />
             {errors.name && <p className="text-red-500 text-sm">{errors.name.message as string}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="cpf" className="text-white">
-              CPF
+            <Label htmlFor="cpf" className="text-foreground">
+              Document
             </Label>
             <Input
               id="cpf"
-              {...register("cpf", { required: "CPF is required" })}
-              className="bg-[#2a3349] border-0 text-white placeholder:text-gray-500 focus-visible:ring-[#06b6d4]"
-              placeholder="Enter CPF"
+              {...register("cpf", { required: "Document is required" })}
+              className="bg-muted border-0 text-foreground placeholder:text-muted-foreground focus-visible:ring-[#06b6d4]"
+              placeholder="Enter document number"
             />
             {errors.cpf && <p className="text-red-500 text-sm">{errors.cpf.message as string}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-white">
+            <Label htmlFor="email" className="text-foreground">
               Email
             </Label>
             <Input
@@ -133,34 +133,34 @@ export function ProfessionalModal({ isOpen, onClose, onSubmit, professional, tea
                   message: "Invalid email address",
                 },
               })}
-              className="bg-[#2a3349] border-0 text-white placeholder:text-gray-500 focus-visible:ring-[#06b6d4]"
+              className="bg-muted border-0 text-foreground placeholder:text-muted-foreground focus-visible:ring-[#06b6d4]"
               placeholder="Enter email address"
             />
             {errors.email && <p className="text-red-500 text-sm">{errors.email.message as string}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone" className="text-white">
+            <Label htmlFor="phone" className="text-foreground">
               Phone
             </Label>
             <Input
               id="phone"
               {...register("phone", { required: "Phone is required" })}
-              className="bg-[#2a3349] border-0 text-white placeholder:text-gray-500 focus-visible:ring-[#06b6d4]"
+              className="bg-muted border-0 text-foreground placeholder:text-muted-foreground focus-visible:ring-[#06b6d4]"
               placeholder="Enter phone number"
             />
             {errors.phone && <p className="text-red-500 text-sm">{errors.phone.message as string}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="teamId" className="text-white">
+            <Label htmlFor="teamId" className="text-foreground">
               Team
             </Label>
             <Select value={watch("teamId")} onValueChange={(value) => setValue("teamId", value)}>
-              <SelectTrigger className="bg-[#2a3349] border-0 text-white focus:ring-[#06b6d4]">
+              <SelectTrigger className="bg-muted border-0 text-foreground focus:ring-[#06b6d4]">
                 <SelectValue placeholder="Select a team" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+              <SelectContent className="bg-card border-border text-foreground">
                 {teams.map((team) => (
                   <SelectItem key={team.id} value={team.id.toString()}>
                     {team.name} - {team.region}
@@ -173,14 +173,14 @@ export function ProfessionalModal({ isOpen, onClose, onSubmit, professional, tea
 
           {professional && (
             <div className="space-y-2">
-              <Label htmlFor="status" className="text-white">
+              <Label htmlFor="status" className="text-foreground">
                 Status
               </Label>
               <Select value={watch("status")} onValueChange={(value) => setValue("status", value)}>
-                <SelectTrigger className="bg-[#2a3349] border-0 text-white focus:ring-[#06b6d4]">
+                <SelectTrigger className="bg-muted border-0 text-foreground focus:ring-[#06b6d4]">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+                <SelectContent className="bg-card border-border text-foreground">
                   <SelectItem value="Active">Active</SelectItem>
                   <SelectItem value="Inactive">Inactive</SelectItem>
                 </SelectContent>
@@ -193,7 +193,7 @@ export function ProfessionalModal({ isOpen, onClose, onSubmit, professional, tea
               type="button"
               variant="outline"
               onClick={onClose}
-              className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent"
+              className="border-border text-foreground hover:bg-muted bg-transparent"
             >
               Cancel
             </Button>

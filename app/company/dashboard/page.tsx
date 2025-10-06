@@ -264,12 +264,12 @@ export default function CompanyDashboardPage() {
     return (
       <div className="space-y-4 p-4 sm:p-6">
         <div className="animate-pulse">
-          <div className="h-6 sm:h-8 bg-gray-300 rounded w-32 sm:w-48 mb-2"></div>
-          <div className="h-3 sm:h-4 bg-gray-300 rounded w-48 sm:w-64"></div>
+          <div className="h-6 sm:h-8 bg-muted rounded w-32 sm:w-48 mb-2"></div>
+          <div className="h-3 sm:h-4 bg-muted rounded w-48 sm:w-64"></div>
         </div>
         <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-24 sm:h-32 bg-gray-200 rounded-lg animate-pulse"></div>
+            <div key={i} className="h-24 sm:h-32 bg-muted rounded-lg animate-pulse"></div>
           ))}
         </div>
       </div>
@@ -280,12 +280,12 @@ export default function CompanyDashboardPage() {
     <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl sm:text-3xl font-bold truncate">Dashboard</h1>
-          <p className="text-sm sm:text-base text-gray-600 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground truncate">Dashboard</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
             Welcome back! Here's what's happening with your business.
           </p>
           {user?.company && (
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-gray-500">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-muted-foreground">
               <div className="flex items-center gap-1 min-w-0">
                 <Building2 className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
                 <span className="truncate">{user.company.name}</span>
@@ -479,13 +479,13 @@ export default function CompanyDashboardPage() {
             <Button
               asChild
               variant="outline"
-              className="h-auto p-3 sm:p-4 flex flex-col items-center gap-1 sm:gap-2 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-blue-200"
+              className="h-auto p-3 sm:p-4 flex flex-col items-center gap-1 sm:gap-2 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-blue-200 dark:from-blue-950 dark:to-blue-900 dark:hover:from-blue-900 dark:hover:to-blue-800 dark:border-blue-800"
             >
               <Link href="/company/schedule">
-                <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+                <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-blue-400" />
                 <div className="text-center">
-                  <div className="font-semibold text-blue-900 text-xs sm:text-sm">Schedule</div>
-                  <div className="text-xs text-blue-700 hidden sm:block">Manage appointments</div>
+                  <div className="font-semibold text-blue-900 dark:text-blue-100 text-xs sm:text-sm">Schedule</div>
+                  <div className="text-xs text-blue-700 dark:text-blue-300 hidden sm:block">Manage appointments</div>
                 </div>
               </Link>
             </Button>
@@ -493,13 +493,13 @@ export default function CompanyDashboardPage() {
             <Button
               asChild
               variant="outline"
-              className="h-auto p-3 sm:p-4 flex flex-col items-center gap-1 sm:gap-2 bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 border-green-200"
+              className="h-auto p-3 sm:p-4 flex flex-col items-center gap-1 sm:gap-2 bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 border-green-200 dark:from-green-950 dark:to-green-900 dark:hover:from-green-900 dark:hover:to-green-800 dark:border-green-800"
             >
               <Link href="/company/clients">
-                <Users className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
+                <Users className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 dark:text-green-400" />
                 <div className="text-center">
-                  <div className="font-semibold text-green-900 text-xs sm:text-sm">Clients</div>
-                  <div className="text-xs text-green-700 hidden sm:block">Customer management</div>
+                  <div className="font-semibold text-green-900 dark:text-green-100 text-xs sm:text-sm">Clients</div>
+                  <div className="text-xs text-green-700 dark:text-green-300 hidden sm:block">Customer management</div>
                 </div>
               </Link>
             </Button>
@@ -507,13 +507,13 @@ export default function CompanyDashboardPage() {
             <Button
               asChild
               variant="outline"
-              className="h-auto p-3 sm:p-4 flex flex-col items-center gap-1 sm:gap-2 bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border-purple-200"
+              className="h-auto p-3 sm:p-4 flex flex-col items-center gap-1 sm:gap-2 bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border-purple-200 dark:from-purple-950 dark:to-purple-900 dark:hover:from-purple-900 dark:hover:to-purple-800 dark:border-purple-800"
             >
               <Link href="/company/payments">
-                <CreditCard className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
+                <CreditCard className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600 dark:text-purple-400" />
                 <div className="text-center">
-                  <div className="font-semibold text-purple-900 text-xs sm:text-sm">Payments</div>
-                  <div className="text-xs text-purple-700 hidden sm:block">Billing & invoices</div>
+                  <div className="font-semibold text-purple-900 dark:text-purple-100 text-xs sm:text-sm">Payments</div>
+                  <div className="text-xs text-purple-700 dark:text-purple-300 hidden sm:block">Billing & invoices</div>
                 </div>
               </Link>
             </Button>
@@ -521,13 +521,15 @@ export default function CompanyDashboardPage() {
             <Button
               asChild
               variant="outline"
-              className="h-auto p-3 sm:p-4 flex flex-col items-center gap-1 sm:gap-2 bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 border-orange-200"
+              className="h-auto p-3 sm:p-4 flex flex-col items-center gap-1 sm:gap-2 bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 border-orange-200 dark:from-orange-950 dark:to-orange-900 dark:hover:from-orange-900 dark:hover:to-orange-800 dark:border-orange-800"
             >
               <Link href="/company/check-management">
-                <UserCheck className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" />
+                <UserCheck className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600 dark:text-orange-400" />
                 <div className="text-center">
-                  <div className="font-semibold text-orange-900 text-xs sm:text-sm">Check Records</div>
-                  <div className="text-xs text-orange-700 hidden sm:block">Track attendance</div>
+                  <div className="font-semibold text-orange-900 dark:text-orange-100 text-xs sm:text-sm">
+                    Check Records
+                  </div>
+                  <div className="text-xs text-orange-700 dark:text-orange-300 hidden sm:block">Track attendance</div>
                 </div>
               </Link>
             </Button>

@@ -77,86 +77,104 @@ export function DashboardOverview() {
       {/* Detailed Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Appointments Chart */}
-        <Card className="bg-[#1a2234] border-[#2a3349] text-white">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-medium">Appointment Status</CardTitle>
-            <CardDescription className="text-gray-400">Completion rate: {appointmentCompletionRate}%</CardDescription>
+        <Card className="border-border bg-card">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg font-semibold">Appointment Status</CardTitle>
+            <CardDescription>Completion rate: {appointmentCompletionRate}%</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-5">
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-green-400">Completed</span>
-                <span>{stats.appointments.completed}</span>
+                <span className="font-medium text-foreground flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-green-500" />
+                  Completed
+                </span>
+                <span className="font-semibold text-foreground">{stats.appointments.completed}</span>
               </div>
-              <Progress value={appointmentCompletionRate} className="h-2 bg-[#0f172a]" />
+              <Progress value={appointmentCompletionRate} className="h-2" />
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-blue-400">Scheduled</span>
-                <span>{stats.appointments.scheduled}</span>
+                <span className="font-medium text-foreground flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-blue-500" />
+                  Scheduled
+                </span>
+                <span className="font-semibold text-foreground">{stats.appointments.scheduled}</span>
               </div>
               <Progress
                 value={
                   stats.appointments.total > 0 ? (stats.appointments.scheduled / stats.appointments.total) * 100 : 0
                 }
-                className="h-2 bg-[#0f172a]"
+                className="h-2"
               />
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-red-400">Cancelled</span>
-                <span>{stats.appointments.cancelled}</span>
+                <span className="font-medium text-foreground flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-red-500" />
+                  Cancelled
+                </span>
+                <span className="font-semibold text-foreground">{stats.appointments.cancelled}</span>
               </div>
               <Progress
                 value={
                   stats.appointments.total > 0 ? (stats.appointments.cancelled / stats.appointments.total) * 100 : 0
                 }
-                className="h-2 bg-[#0f172a]"
+                className="h-2"
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Payments Chart */}
-        <Card className="bg-[#1a2234] border-[#2a3349] text-white">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-medium">Payment Status</CardTitle>
-            <CardDescription className="text-gray-400">Success rate: {paymentSuccessRate}%</CardDescription>
+        <Card className="border-border bg-card">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg font-semibold">Payment Status</CardTitle>
+            <CardDescription>Success rate: {paymentSuccessRate}%</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-5">
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-green-400">Paid</span>
-                <span>
+                <span className="font-medium text-foreground flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-green-500" />
+                  Paid
+                </span>
+                <span className="font-semibold text-foreground">
                   {formatCurrency(
                     stats.payments.totalAmount * (stats.payments.paid / Math.max(stats.payments.total, 1)),
                   )}
                 </span>
               </div>
-              <Progress value={paymentSuccessRate} className="h-2 bg-[#0f172a]" />
+              <Progress value={paymentSuccessRate} className="h-2" />
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-yellow-400">Pending</span>
-                <span>{stats.payments.pending}</span>
+                <span className="font-medium text-foreground flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-yellow-500" />
+                  Pending
+                </span>
+                <span className="font-semibold text-foreground">{stats.payments.pending}</span>
               </div>
               <Progress
                 value={stats.payments.total > 0 ? (stats.payments.pending / stats.payments.total) * 100 : 0}
-                className="h-2 bg-[#0f172a]"
+                className="h-2"
               />
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-red-400">Overdue</span>
-                <span>{stats.payments.overdue}</span>
+                <span className="font-medium text-foreground flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-red-500" />
+                  Overdue
+                </span>
+                <span className="font-semibold text-foreground">{stats.payments.overdue}</span>
               </div>
               <Progress
                 value={stats.payments.total > 0 ? (stats.payments.overdue / stats.payments.total) * 100 : 0}
-                className="h-2 bg-[#0f172a]"
+                className="h-2"
               />
             </div>
           </CardContent>

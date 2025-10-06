@@ -119,13 +119,13 @@ export default function CompanyNotificationsPage() {
   return (
     <div className="space-y-6 max-w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold">Notifications</h1>
+        <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
         <Button
           onClick={() => {
             setSelectedNotification(null)
             setIsNotificationModalOpen(true)
           }}
-          className="bg-[#06b6d4] hover:bg-[#0891b2]"
+          className="bg-primary hover:bg-primary/90"
         >
           <PenSquare className="h-4 w-4 mr-2" />
           Create Notification
@@ -133,36 +133,36 @@ export default function CompanyNotificationsPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-white dark:bg-gray-800">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
+            <div className="text-2xl font-bold text-foreground">{stats.total}</div>
           </CardContent>
         </Card>
-        <Card className="bg-white dark:bg-gray-800">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Sent</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.sent}</div>
+            <div className="text-2xl font-bold text-foreground">{stats.sent}</div>
           </CardContent>
         </Card>
-        <Card className="bg-white dark:bg-gray-800">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Read</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.read}</div>
+            <div className="text-2xl font-bold text-foreground">{stats.read}</div>
           </CardContent>
         </Card>
-        <Card className="bg-white dark:bg-gray-800">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Unread</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.unread}</div>
+            <div className="text-2xl font-bold text-foreground">{stats.unread}</div>
           </CardContent>
         </Card>
       </div>
@@ -174,13 +174,13 @@ export default function CompanyNotificationsPage() {
             <Input
               type="search"
               placeholder="Search notifications..."
-              className="pl-8 bg-white dark:bg-gray-800"
+              className="pl-8 bg-card border-border"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <Select value={selectedPriority} onValueChange={setSelectedPriority}>
-            <SelectTrigger className="w-full sm:w-48 bg-white dark:bg-gray-800">
+            <SelectTrigger className="w-full sm:w-48 bg-card border-border">
               <SelectValue placeholder="Priority" />
             </SelectTrigger>
             <SelectContent>
@@ -196,26 +196,26 @@ export default function CompanyNotificationsPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-white dark:bg-gray-800 mb-4">
+        <TabsList className="bg-muted mb-4">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="read">Read</TabsTrigger>
           <TabsTrigger value="unread">Unread</TabsTrigger>
         </TabsList>
         <TabsContent value={activeTab} className="mt-0 p-0">
-          <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm">
+          <Card className="bg-card border-border shadow-sm">
             <CardContent className="p-0 overflow-auto">
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                      <TableHead>Title</TableHead>
-                      <TableHead>Priority</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Recipients</TableHead>
-                      <TableHead>Read Rate</TableHead>
-                      <TableHead>Created</TableHead>
-                      <TableHead>Attachments</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                    <TableRow className="hover:bg-transparent border-border">
+                      <TableHead className="text-muted-foreground">Title</TableHead>
+                      <TableHead className="text-muted-foreground">Priority</TableHead>
+                      <TableHead className="text-muted-foreground">Status</TableHead>
+                      <TableHead className="text-muted-foreground">Recipients</TableHead>
+                      <TableHead className="text-muted-foreground">Read Rate</TableHead>
+                      <TableHead className="text-muted-foreground">Created</TableHead>
+                      <TableHead className="text-muted-foreground">Attachments</TableHead>
+                      <TableHead className="text-right text-muted-foreground">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -233,8 +233,8 @@ export default function CompanyNotificationsPage() {
                       </TableRow>
                     ) : (
                       notifications.map((notification) => (
-                        <TableRow key={notification.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                          <TableCell className="font-medium">
+                        <TableRow key={notification.id} className="hover:bg-muted/50 border-border">
+                          <TableCell className="font-medium text-foreground">
                             <div className="flex items-center gap-2">
                               {getPriorityIcon(notification.type)}
                               <span className="truncate max-w-[200px]">{notification.title}</span>
@@ -243,21 +243,23 @@ export default function CompanyNotificationsPage() {
                           <TableCell>{getPriorityBadge(notification.type)}</TableCell>
                           <TableCell>{getStatusBadge(notification.status)}</TableCell>
                           <TableCell>
-                            <div className="flex items-center gap-1">
-                              <Users className="h-4 w-4 text-muted-foreground" />1
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                              <Users className="h-4 w-4" />1
                             </div>
                           </TableCell>
                           <TableCell>
                             {notification.status === 1 ? (
-                              <div className="flex items-center gap-1">
-                                <Eye className="h-4 w-4 text-muted-foreground" />
+                              <div className="flex items-center gap-1 text-muted-foreground">
+                                <Eye className="h-4 w-4" />
                                 100%
                               </div>
                             ) : (
                               <span className="text-muted-foreground">-</span>
                             )}
                           </TableCell>
-                          <TableCell>{new Date(notification.createdDate).toLocaleDateString()}</TableCell>
+                          <TableCell className="text-foreground">
+                            {new Date(notification.createdDate).toLocaleDateString()}
+                          </TableCell>
                           <TableCell>
                             <span className="text-muted-foreground">-</span>
                           </TableCell>

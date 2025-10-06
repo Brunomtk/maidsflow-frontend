@@ -222,7 +222,7 @@ export default function CheckInPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white">Loading check-in records...</div>
+        <div className="text-foreground">Loading check-in records...</div>
       </div>
     )
   }
@@ -232,8 +232,10 @@ export default function CheckInPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white mb-1">Check-in/Check-out Management</h1>
-            <p className="text-gray-400">Monitor all check-ins and check-outs across all companies in the system.</p>
+            <h1 className="text-2xl font-bold text-foreground mb-1">Check-in/Check-out Management</h1>
+            <p className="text-muted-foreground">
+              Monitor all check-ins and check-outs across all companies in the system.
+            </p>
           </div>
           <Button
             className="bg-[#06b6d4] hover:bg-[#0891b2] text-white"
@@ -249,46 +251,46 @@ export default function CheckInPage() {
 
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="relative w-full md:w-auto">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by professional or customer..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 w-full md:w-[300px] bg-[#1a2234] border-[#2a3349] text-white focus-visible:ring-[#06b6d4]"
+              className="pl-10 w-full md:w-[300px] bg-background border-input text-foreground focus-visible:ring-[#06b6d4]"
             />
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px] bg-[#1a2234] border-[#2a3349] text-white">
+              <SelectTrigger className="w-[180px] bg-background border-input text-foreground">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
-                <SelectItem value="all" className="hover:bg-[#2a3349]">
+              <SelectContent className="bg-popover border-border text-popover-foreground">
+                <SelectItem value="all" className="hover:bg-accent">
                   All Statuses
                 </SelectItem>
-                <SelectItem value="0" className="hover:bg-[#2a3349]">
+                <SelectItem value="0" className="hover:bg-accent">
                   Pending
                 </SelectItem>
-                <SelectItem value="1" className="hover:bg-[#2a3349]">
+                <SelectItem value="1" className="hover:bg-accent">
                   Checked In
                 </SelectItem>
-                <SelectItem value="2" className="hover:bg-[#2a3349]">
+                <SelectItem value="2" className="hover:bg-accent">
                   Checked Out
                 </SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={companyFilter} onValueChange={setCompanyFilter}>
-              <SelectTrigger className="w-[180px] bg-[#1a2234] border-[#2a3349] text-white">
+              <SelectTrigger className="w-[180px] bg-background border-input text-foreground">
                 <SelectValue placeholder="Filter by company" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
-                <SelectItem value="all" className="hover:bg-[#2a3349]">
+              <SelectContent className="bg-popover border-border text-popover-foreground">
+                <SelectItem value="all" className="hover:bg-accent">
                   All Companies
                 </SelectItem>
                 {companies.map((company) => (
-                  <SelectItem key={company.id} value={company.id.toString()} className="hover:bg-[#2a3349]">
+                  <SelectItem key={company.id} value={company.id.toString()} className="hover:bg-accent">
                     {company.name}
                   </SelectItem>
                 ))}
@@ -297,33 +299,33 @@ export default function CheckInPage() {
           </div>
         </div>
 
-        <div className="rounded-md border border-[#2a3349] overflow-hidden">
+        <div className="rounded-md border border-border overflow-hidden">
           <Table>
-            <TableHeader className="bg-[#1a2234]">
-              <TableRow className="border-[#2a3349] hover:bg-[#2a3349]">
-                <TableHead className="text-white">Professional</TableHead>
-                <TableHead className="text-white">Customer</TableHead>
-                <TableHead className="text-white">Check-in</TableHead>
-                <TableHead className="text-white">Check-out</TableHead>
-                <TableHead className="text-white">Service Type</TableHead>
-                <TableHead className="text-white">Status</TableHead>
-                <TableHead className="text-white text-center">Actions</TableHead>
+            <TableHeader className="bg-muted/50">
+              <TableRow className="border-border hover:bg-muted">
+                <TableHead className="text-foreground">Professional</TableHead>
+                <TableHead className="text-foreground">Customer</TableHead>
+                <TableHead className="text-foreground">Check-in</TableHead>
+                <TableHead className="text-foreground">Check-out</TableHead>
+                <TableHead className="text-foreground">Service Type</TableHead>
+                <TableHead className="text-foreground">Status</TableHead>
+                <TableHead className="text-foreground text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredCheckIns.length === 0 ? (
-                <TableRow className="border-[#2a3349] bg-[#0f172a]">
-                  <TableCell colSpan={7} className="text-center text-gray-400 py-8">
+                <TableRow className="border-border bg-background">
+                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
                     No check-in records found
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredCheckIns.map((checkIn) => (
-                  <TableRow key={checkIn.id} className="border-[#2a3349] hover:bg-[#1a2234] bg-[#0f172a]">
-                    <TableCell className="font-medium text-white">
+                  <TableRow key={checkIn.id} className="border-border hover:bg-muted/50 bg-background">
+                    <TableCell className="font-medium text-foreground">
                       <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8 border border-[#2a3349]">
-                          <AvatarFallback className="bg-[#2a3349] text-[#06b6d4]">
+                        <Avatar className="h-8 w-8 border border-border">
+                          <AvatarFallback className="bg-muted text-[#06b6d4]">
                             {(checkIn.professionalName || "N/A")
                               .split(" ")
                               .map((n: string) => n[0])
@@ -332,40 +334,40 @@ export default function CheckInPage() {
                         </Avatar>
                         <div>
                           <div>{checkIn.professionalName || "N/A"}</div>
-                          <div className="text-xs text-gray-400">ID: {checkIn.professionalId || "N/A"}</div>
+                          <div className="text-xs text-muted-foreground">ID: {checkIn.professionalId || "N/A"}</div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div>
-                        <div className="text-white">{checkIn.customerName || "N/A"}</div>
-                        <div className="text-xs text-gray-400">{checkIn.address || "N/A"}</div>
+                        <div className="text-foreground">{checkIn.customerName || "N/A"}</div>
+                        <div className="text-xs text-muted-foreground">{checkIn.address || "N/A"}</div>
                       </div>
                     </TableCell>
                     <TableCell>
                       {checkIn.checkInTime ? (
                         <div className="flex items-center gap-1">
                           <LogIn className="h-3 w-3 text-green-500" />
-                          <span className="text-gray-400">{formatDateTime(checkIn.checkInTime)}</span>
+                          <span className="text-muted-foreground">{formatDateTime(checkIn.checkInTime)}</span>
                         </div>
                       ) : (
-                        <span className="text-gray-500">Pending</span>
+                        <span className="text-muted-foreground">Pending</span>
                       )}
                     </TableCell>
                     <TableCell>
                       {checkIn.checkOutTime ? (
                         <div className="flex items-center gap-1">
                           <LogOut className="h-3 w-3 text-red-500" />
-                          <span className="text-gray-400">{formatDateTime(checkIn.checkOutTime)}</span>
+                          <span className="text-muted-foreground">{formatDateTime(checkIn.checkOutTime)}</span>
                         </div>
                       ) : checkIn.status === 1 ? (
-                        <span className="text-gray-500">In progress</span>
+                        <span className="text-muted-foreground">In progress</span>
                       ) : (
-                        <span className="text-gray-500">-</span>
+                        <span className="text-muted-foreground">-</span>
                       )}
                     </TableCell>
                     <TableCell>
-                      <span className="text-gray-400">{checkIn.serviceType || "N/A"}</span>
+                      <span className="text-muted-foreground">{checkIn.serviceType || "N/A"}</span>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={getStatusBadge(checkIn.status || 0).className}>
@@ -380,7 +382,7 @@ export default function CheckInPage() {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleViewDetails(checkIn)}
-                              className="h-8 w-8 text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                              className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -396,7 +398,7 @@ export default function CheckInPage() {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleEdit(checkIn)}
-                              className="h-8 w-8 text-gray-400 hover:text-white hover:bg-[#2a3349]"
+                              className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent"
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -413,7 +415,7 @@ export default function CheckInPage() {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => handleQuickCheckOut(checkIn)}
-                                className="h-8 w-8 text-gray-400 hover:text-green-500 hover:bg-[#2a3349]"
+                                className="h-8 w-8 text-muted-foreground hover:text-green-500 hover:bg-accent"
                               >
                                 <Clock className="h-4 w-4" />
                               </Button>
@@ -430,7 +432,7 @@ export default function CheckInPage() {
                               variant="ghost"
                               size="icon"
                               onClick={() => setCheckInToDelete(checkIn)}
-                              className="h-8 w-8 text-gray-400 hover:text-red-500 hover:bg-[#2a3349]"
+                              className="h-8 w-8 text-muted-foreground hover:text-red-500 hover:bg-accent"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -449,37 +451,21 @@ export default function CheckInPage() {
         </div>
 
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-400">
-            Showing <span className="font-medium text-white">{filteredCheckIns.length}</span> of{" "}
-            <span className="font-medium text-white">{checkIns.length}</span> check-ins
+          <p className="text-sm text-muted-foreground">
+            Showing <span className="font-medium text-foreground">{filteredCheckIns.length}</span> of{" "}
+            <span className="font-medium text-foreground">{checkIns.length}</span> check-ins
           </p>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent"
-            >
+            <Button variant="outline" size="sm" className="border-input text-foreground hover:bg-accent bg-transparent">
               Previous
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-[#2a3349] bg-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white"
-            >
+            <Button variant="outline" size="sm" className="border-input bg-accent text-foreground hover:bg-accent">
               1
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent"
-            >
+            <Button variant="outline" size="sm" className="border-input text-foreground hover:bg-accent bg-transparent">
               2
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-[#2a3349] text-white hover:bg-[#2a3349] hover:text-white bg-transparent"
-            >
+            <Button variant="outline" size="sm" className="border-input text-foreground hover:bg-accent bg-transparent">
               Next
             </Button>
           </div>
@@ -507,16 +493,16 @@ export default function CheckInPage() {
         />
 
         <AlertDialog open={!!checkInToDelete} onOpenChange={() => setCheckInToDelete(null)}>
-          <AlertDialogContent className="bg-[#1a2234] border-[#2a3349] text-white">
+          <AlertDialogContent className="bg-popover border-border text-popover-foreground">
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription className="text-gray-400">
+              <AlertDialogDescription className="text-muted-foreground">
                 This action cannot be undone. This will permanently delete the check-in record for
-                <span className="font-semibold text-white block mt-1">{checkInToDelete?.professionalName}</span>
+                <span className="font-semibold text-foreground block mt-1">{checkInToDelete?.professionalName}</span>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="bg-transparent border-[#2a3349] text-white hover:bg-[#2a3349]">
+              <AlertDialogCancel className="bg-transparent border-input text-foreground hover:bg-accent">
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction
