@@ -149,7 +149,7 @@ export default function InternalFeedbackPage() {
         return <Badge variant="outline">Low</Badge>
       case 1:
         return (
-          <Badge variant="default" className="bg-blue-600">
+          <Badge variant="default" className="bg-[#00D3F3]">
             Medium
           </Badge>
         )

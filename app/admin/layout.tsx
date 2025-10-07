@@ -20,7 +20,7 @@ import { PaymentsProvider } from "@/contexts/payments-context"
 import { RecurrencesProvider } from "@/contexts/recurrences-context"
 import { InternalReportsProvider } from "@/contexts/internal-reports-context"
 import { ReviewsProvider } from "@/contexts/reviews-context"
-import { LeadersProvider } from "@/contexts/leaders-context" // Added LeadersProvider import
+import { LeadersProvider } from "@/contexts/leaders-context"
 
 export default function AdminLayout({
   children,
@@ -36,8 +36,6 @@ export default function AdminLayout({
               <CustomersProvider>
                 <UsersProvider>
                   <LeadersProvider>
-                    {" "}
-                    {/* Added LeadersProvider */}
                     <AppointmentsProvider>
                       <CancellationsProvider>
                         <CheckRecordsProvider>
@@ -67,8 +65,7 @@ export default function AdminLayout({
                         </CheckRecordsProvider>
                       </CancellationsProvider>
                     </AppointmentsProvider>
-                  </LeadersProvider>{" "}
-                  {/* Closed LeadersProvider */}
+                  </LeadersProvider>
                 </UsersProvider>
               </CustomersProvider>
             </ProfessionalsProvider>

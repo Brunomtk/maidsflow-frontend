@@ -86,18 +86,18 @@ export function DashboardOverview() {
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium text-foreground flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-green-500" />
+                  <div className="h-2 w-2 rounded-full bg-[#00D3F3]" />
                   Completed
                 </span>
                 <span className="font-semibold text-foreground">{stats.appointments.completed}</span>
               </div>
-              <Progress value={appointmentCompletionRate} className="h-2" />
+              <Progress value={appointmentCompletionRate} className="h-2" indicatorClassName="bg-[#00D3F3]" />
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium text-foreground flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-blue-500" />
+                  <div className="h-2 w-2 rounded-full bg-[#00D3F3]" />
                   Scheduled
                 </span>
                 <span className="font-semibold text-foreground">{stats.appointments.scheduled}</span>
@@ -107,6 +107,7 @@ export function DashboardOverview() {
                   stats.appointments.total > 0 ? (stats.appointments.scheduled / stats.appointments.total) * 100 : 0
                 }
                 className="h-2"
+                indicatorClassName="bg-[#00D3F3]"
               />
             </div>
 
@@ -123,6 +124,7 @@ export function DashboardOverview() {
                   stats.appointments.total > 0 ? (stats.appointments.cancelled / stats.appointments.total) * 100 : 0
                 }
                 className="h-2"
+                indicatorClassName="bg-red-500"
               />
             </div>
           </CardContent>
@@ -138,7 +140,7 @@ export function DashboardOverview() {
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium text-foreground flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-green-500" />
+                  <div className="h-2 w-2 rounded-full bg-[#00D3F3]" />
                   Paid
                 </span>
                 <span className="font-semibold text-foreground">
@@ -147,13 +149,13 @@ export function DashboardOverview() {
                   )}
                 </span>
               </div>
-              <Progress value={paymentSuccessRate} className="h-2" />
+              <Progress value={paymentSuccessRate} className="h-2" indicatorClassName="bg-[#00D3F3]" />
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium text-foreground flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-yellow-500" />
+                  <div className="h-2 w-2 rounded-full bg-[#00D3F3]" />
                   Pending
                 </span>
                 <span className="font-semibold text-foreground">{stats.payments.pending}</span>
@@ -161,6 +163,7 @@ export function DashboardOverview() {
               <Progress
                 value={stats.payments.total > 0 ? (stats.payments.pending / stats.payments.total) * 100 : 0}
                 className="h-2"
+                indicatorClassName="bg-[#00D3F3]"
               />
             </div>
 
@@ -175,6 +178,7 @@ export function DashboardOverview() {
               <Progress
                 value={stats.payments.total > 0 ? (stats.payments.overdue / stats.payments.total) * 100 : 0}
                 className="h-2"
+                indicatorClassName="bg-red-500"
               />
             </div>
           </CardContent>

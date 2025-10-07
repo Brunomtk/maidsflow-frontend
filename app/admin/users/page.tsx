@@ -209,13 +209,13 @@ export default function UsersPage() {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <Card className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300">
+        <Card className="bg-gradient-to-br from-[#00D3F3]/10 via-card to-[#00D3F3]/5 border-[#00D3F3]/30 shadow-lg hover:shadow-[#00D3F3]/20 hover:scale-105 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs md:text-sm font-medium text-card-foreground">Total Users</CardTitle>
-            <Users className="h-3 w-3 md:h-4 md:w-4 text-blue-500" />
+            <Users className="h-3 w-3 md:h-4 md:w-4 text-[#00D3F3]" />
           </CardHeader>
           <CardContent>
-            <div className="text-lg md:text-2xl font-bold text-blue-500">{totalUsers}</div>
+            <div className="text-lg md:text-2xl font-bold text-[#00D3F3]">{totalUsers}</div>
           </CardContent>
         </Card>
 

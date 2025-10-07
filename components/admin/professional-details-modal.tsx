@@ -22,7 +22,7 @@ export function ProfessionalDetailsModal({ isOpen, onClose, professional }: Prof
       case "active":
         return { label: "Active", className: "border-green-500 text-green-500" }
       case "in_service":
-        return { label: "In Service", className: "border-blue-500 text-blue-500" }
+        return { label: "In Service", className: "border-[#00D3F3] text-[#00D3F3]" }
       case "on_leave":
         return { label: "On Leave", className: "border-yellow-500 text-yellow-500" }
       default:

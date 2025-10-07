@@ -16,10 +16,10 @@ function DashboardContent() {
       icon: Calendar,
       label: "New Appointment",
       path: "/admin/appointments",
-      color: "text-blue-500",
-      bgGradient: "from-blue-500/20 via-blue-500/10 to-transparent",
-      borderColor: "border-blue-500/30",
-      hoverShadow: "hover:shadow-blue-500/20",
+      color: "text-[#00D3F3]",
+      bgGradient: "from-[#00D3F3]/20 via-[#00D3F3]/10 to-transparent",
+      borderColor: "border-[#00D3F3]/30",
+      hoverShadow: "hover:shadow-[#00D3F3]/20",
     },
     {
       icon: Building2,
@@ -52,10 +52,10 @@ function DashboardContent() {
       icon: Users,
       label: "New Team",
       path: "/admin/teams",
-      color: "text-cyan-500",
-      bgGradient: "from-cyan-500/20 via-cyan-500/10 to-transparent",
-      borderColor: "border-cyan-500/30",
-      hoverShadow: "hover:shadow-cyan-500/20",
+      color: "text-[#00D3F3]",
+      bgGradient: "from-[#00D3F3]/20 via-[#00D3F3]/10 to-transparent",
+      borderColor: "border-[#00D3F3]/30",
+      hoverShadow: "hover:shadow-[#00D3F3]/20",
     },
     {
       icon: ClipboardCheck,
@@ -116,7 +116,6 @@ function DashboardContent() {
           </div>
         </CardContent>
       </Card>
-      {/* </CHANGE> */}
     </div>
   )
 }

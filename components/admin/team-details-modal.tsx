@@ -150,7 +150,7 @@ export function TeamDetailsModal({ isOpen, team, onClose, onEdit, onDelete }: Te
       case "task_completed":
         return <CheckCircle className="h-4 w-4 text-green-500" />
       case "member_added":
-        return <Users className="h-4 w-4 text-blue-500" />
+        return <Users className="h-4 w-4 text-[#00D3F3]" />
       case "task_assigned":
         return <AlertCircle className="h-4 w-4 text-orange-500" />
       case "rating_updated":
@@ -184,7 +184,7 @@ export function TeamDetailsModal({ isOpen, team, onClose, onEdit, onDelete }: Te
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
-                <Users className="h-6 w-6 text-primary" />
+                <Users className="h-6 w-6 text-[#00D3F3]" />
               </div>
               <div>
                 <DialogTitle className="text-xl">{team.name}</DialogTitle>
@@ -220,7 +220,7 @@ export function TeamDetailsModal({ isOpen, team, onClose, onEdit, onDelete }: Te
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2">
-                    <Users className="h-5 w-5 text-blue-500" />
+                    <Users className="h-5 w-5 text-[#00D3F3]" />
                     <div>
                       <p className="text-2xl font-bold">{mockMembers.length}</p>
                       <p className="text-sm text-muted-foreground">Members</p>

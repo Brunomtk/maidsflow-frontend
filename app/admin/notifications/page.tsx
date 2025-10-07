@@ -127,7 +127,7 @@ export default function NotificationsPage() {
   const getTypeIcon = (type: number) => {
     switch (type) {
       case 1:
-        return <Bell className="h-4 w-4 text-blue-500" />
+        return <Bell className="h-4 w-4 text-[#00D3F3]" />
       case 2:
         return <Clock className="h-4 w-4 text-green-500" />
       case 3:

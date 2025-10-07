@@ -187,7 +187,7 @@ function getStatusStyles(status: number) {
     case 2:
       return "border-green-500 text-green-500"
     case 1:
-      return "border-blue-500 text-blue-500"
+      return "border-[#00D3F3] text-[#00D3F3]"
     default:
       return "border-gray-500 text-gray-500"
   }

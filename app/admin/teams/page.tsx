@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Plus, Search, MoreHorizontal, Edit, Trash2, Users, Building2, RefreshCw } from "lucide-react"
+import { Plus, Search, MoreHorizontal, Edit, Trash2, Users, Building2, RefreshCw, Eye } from "lucide-react"
 import { TeamModal } from "@/components/admin/team-modal"
 import { TeamDetailsModal } from "@/components/admin/team-details-modal"
 import { useToast } from "@/hooks/use-toast"
@@ -280,147 +280,125 @@ export default function AdminTeamsPage() {
   }
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto py-4 md:py-6 px-4 md:px-0 space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold">Teams Management</h1>
-          <p className="text-gray-600">Manage teams and their members</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Teams Management</h1>
+          <p className="text-sm md:text-base text-muted-foreground">Manage teams and their members</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={fetchTeams} variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </Button>
-          <Button onClick={() => setIsCreateModalOpen(true)}>
+          <Button onClick={() => setIsCreateModalOpen(true)} className="bg-primary hover:bg-primary/90">
             <Plus className="h-4 w-4 mr-2" />
             Add Team
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <Card className="bg-gradient-to-br from-[#00D3F3]/10 via-card to-[#00D3F3]/5 border-[#00D3F3]/30 shadow-lg hover:shadow-[#00D3F3]/20 hover:scale-105 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Teams</CardTitle>
-            <Users className="h-4 w-4 text-blue-500" />
+            <CardTitle className="text-xs md:text-sm font-medium text-card-foreground">Total Teams</CardTitle>
+            <Users className="h-3 w-3 md:h-4 md:w-4 text-[#00D3F3]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-500">{teams.length}</div>
+            <div className="text-lg md:text-2xl font-bold text-[#00D3F3]">{teams.length}</div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-green-500/10 via-card to-green-500/5 border-green-500/30 shadow-lg hover:shadow-green-500/20 hover:scale-105 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Teams</CardTitle>
-            <Users className="h-4 w-4 text-green-500" />
+            <CardTitle className="text-xs md:text-sm font-medium text-card-foreground">Active Teams</CardTitle>
+            <Users className="h-3 w-3 md:h-4 md:w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-500">{teams.filter((t) => t.status === 1).length}</div>
+            <div className="text-lg md:text-2xl font-bold text-green-500">
+              {teams.filter((t) => t.status === 1).length}
+            </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-purple-500/10 via-card to-purple-500/5 border-purple-500/30 shadow-lg hover:shadow-purple-500/20 hover:scale-105 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Companies</CardTitle>
-            <Building2 className="h-4 w-4 text-purple-500" />
+            <CardTitle className="text-xs md:text-sm font-medium text-card-foreground">Companies</CardTitle>
+            <Building2 className="h-3 w-3 md:h-4 md:w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-500">{companies.length}</div>
+            <div className="text-lg md:text-2xl font-bold text-purple-500">{companies.length}</div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-orange-500/10 via-card to-orange-500/5 border-orange-500/30 shadow-lg hover:shadow-orange-500/20 hover:scale-105 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Rating</CardTitle>
-            <Users className="h-4 w-4 text-orange-500" />
+            <CardTitle className="text-xs md:text-sm font-medium text-card-foreground">Inactive Teams</CardTitle>
+            <Users className="h-3 w-3 md:h-4 md:w-4 text-orange-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-500">
-              {teams.length > 0 ? (teams.reduce((sum, team) => sum + team.rating, 0) / teams.length).toFixed(1) : "0.0"}
+            <div className="text-lg md:text-2xl font-bold text-orange-500">
+              {teams.filter((t) => t.status === 0).length}
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="bg-gradient-to-br from-card via-card to-muted/20 border-border shadow-lg">
-        <CardHeader>
-          <CardTitle>Teams</CardTitle>
-          <CardDescription>Manage and organize teams</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center space-x-2 mb-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+      <div className="block md:hidden">
+        <Card className="bg-gradient-to-br from-muted/50 via-muted/30 to-transparent border-border shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-card-foreground text-lg">Teams List</CardTitle>
+            <CardDescription className="text-muted-foreground text-sm">Manage and organize teams</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center space-x-2 mb-4">
+              <Search className="h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search teams..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8"
+                className="text-sm"
               />
             </div>
-          </div>
 
-          {/* Teams Table */}
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Company</TableHead>
-                  <TableHead>Leader</TableHead>
-                  <TableHead>Region</TableHead>
-                  <TableHead>Rating</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredTeams.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                      {searchTerm ? "No teams found matching your search." : "No teams found."}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredTeams.map((team) => (
-                    <TableRow key={team.id}>
-                      <TableCell>
+            <div className="space-y-3">
+              {filteredTeams.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground text-sm">
+                    {searchTerm ? "No teams found matching your search." : "No teams found."}
+                  </p>
+                </div>
+              ) : (
+                filteredTeams.map((team) => (
+                  <Card
+                    key={team.id}
+                    className="bg-gradient-to-br from-muted/50 via-muted/30 to-transparent border-border shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
+                  >
+                    <CardContent className="p-3">
+                      <div className="flex items-start justify-between mb-2">
                         <div>
-                          <div className="font-medium">{team.name}</div>
+                          <div className="font-medium text-foreground text-sm">{team.name}</div>
                           {team.description && (
-                            <div className="text-sm text-muted-foreground truncate max-w-xs">{team.description}</div>
+                            <div className="text-xs text-muted-foreground truncate max-w-[200px]">
+                              {team.description}
+                            </div>
                           )}
                         </div>
-                      </TableCell>
-                      <TableCell>{team.company?.name || "N/A"}</TableCell>
-                      <TableCell>{team.leader?.name || "No leader assigned"}</TableCell>
-                      <TableCell>{team.region || "N/A"}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1">
-                          <span>{team.rating.toFixed(1)}</span>
-                          <span className="text-yellow-500">★</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{getStatusBadge(team.status)}</TableCell>
-                      <TableCell>
-                        {team.createdDate ? new Date(team.createdDate).toLocaleDateString() : "N/A"}
-                      </TableCell>
-                      <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <MoreHorizontal className="h-4 w-4" />
+                            <Button variant="ghost" className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground">
+                              <MoreHorizontal className="h-3 w-3" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent align="end" className="bg-card border-border">
                             <DropdownMenuItem
                               onClick={() => {
                                 setSelectedTeam(team)
                                 setIsDetailsModalOpen(true)
                               }}
+                              className="text-card-foreground hover:bg-border hover:text-foreground text-xs"
                             >
-                              <Users className="mr-2 h-4 w-4" />
+                              <Eye className="mr-2 h-3 w-3" />
                               View Details
                             </DropdownMenuItem>
                             <DropdownMenuItem
@@ -428,8 +406,9 @@ export default function AdminTeamsPage() {
                                 setSelectedTeam(team)
                                 setIsEditModalOpen(true)
                               }}
+                              className="text-card-foreground hover:bg-border hover:text-foreground text-xs"
                             >
-                              <Edit className="mr-2 h-4 w-4" />
+                              <Edit className="mr-2 h-3 w-3" />
                               Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem
@@ -437,24 +416,149 @@ export default function AdminTeamsPage() {
                                 setTeamToDelete(team)
                                 setIsDeleteDialogOpen(true)
                               }}
-                              className="text-red-600"
+                              className="text-red-500 hover:bg-border hover:text-red-400 text-xs"
                             >
-                              <Trash2 className="mr-2 h-4 w-4" />
+                              <Trash2 className="mr-2 h-3 w-3" />
                               Delete
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        <Badge className="text-xs">{team.company?.name || "N/A"}</Badge>
+                        {getStatusBadge(team.status)}
+                      </div>
+
+                      <div className="text-xs text-muted-foreground">
+                        Leader: {team.leader?.name || "No leader assigned"}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Region: {team.region || "N/A"}</div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="hidden md:block">
+        <Card className="bg-gradient-to-br from-card via-card to-muted/20 border-border shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-card-foreground">Teams List</CardTitle>
+            <CardDescription className="text-muted-foreground">Manage and organize teams</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center space-x-2 mb-4">
+              <Search className="h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search teams..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="max-w-sm"
+              />
+            </div>
+
+            <div className="rounded-md border border-border">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-border">
+                    <TableHead className="text-muted-foreground">Name</TableHead>
+                    <TableHead className="text-muted-foreground">Company</TableHead>
+                    <TableHead className="text-muted-foreground">Leader</TableHead>
+                    <TableHead className="text-muted-foreground">Region</TableHead>
+                    <TableHead className="text-muted-foreground">Rating</TableHead>
+                    <TableHead className="text-muted-foreground">Status</TableHead>
+                    <TableHead className="text-muted-foreground">Created</TableHead>
+                    <TableHead className="text-right text-muted-foreground">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredTeams.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                        {searchTerm ? "No teams found matching your search." : "No teams found."}
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+                  ) : (
+                    filteredTeams.map((team) => (
+                      <TableRow key={team.id} className="border-border">
+                        <TableCell>
+                          <div>
+                            <div className="font-medium text-foreground">{team.name}</div>
+                            {team.description && (
+                              <div className="text-sm text-muted-foreground truncate max-w-xs">{team.description}</div>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-foreground">{team.company?.name || "N/A"}</TableCell>
+                        <TableCell className="text-foreground">{team.leader?.name || "No leader assigned"}</TableCell>
+                        <TableCell className="text-foreground">{team.region || "N/A"}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <span className="text-foreground">{team.rating.toFixed(1)}</span>
+                            <span className="text-yellow-500">★</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>{getStatusBadge(team.status)}</TableCell>
+                        <TableCell className="text-foreground">
+                          {team.createdDate ? new Date(team.createdDate).toLocaleDateString() : "N/A"}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-card border-border">
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setSelectedTeam(team)
+                                  setIsDetailsModalOpen(true)
+                                }}
+                                className="text-card-foreground hover:bg-border hover:text-foreground"
+                              >
+                                <Eye className="mr-2 h-4 w-4" />
+                                View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setSelectedTeam(team)
+                                  setIsEditModalOpen(true)
+                                }}
+                                className="text-card-foreground hover:bg-border hover:text-foreground"
+                              >
+                                <Edit className="mr-2 h-4 w-4" />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setTeamToDelete(team)
+                                  setIsDeleteDialogOpen(true)
+                                }}
+                                className="text-red-500 hover:bg-border hover:text-red-400"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Create Team Modal */}
       <TeamModal
         isOpen={isCreateModalOpen}
         companies={companies}
@@ -462,7 +566,6 @@ export default function AdminTeamsPage() {
         onCancel={() => setIsCreateModalOpen(false)}
       />
 
-      {/* Edit Team Modal */}
       <TeamModal
         isOpen={isEditModalOpen}
         team={selectedTeam}
@@ -474,7 +577,6 @@ export default function AdminTeamsPage() {
         }}
       />
 
-      {/* Team Details Modal */}
       <TeamDetailsModal
         isOpen={isDetailsModalOpen}
         team={selectedTeam}
@@ -494,12 +596,11 @@ export default function AdminTeamsPage() {
         }}
       />
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-card border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-card-foreground">Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
               This action cannot be undone. This will permanently delete the team "{teamToDelete?.name}" and remove all
               associated data.
             </AlertDialogDescription>

@@ -31,7 +31,7 @@ export function CheckInDetailsModal({ isOpen, onClose, checkIn, onEdit, onDelete
       case 0:
         return { label: "Pending", className: "border-yellow-500 text-yellow-500" }
       case 1:
-        return { label: "Checked In", className: "border-blue-500 text-blue-500" }
+        return { label: "Checked In", className: "border-[#00D3F3] text-[#00D3F3]" }
       case 2:
         return { label: "Checked Out", className: "border-green-500 text-green-500" }
       default:

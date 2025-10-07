@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -22,6 +22,14 @@ export function LoginForm() {
   const { login } = useAuth()
   const router = useRouter()
 
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("noah_remember_email")
+    if (savedEmail) {
+      setEmail(savedEmail)
+      setRememberMe(true)
+    }
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -30,6 +38,12 @@ export function LoginForm() {
       const success = await login({ email, password })
 
       if (success) {
+        if (rememberMe) {
+          localStorage.setItem("noah_remember_email", email)
+        } else {
+          localStorage.removeItem("noah_remember_email")
+        }
+
         // Redirecionar baseado no role do usuário
         const token = localStorage.getItem("noah_token")
         if (token) {

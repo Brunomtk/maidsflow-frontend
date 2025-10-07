@@ -42,7 +42,7 @@ export function AppointmentCalendar({
   const getStatusColor = (status: number) => {
     switch (status) {
       case 0:
-        return "bg-blue-500"
+        return "bg-[#00D3F3]"
       case 1:
         return "bg-yellow-500"
       case 2:
@@ -72,7 +72,7 @@ export function AppointmentCalendar({
   const getTypeColor = (type: number) => {
     switch (type) {
       case 0:
-        return "border-blue-400"
+        return "border-[#00D3F3]"
       case 1:
         return "border-purple-400"
       case 2:

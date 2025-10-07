@@ -29,15 +29,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
     try {
       setIsLoading(true)
-      const response = await fetchApi<{ token: string; id: number; name: string; email: string; role: string; status: number; avatar?: string; companyId?: string; professionalId?: string; createdDate: string; updatedDate: string }>(
-        "/Users/authenticate",
-        {
-          method: "POST",
-          body: JSON.stringify(credentials),
-        }
-      )
+      const response = await fetchApi<{
+        token: string
+        id: number
+        name: string
+        email: string
+        role: string
+        status: number
+        avatar?: string
+        companyId?: string
+        professionalId?: string
+        createdDate: string
+        updatedDate: string
+      }>("/Users/authenticate", {
+        method: "POST",
+        body: JSON.stringify(credentials),
+      })
       // fetchApi throws on non-ok, so if we’re here we have data
       localStorage.setItem("noah_token", response.token)
+      if (credentials.rememberEmail) {
+        localStorage.setItem("noah_remember_email", credentials.email)
+      }
       setToken(response.token)
       setUser({
         id: response.id,
@@ -65,21 +77,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (data: RegisterData): Promise<boolean> => {
     try {
       setIsLoading(true)
-      const result = await fetchApi<boolean>(
-        "/Users/create",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            name: data.name,
-            email: data.email,
-            password: data.password,
-            role: data.role,
-            status: 1,
-            companyId: data.companyId || null,
-            professionalId: data.professionalId || null,
-          }),
-        }
-      )
+      const result = await fetchApi<boolean>("/Users/create", {
+        method: "POST",
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          role: data.role,
+          status: 1,
+          companyId: data.companyId || null,
+          professionalId: data.professionalId || null,
+        }),
+      })
       if (result) {
         toast.success("Registration successful! Please login.")
         return true
@@ -98,6 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     localStorage.removeItem("noah_token")
+    localStorage.removeItem("noah_remember_email")
     setUser(null)
     setToken(null)
     toast.success("Logged out successfully")

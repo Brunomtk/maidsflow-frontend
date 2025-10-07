@@ -149,15 +149,15 @@ export default function LeadersPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-gradient-to-br from-blue-500/10 via-card to-blue-500/5 border-blue-500/30 shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300">
+          <Card className="bg-gradient-to-br from-[#00D3F3]/10 via-card to-[#00D3F3]/5 border-[#00D3F3]/30 shadow-lg hover:shadow-[#00D3F3]/20 hover:scale-105 transition-all duration-300">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground mb-1">Total Leaders</p>
                   <p className="text-3xl font-bold text-foreground">{stats.total}</p>
                 </div>
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-500/10 border border-blue-500/30 flex items-center justify-center">
-                  <Users className="h-7 w-7 text-blue-500" />
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-[#00D3F3]/20 to-[#00D3F3]/10 border border-[#00D3F3]/30 flex items-center justify-center">
+                  <Users className="h-7 w-7 text-[#00D3F3]" />
                 </div>
               </div>
             </CardContent>
