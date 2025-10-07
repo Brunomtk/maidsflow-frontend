@@ -3,6 +3,33 @@ import type { User, RegisterUserData } from "@/types/user"
 import type { ApiResponse, PaginatedResponse } from "@/types/api"
 
 export const usersApi = {
+  // Get all users without pagination
+  getAll: async (): Promise<User[]> => {
+    try {
+      const response = await apiRequest<any>("/Users", {
+        method: "GET",
+      })
+
+      // Handle different response structures
+      if (Array.isArray(response)) {
+        return response as User[]
+      } else if (response.data) {
+        // If response has data property, extract it
+        if (Array.isArray(response.data)) {
+          return response.data as User[]
+        } else if (response.data.data && Array.isArray(response.data.data)) {
+          return response.data.data as User[]
+        }
+      }
+
+      // Fallback to empty array
+      return []
+    } catch (error) {
+      console.error("Error in getAll:", error)
+      return []
+    }
+  },
+
   // Get all users with pagination
   getUsers: async (page = 1, limit = 10): Promise<ApiResponse<PaginatedResponse<User>>> => {
     try {

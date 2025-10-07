@@ -156,35 +156,28 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
     untilStr: string,
     type: "weekly" | "bi-weekly" | "monthly",
   ) => {
-    const occurrences: { start: string; end: string }[] = []
-    if (!startDateStr || !endDateStr || !untilStr) return occurrences
+    const occurrences: Array<{ start: string; end: string }> = []
 
-    const [sh, sm] = (formData.startTime || "09:00").split(":").map((v) => Number.parseInt(v, 10))
-    const [eh, em] = (formData.endTime || "10:00").split(":").map((v) => Number.parseInt(v, 10))
+    const [sh, sm] = (formData.startTime || "00:00").split(":").map((v) => Number.parseInt(v || "0", 10))
+    const [eh, em] = (formData.endTime || "00:00").split(":").map((v) => Number.parseInt(v || "0", 10))
 
-    const baseParts = parseDateOnly(startDateStr)
-    const base = baseParts ? new Date(baseParts.y, baseParts.m - 1, baseParts.d) : new Date(startDateStr)
-    base.setHours(0, 0, 0, 0)
+    const startParts = parseDateOnly(startDateStr)
+    if (!startParts) return occurrences
+
     const untilParts = parseDateOnly(untilStr)
-    const until = untilParts ? new Date(untilParts.y, untilParts.m - 1, untilParts.d) : new Date(untilStr)
-    until.setHours(23, 59, 59, 999)
+    if (!untilParts) return occurrences
 
-    let cur = new Date(base)
+    let cur = new Date(startParts.y, startParts.m - 1, startParts.d)
+    const until = new Date(untilParts.y, untilParts.m - 1, untilParts.d)
+
     const pushOccurrence = (d: Date) => {
-      const s = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), sh, sm, 0, 0))
-      const e = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), eh, em, 0, 0))
-      if (s <= until) {
-        const y = s.getUTCFullYear(),
-          m = s.getUTCMonth() + 1,
-          d = s.getUTCDate()
-        const ye = e.getUTCFullYear(),
-          me = e.getUTCMonth() + 1,
-          de = e.getUTCDate()
-        occurrences.push({
-          start: `${y}-${pad2(m)}-${pad2(d)}T${pad2(sh)}:${pad2(sm)}:00.000Z`,
-          end: `${ye}-${pad2(me)}-${pad2(de)}T${pad2(eh)}:${pad2(em)}:00.000Z`,
-        })
-      }
+      const startLocal = new Date(d.getFullYear(), d.getMonth(), d.getDate(), sh, sm, 0, 0)
+      const endLocal = new Date(d.getFullYear(), d.getMonth(), d.getDate(), eh, em, 0, 0)
+
+      occurrences.push({
+        start: startLocal.toISOString(),
+        end: endLocal.toISOString(),
+      })
     }
 
     const addInterval = (d: Date) => {
@@ -290,11 +283,20 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
       let endDateTime = ""
 
       if (formData.date && formData.startTime) {
-        startDateTime = composeISOZ(formData.date, formData.startTime)
+        console.log("[v0] Input date:", formData.date)
+        console.log("[v0] Input start time:", formData.startTime)
+        startDateTime = composeLocalISO(formData.date, formData.startTime)
+        console.log("[v0] Composed start datetime (ISO):", startDateTime)
+        console.log("[v0] Start datetime as Date object:", new Date(startDateTime))
+        console.log("[v0] Start datetime formatted back:", format(new Date(startDateTime), "h:mm a"))
       }
 
       if (formData.date && formData.endTime) {
-        endDateTime = composeISOZ(formData.date, formData.endTime)
+        console.log("[v0] Input end time:", formData.endTime)
+        endDateTime = composeLocalISO(formData.date, formData.endTime)
+        console.log("[v0] Composed end datetime (ISO):", endDateTime)
+        console.log("[v0] End datetime as Date object:", new Date(endDateTime))
+        console.log("[v0] End datetime formatted back:", format(new Date(endDateTime), "h:mm a"))
 
         const startTime = new Date(startDateTime)
         const endTime = new Date(endDateTime)
@@ -341,6 +343,7 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
           const body = { ...appointmentData, start: occ.start, end: occ.end }
           await appointmentsApi.createAppointment(body as any)
         }
+        await onSubmit(appointmentData)
       } else {
         await onSubmit(appointmentData)
       }

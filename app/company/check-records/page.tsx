@@ -11,7 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Plus, Eye, Edit, Trash2, Clock, CheckCircle, XCircle, LogIn, LogOut } from "lucide-react"
 import { CheckRecordModal } from "@/components/company/check-record-modal"
 import { CheckRecordDetailsModal } from "@/components/company/check-record-details-modal"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { fetchApi } from "@/lib/api/config"
+import { performCheckIn, performCheckOut } from "@/lib/api/check-records"
+import { customersApi } from "@/lib/api/customers"
+import { createPayment } from "@/lib/api/payments"
+import { useToast } from "@/hooks/use-toast"
 
 interface CheckRecord {
   id: number
@@ -52,6 +59,7 @@ const statusMap = {
 
 export default function CheckRecordsPage() {
   const { user } = useAuth()
+  const { toast } = useToast()
   const [checkRecords, setCheckRecords] = useState<CheckRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -64,6 +72,21 @@ export default function CheckRecordsPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const [selectedRecord, setSelectedRecord] = useState<CheckRecord | null>(null)
+
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
+  const [paymentLoading, setPaymentLoading] = useState(false)
+  const [customerData, setCustomerData] = useState<any>(null)
+  const [paymentForm, setPaymentForm] = useState<{
+    paid: boolean
+    amount: string
+    method: string
+    reference: string
+  }>({
+    paid: true,
+    amount: "",
+    method: "",
+    reference: "",
+  })
 
   const fetchCheckRecords = async () => {
     if (!user?.companyId) return
@@ -140,24 +163,51 @@ export default function CheckRecordsPage() {
     if (!user?.token) return
 
     try {
-      const checkInData = {
-        professionalId: record.professionalId,
-        appointmentId: record.appointmentId,
-        customerId: record.customerId,
-        address: record.address,
-        serviceType: record.serviceType,
-        notes: record.notes || "",
-      }
-
-      await fetchApi("CheckRecord/check-in", {
-        method: "POST",
-        body: JSON.stringify(checkInData),
+      await fetchApi(`CheckRecord/${record.id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          ...record,
+          status: 1, // Checked In
+          checkInTime: new Date().toISOString(),
+        }),
       })
 
-      fetchCheckRecords() // Refresh the list
+      try {
+        const checkInData = {
+          professionalId: record.professionalId,
+          professionalName: record.professionalName || "",
+          companyId: record.companyId,
+          customerId: record.customerId,
+          customerName: record.customerName || "",
+          appointmentId: record.appointmentId,
+          address: record.address,
+          teamId: record.teamId || null,
+          teamName: record.teamName || null,
+          serviceType: record.serviceType,
+          notes: record.notes || "",
+        }
+
+        await performCheckIn(checkInData)
+      } catch (gpsError) {
+        console.error("GPS tracking creation failed:", gpsError)
+      }
+
+      toast({
+        title: "Check-in realizado",
+        description: "Check-in realizado com sucesso",
+      })
+
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
     } catch (err) {
       console.error("Error checking in:", err)
       setError("Failed to check in")
+      toast({
+        title: "Erro",
+        description: "Falha ao realizar check-in",
+        variant: "destructive",
+      })
     }
   }
 
@@ -165,20 +215,120 @@ export default function CheckRecordsPage() {
     if (!user?.token || !record.id) return
 
     try {
-      const checkOutData = {
-        notes: record.notes || "",
-        serviceCompleted: true,
-      }
+      await performCheckOut(record.id.toString())
 
-      await fetchApi(`CheckRecord/check-out/${record.id}`, {
-        method: "POST",
-        body: JSON.stringify(checkOutData),
+      toast({
+        title: "Check-out realizado",
+        description: "Abrindo confirmação de pagamento...",
       })
 
-      fetchCheckRecords() // Refresh the list
+      await openPaymentDialogPrefilled(record)
     } catch (err) {
       console.error("Error checking out:", err)
       setError("Failed to check out")
+      toast({
+        title: "Erro",
+        description: "Falha ao realizar check-out",
+        variant: "destructive",
+      })
+    }
+  }
+
+  async function openPaymentDialogPrefilled(record: CheckRecord) {
+    try {
+      console.log("[v0] Fetching customer data for ID:", record.customerId)
+      setSelectedRecord(record)
+
+      const customer = await customersApi.getById(Number(record.customerId))
+      console.log("[v0] Customer data fetched:", customer)
+
+      setCustomerData(customer)
+
+      const defaultAmount = (customer as any)?.ticket != null ? String((customer as any).ticket) : ""
+      const defaultMethod = (customer as any)?.paymentMethod != null ? String((customer as any).paymentMethod) : ""
+
+      console.log("[v0] Default amount (ticket):", defaultAmount)
+      console.log("[v0] Default method:", defaultMethod)
+
+      setPaymentForm({
+        paid: true,
+        amount: defaultAmount,
+        method: defaultMethod,
+        reference: `Appointment #${record.appointmentId} - ${(customer as any)?.name || record.customerName || ""}`,
+      })
+    } catch (error) {
+      console.error("[v0] Error fetching customer data:", error)
+      setCustomerData(null)
+      setPaymentForm({
+        paid: true,
+        amount: "",
+        method: "",
+        reference: `Appointment #${record.appointmentId} - ${record.customerName || ""}`,
+      })
+    } finally {
+      setPaymentDialogOpen(true)
+    }
+  }
+
+  const handlePaymentConfirmation = async () => {
+    if (!selectedRecord) {
+      setPaymentDialogOpen(false)
+      return
+    }
+
+    if (!paymentForm.paid) {
+      setPaymentDialogOpen(false)
+      setSelectedRecord(null)
+      toast({
+        title: "Pagamento registrado",
+        description: "Pagamento não recebido foi registrado",
+      })
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
+      return
+    }
+
+    setPaymentLoading(true)
+    try {
+      const nowIso = new Date().toISOString()
+      let planId: number | undefined = undefined
+
+      try {
+        const customer = await customersApi.getById(Number(selectedRecord.customerId))
+        planId = (customer as any)?.company?.planId ?? undefined
+      } catch {}
+
+      await createPayment({
+        companyId: Number(selectedRecord.companyId || user?.companyId || 1),
+        amount: Number(paymentForm.amount),
+        dueDate: nowIso,
+        paymentDate: nowIso,
+        status: 1, // Paid
+        method: Number(paymentForm.method) as any,
+        reference: paymentForm.reference || `Appointment #${selectedRecord.appointmentId}`,
+        ...(planId ? { planId } : {}),
+      } as any)
+
+      setPaymentDialogOpen(false)
+      setSelectedRecord(null)
+      toast({
+        title: "Pagamento criado",
+        description: "O pagamento foi registrado com sucesso",
+      })
+
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
+    } catch (err) {
+      console.error("Failed to create payment:", err)
+      toast({
+        title: "Erro",
+        description: "Falha ao criar pagamento",
+        variant: "destructive",
+      })
+    } finally {
+      setPaymentLoading(false)
     }
   }
 
@@ -413,6 +563,139 @@ export default function CheckRecordsPage() {
         }}
         record={selectedRecord}
       />
+
+      <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
+        <DialogContent className="max-w-md bg-[#1a2234] border-[#2a3349] text-white">
+          <DialogHeader>
+            <DialogTitle>Confirmação de Pagamento</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              O pagamento foi recebido de {customerData?.name || selectedRecord?.customerName || "este cliente"}?
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            {customerData && (
+              <div className="p-3 bg-[#0f172a] rounded-lg border border-[#2a3349] space-y-2">
+                <h4 className="text-sm font-semibold text-cyan-400">Informações do Cliente</h4>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <p className="text-gray-400">Nome:</p>
+                    <p className="font-medium">{customerData.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400">Email:</p>
+                    <p className="font-medium">{customerData.email || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400">Telefone:</p>
+                    <p className="font-medium">{customerData.phone || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400">Ticket Médio:</p>
+                    <p className="font-medium text-green-400">${customerData.ticket || "0"}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400">Frequência:</p>
+                    <p className="font-medium">{customerData.frequency || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400">Endereço:</p>
+                    <p className="font-medium truncate">{customerData.address || "N/A"}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium leading-none">Pagamento recebido?</p>
+                <p className="text-xs text-gray-400">Confirme se o cliente pagou pelo serviço.</p>
+              </div>
+              <Switch checked={paymentForm.paid} onCheckedChange={(v) => setPaymentForm((f) => ({ ...f, paid: v }))} />
+            </div>
+
+            {paymentForm.paid && (
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="pay-amount" className="text-white">
+                      Valor * <span className="text-xs text-gray-400">(editável)</span>
+                    </Label>
+                    <Input
+                      id="pay-amount"
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={paymentForm.amount}
+                      onChange={(e) => setPaymentForm((f) => ({ ...f, amount: e.target.value }))}
+                      className="bg-[#0f172a] border-[#2a3349] text-white"
+                    />
+                    {customerData?.ticket && (
+                      <p className="text-xs text-gray-400 mt-1">Ticket médio: ${customerData.ticket}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Label htmlFor="pay-method" className="text-white">
+                      Método *
+                    </Label>
+                    <Select
+                      value={paymentForm.method}
+                      onValueChange={(v) => setPaymentForm((f) => ({ ...f, method: v }))}
+                    >
+                      <SelectTrigger id="pay-method" className="bg-[#0f172a] border-[#2a3349] text-white">
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">Cartão de Crédito</SelectItem>
+                        <SelectItem value="1">Cartão de Débito</SelectItem>
+                        <SelectItem value="2">Transferência</SelectItem>
+                        <SelectItem value="3">Pix</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="pay-ref" className="text-white">
+                    Referência
+                  </Label>
+                  <Input
+                    id="pay-ref"
+                    placeholder="Referência do pagamento"
+                    value={paymentForm.reference}
+                    onChange={(e) => setPaymentForm((f) => ({ ...f, reference: e.target.value }))}
+                    className="bg-[#0f172a] border-[#2a3349] text-white"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setPaymentDialogOpen(false)
+                setSelectedRecord(null)
+                setCustomerData(null)
+                setTimeout(() => {
+                  window.location.reload()
+                }, 500)
+              }}
+              className="bg-transparent border-[#2a3349] text-white hover:bg-[#2a3349]"
+            >
+              Pular
+            </Button>
+            <Button
+              disabled={paymentLoading || (paymentForm.paid && (!paymentForm.amount || !paymentForm.method))}
+              onClick={handlePaymentConfirmation}
+              className="flex-1 bg-[#06b6d4] hover:bg-[#0891b2]"
+            >
+              {paymentLoading ? "Processando..." : "Confirmar & Criar Pagamento"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

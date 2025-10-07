@@ -17,12 +17,13 @@ import { cn } from "@/lib/utils"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { apiRequest } from "@/lib/api/utils"
+import { updateCompanyAppointment } from "@/lib/api/company-appointments"
 
 interface PrefilledData {
   appointmentId?: string
   customerId?: string
-  address?: string
   professionalId?: string
+  address?: string
 }
 
 interface CompanyCheckRecordModalProps {
@@ -64,9 +65,9 @@ export function CompanyCheckRecordModal({ isOpen, onClose, onSuccess, prefilledD
     }
   }, [isOpen, user?.companyId])
 
-  // Set prefilled data when modal opens
   useEffect(() => {
     if (isOpen && prefilledData) {
+      console.log("[v0] Prefilled data received:", prefilledData)
       setFormData((prev) => ({
         ...prev,
         appointmentId: prefilledData.appointmentId || "",
@@ -175,6 +176,15 @@ export function CompanyCheckRecordModal({ isOpen, onClose, onSuccess, prefilledD
       return
     }
 
+    if (!formData.appointmentId || formData.appointmentId === "" || formData.appointmentId === "none") {
+      toast({
+        title: "Error",
+        description: "Please select an appointment.",
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsLoading(true)
 
     try {
@@ -212,16 +222,40 @@ export function CompanyCheckRecordModal({ isOpen, onClose, onSuccess, prefilledD
 
       console.log("Check record created:", response)
 
+      if (formData.appointmentId && formData.appointmentId !== "" && formData.appointmentId !== "none") {
+        try {
+          const appointmentId = Number.parseInt(formData.appointmentId)
+          const appointment = appointments.find((a) => a.id === appointmentId)
+
+          if (appointment) {
+            await updateCompanyAppointment(appointmentId, {
+              ...appointment,
+              status: 1, // InProgress
+              start: new Date(appointment.start).toISOString(),
+              end: new Date(appointment.end).toISOString(),
+            })
+            console.log("Appointment status updated to InProgress")
+          }
+        } catch (appointmentError) {
+          console.error("Failed to update appointment status:", appointmentError)
+        }
+      }
+
       toast({
         title: "Success",
         description: "Check record created successfully!",
         variant: "default",
       })
 
-      onClose()
       if (onSuccess) {
         onSuccess()
       }
+
+      onClose()
+
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
     } catch (error) {
       console.error("Error creating check record:", error)
       toast({
@@ -257,17 +291,31 @@ export function CompanyCheckRecordModal({ isOpen, onClose, onSuccess, prefilledD
             {/* Appointment Selection */}
             <div className="space-y-2">
               <Label htmlFor="appointment" className="text-sm font-medium">
-                Appointment (Optional)
+                Appointment <span className="text-red-400">*</span>
               </Label>
               <Select
                 value={formData.appointmentId}
-                onValueChange={(value) => setFormData({ ...formData, appointmentId: value })}
+                onValueChange={(value) => {
+                  console.log("[v0] Appointment selected:", value)
+                  setFormData({ ...formData, appointmentId: value })
+                }}
+                disabled={!!prefilledData?.appointmentId}
               >
-                <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white focus:border-[#06b6d4]">
-                  <SelectValue placeholder="Select an appointment" />
+                <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white focus:border-[#06b6d4] disabled:opacity-50 disabled:cursor-not-allowed">
+                  <SelectValue placeholder="Select an appointment">
+                    {formData.appointmentId && appointments.length > 0
+                      ? (() => {
+                          const selectedAppointment = appointments.find(
+                            (a) => a.id.toString() === formData.appointmentId,
+                          )
+                          return selectedAppointment
+                            ? `${selectedAppointment.title} - ${format(new Date(selectedAppointment.start), "MMM d, yyyy h:mm a")}`
+                            : "Select an appointment"
+                        })()
+                      : "Select an appointment"}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
-                  <SelectItem value="none">No appointment</SelectItem>
                   {appointments.map((appointment) => (
                     <SelectItem key={appointment.id} value={appointment.id.toString()}>
                       {appointment.title} - {format(new Date(appointment.start), "MMM d, yyyy h:mm a")}
@@ -275,6 +323,9 @@ export function CompanyCheckRecordModal({ isOpen, onClose, onSuccess, prefilledD
                   ))}
                 </SelectContent>
               </Select>
+              {prefilledData?.appointmentId && (
+                <p className="text-xs text-green-400">✓ Appointment auto-selected from appointment details</p>
+              )}
             </div>
 
             {/* Customer and Professional */}
@@ -286,8 +337,9 @@ export function CompanyCheckRecordModal({ isOpen, onClose, onSuccess, prefilledD
                 <Select
                   value={formData.customerId}
                   onValueChange={(value) => setFormData({ ...formData, customerId: value })}
+                  disabled={!!prefilledData?.customerId}
                 >
-                  <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white focus:border-[#06b6d4]">
+                  <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white focus:border-[#06b6d4] disabled:opacity-50 disabled:cursor-not-allowed">
                     <SelectValue placeholder="Select a customer" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
@@ -307,8 +359,9 @@ export function CompanyCheckRecordModal({ isOpen, onClose, onSuccess, prefilledD
                 <Select
                   value={formData.professionalId}
                   onValueChange={(value) => setFormData({ ...formData, professionalId: value })}
+                  disabled={!!prefilledData?.professionalId}
                 >
-                  <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white focus:border-[#06b6d4]">
+                  <SelectTrigger className="bg-[#0f172a] border-[#2a3349] text-white focus:border-[#06b6d4] disabled:opacity-50 disabled:cursor-not-allowed">
                     <SelectValue placeholder="Select a professional" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
@@ -333,6 +386,7 @@ export function CompanyCheckRecordModal({ isOpen, onClose, onSuccess, prefilledD
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 className="bg-[#0f172a] border-[#2a3349] text-white focus:border-[#06b6d4]"
                 placeholder="Enter service address"
+                disabled={!!prefilledData?.address}
                 required
               />
             </div>

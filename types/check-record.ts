@@ -17,6 +17,7 @@ export interface CheckRecord {
   notes?: string
   createdDate?: string
   updatedDate?: string
+  gpsTrackingId?: number
 }
 
 export interface CheckRecordFormData {

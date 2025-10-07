@@ -2,7 +2,7 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Clock, CheckCircle, XCircle } from "lucide-react"
+import { Clock, CheckCircle, XCircle, MapPin, User, Building, Calendar, FileText, Hash } from "lucide-react"
 
 interface CheckRecord {
   id: number
@@ -22,6 +22,7 @@ interface CheckRecord {
   notes: string
   createdDate: string
   updatedDate: string
+  gpsTrackingId?: number
 }
 
 interface CheckRecordDetailsModalProps {
@@ -59,68 +60,144 @@ export function CheckRecordDetailsModal({ isOpen, onClose, record }: CheckRecord
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Check Record Details</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <FileText className="w-5 h-5" />
+            Check Record Details
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h3 className="font-semibold text-sm text-muted-foreground">Professional</h3>
-              <p className="font-medium">{record.professionalName || "N/A"}</p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm text-muted-foreground">Customer</h3>
-              <p className="font-medium">{record.customerName || "N/A"}</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h3 className="font-semibold text-sm text-muted-foreground">Team</h3>
-              <p className="font-medium">{record.teamName || "No team assigned"}</p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm text-muted-foreground">Service Type</h3>
-              <p className="font-medium">{record.serviceType || "N/A"}</p>
+          <div className="bg-muted/50 p-4 rounded-lg">
+            <h3 className="font-semibold text-sm text-muted-foreground mb-3 flex items-center gap-2">
+              <Hash className="w-4 h-4" />
+              Reference IDs
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+              <div>
+                <p className="text-muted-foreground">Record ID</p>
+                <p className="font-mono font-medium">{record.id}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Appointment ID</p>
+                <p className="font-mono font-medium">{record.appointmentId}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Professional ID</p>
+                <p className="font-mono font-medium">{record.professionalId}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Customer ID</p>
+                <p className="font-mono font-medium">{record.customerId}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Company ID</p>
+                <p className="font-mono font-medium">{record.companyId}</p>
+              </div>
+              {record.teamId && (
+                <div>
+                  <p className="text-muted-foreground">Team ID</p>
+                  <p className="font-mono font-medium">{record.teamId}</p>
+                </div>
+              )}
+              {record.gpsTrackingId && (
+                <div>
+                  <p className="text-muted-foreground">GPS Tracking ID</p>
+                  <p className="font-mono font-medium">{record.gpsTrackingId}</p>
+                </div>
+              )}
             </div>
           </div>
 
           <div>
-            <h3 className="font-semibold text-sm text-muted-foreground">Address</h3>
-            <p className="font-medium">{record.address || "N/A"}</p>
+            <h3 className="font-semibold text-sm text-muted-foreground mb-3 flex items-center gap-2">
+              <User className="w-4 h-4" />
+              People Information
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Professional</p>
+                <p className="font-medium">{record.professionalName || "N/A"}</p>
+                <p className="text-xs text-muted-foreground mt-1">ID: {record.professionalId}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Customer</p>
+                <p className="font-medium">{record.customerName || "N/A"}</p>
+                <p className="text-xs text-muted-foreground mt-1">ID: {record.customerId}</p>
+              </div>
+            </div>
           </div>
 
           <div>
-            <h3 className="font-semibold text-sm text-muted-foreground">Status</h3>
+            <h3 className="font-semibold text-sm text-muted-foreground mb-3 flex items-center gap-2">
+              <Building className="w-4 h-4" />
+              Service Information
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Team</p>
+                <p className="font-medium">{record.teamName || "No team assigned"}</p>
+                {record.teamId && <p className="text-xs text-muted-foreground mt-1">ID: {record.teamId}</p>}
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Service Type</p>
+                <p className="font-medium">{record.serviceType || "N/A"}</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-sm text-muted-foreground mb-2 flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              Location
+            </h3>
+            <p className="font-medium bg-muted/50 p-3 rounded-md">{record.address || "N/A"}</p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-sm text-muted-foreground mb-2">Status</h3>
             <div className="mt-1">{getStatusBadge(record.status)}</div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h3 className="font-semibold text-sm text-muted-foreground">Check In Time</h3>
-              <p className="font-medium">{formatDateTime(record.checkInTime)}</p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm text-muted-foreground">Check Out Time</h3>
-              <p className="font-medium">{formatDateTime(record.checkOutTime)}</p>
+          <div>
+            <h3 className="font-semibold text-sm text-muted-foreground mb-3 flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              Time Information
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Check In Time</p>
+                <p className="font-medium">{formatDateTime(record.checkInTime)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Check Out Time</p>
+                <p className="font-medium">{formatDateTime(record.checkOutTime)}</p>
+              </div>
             </div>
           </div>
+
+          {record.notes && (
+            <div>
+              <h3 className="font-semibold text-sm text-muted-foreground mb-2">Notes</h3>
+              <p className="font-medium whitespace-pre-wrap bg-muted/50 p-3 rounded-md">{record.notes}</p>
+            </div>
+          )}
 
           <div>
-            <h3 className="font-semibold text-sm text-muted-foreground">Notes</h3>
-            <p className="font-medium whitespace-pre-wrap">{record.notes || "No notes"}</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
-            <div>
-              <h3 className="font-semibold">Created</h3>
-              <p>{formatDateTime(record.createdDate)}</p>
-            </div>
-            <div>
-              <h3 className="font-semibold">Last Updated</h3>
-              <p>{formatDateTime(record.updatedDate)}</p>
+            <h3 className="font-semibold text-sm text-muted-foreground mb-3 flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              Record Timestamps
+            </h3>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Created</p>
+                <p className="font-medium">{formatDateTime(record.createdDate)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Last Updated</p>
+                <p className="font-medium">{formatDateTime(record.updatedDate)}</p>
+              </div>
             </div>
           </div>
         </div>

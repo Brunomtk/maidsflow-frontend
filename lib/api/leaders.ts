@@ -21,7 +21,7 @@ export const leadersApi = {
   },
 
   // Update leader
-  async update(id: number, data: UpdateLeaderRequest): Promise<Leader> {
+  async update(id: number, data: Partial<UpdateLeaderRequest>): Promise<Leader> {
     return await fetchApi<Leader>(`/Leader/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),

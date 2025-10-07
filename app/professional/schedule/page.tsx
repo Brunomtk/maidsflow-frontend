@@ -238,10 +238,12 @@ export default function ProfessionalSchedule() {
     const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 })
     const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 })
 
-    return filteredAppointments.filter((appointment) => {
+    const weekAppointments = filteredAppointments.filter((appointment) => {
       const appointmentDate = new Date(appointment.start)
       return appointmentDate >= weekStart && appointmentDate <= weekEnd
     })
+
+    return weekAppointments
   }, [filteredAppointments, currentDate])
 
   const handleViewDetails = (appointment: Appointment) => {
@@ -614,59 +616,6 @@ export default function ProfessionalSchedule() {
                       </div>
                     </div>
                   ))}
-                </div>
-
-                <div className="mt-6 space-y-3">
-                  <h3 className="text-base md:text-lg font-semibold mb-3 text-foreground">Week Appointments</h3>
-
-                  {getWeekAppointments.length > 0 ? (
-                    getWeekAppointments.map((appointment) => (
-                      <div
-                        key={appointment.id}
-                        className="border border-border rounded-lg p-3 md:p-4 hover:bg-muted/50 transition-colors bg-card"
-                      >
-                        <div className="flex flex-col gap-3">
-                          <div className="space-y-2">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <Badge variant="outline" className={getStatusBadge(appointment.status).className}>
-                                {getStatusBadge(appointment.status).label}
-                              </Badge>
-                              <span className="text-xs md:text-sm text-muted-foreground">
-                                {format(new Date(appointment.start), "MMM dd, yyyy")}
-                              </span>
-                              <Badge variant="secondary" className="text-xs">
-                                {getTypeLabel(appointment.type)}
-                              </Badge>
-                            </div>
-                            <h3 className="font-semibold text-sm md:text-base text-foreground">{appointment.title}</h3>
-                            <div className="flex items-start gap-2 text-xs md:text-sm text-muted-foreground">
-                              <MapPin className="h-3 w-3 md:h-4 md:w-4 mt-0.5 flex-shrink-0" />
-                              <span className="break-words">{appointment.address}</span>
-                            </div>
-                          </div>
-                          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
-                              <span className="text-xs md:text-sm">
-                                {format(new Date(appointment.start), "HH:mm")} -{" "}
-                                {format(new Date(appointment.end), "HH:mm")}
-                              </span>
-                            </div>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-full sm:w-auto bg-transparent text-xs md:text-sm"
-                              onClick={() => handleViewDetails(appointment)}
-                            >
-                              View Details
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8 text-muted-foreground text-sm">No appointments this week</div>
-                  )}
                 </div>
               </div>
             )}

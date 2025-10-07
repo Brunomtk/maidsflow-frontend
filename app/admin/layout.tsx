@@ -20,6 +20,7 @@ import { PaymentsProvider } from "@/contexts/payments-context"
 import { RecurrencesProvider } from "@/contexts/recurrences-context"
 import { InternalReportsProvider } from "@/contexts/internal-reports-context"
 import { ReviewsProvider } from "@/contexts/reviews-context"
+import { LeadersProvider } from "@/contexts/leaders-context" // Added LeadersProvider import
 
 export default function AdminLayout({
   children,
@@ -34,35 +35,40 @@ export default function AdminLayout({
             <ProfessionalsProvider>
               <CustomersProvider>
                 <UsersProvider>
-                  <AppointmentsProvider>
-                    <CancellationsProvider>
-                      <CheckRecordsProvider>
-                        <GpsTrackingProvider>
-                          <InternalFeedbackProvider>
-                            <NotificationsProvider>
-                              <PaymentsProvider>
-                                <RecurrencesProvider>
-                                  <InternalReportsProvider>
-                                    <ReviewsProvider>
-                                      <div className="flex h-screen bg-background">
-                                        <AdminSidebar />
-                                        <div className="flex-1 flex flex-col overflow-hidden">
-                                          <AdminHeader />
-                                          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-3 md:p-6">
-                                            {children}
-                                          </main>
+                  <LeadersProvider>
+                    {" "}
+                    {/* Added LeadersProvider */}
+                    <AppointmentsProvider>
+                      <CancellationsProvider>
+                        <CheckRecordsProvider>
+                          <GpsTrackingProvider>
+                            <InternalFeedbackProvider>
+                              <NotificationsProvider>
+                                <PaymentsProvider>
+                                  <RecurrencesProvider>
+                                    <InternalReportsProvider>
+                                      <ReviewsProvider>
+                                        <div className="flex h-screen bg-background">
+                                          <AdminSidebar />
+                                          <div className="flex-1 flex flex-col overflow-hidden">
+                                            <AdminHeader />
+                                            <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-3 md:p-6">
+                                              {children}
+                                            </main>
+                                          </div>
                                         </div>
-                                      </div>
-                                    </ReviewsProvider>
-                                  </InternalReportsProvider>
-                                </RecurrencesProvider>
-                              </PaymentsProvider>
-                            </NotificationsProvider>
-                          </InternalFeedbackProvider>
-                        </GpsTrackingProvider>
-                      </CheckRecordsProvider>
-                    </CancellationsProvider>
-                  </AppointmentsProvider>
+                                      </ReviewsProvider>
+                                    </InternalReportsProvider>
+                                  </RecurrencesProvider>
+                                </PaymentsProvider>
+                              </NotificationsProvider>
+                            </InternalFeedbackProvider>
+                          </GpsTrackingProvider>
+                        </CheckRecordsProvider>
+                      </CancellationsProvider>
+                    </AppointmentsProvider>
+                  </LeadersProvider>{" "}
+                  {/* Closed LeadersProvider */}
                 </UsersProvider>
               </CustomersProvider>
             </ProfessionalsProvider>

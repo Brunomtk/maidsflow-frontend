@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -8,8 +9,9 @@ import { Separator } from "@/components/ui/separator"
 import { Calendar, Clock, MapPin, User, Phone, Mail, FileText, Edit, Trash2, Plus } from "lucide-react"
 import { format, isValid } from "date-fns"
 import type { Appointment } from "@/types/appointment"
-import { CompanyCheckRecordModal } from "./company-check-record-modal"
 import { useToast } from "@/hooks/use-toast"
+import { getCheckRecords, createCheckRecordFromAppointment } from "@/lib/api/check-records"
+import { useCompanyAppointments } from "@/contexts/company-appointments-context"
 
 interface CompanyAppointmentDetailsModalProps {
   appointment: Appointment | null
@@ -99,8 +101,10 @@ export function CompanyAppointmentDetailsModal({
   onEdit,
   onDelete,
 }: CompanyAppointmentDetailsModalProps) {
-  const [isCheckRecordModalOpen, setIsCheckRecordModalOpen] = useState(false)
+  const [isCreatingCheckRecord, setIsCreatingCheckRecord] = useState(false)
   const { toast } = useToast()
+  const { fetchAppointments } = useCompanyAppointments()
+  const router = useRouter()
 
   if (!appointment) return null
 
@@ -109,7 +113,14 @@ export function CompanyAppointmentDetailsModal({
   const isValidStartDate = isValid(startDate)
   const isValidEndDate = isValid(endDate)
 
-  
+  console.log("[v0] Appointment data received:", appointment)
+  console.log("[v0] Start from API:", appointment.start)
+  console.log("[v0] End from API:", appointment.end)
+  console.log("[v0] Start as Date object:", startDate)
+  console.log("[v0] End as Date object:", endDate)
+  console.log("[v0] Start formatted:", isValidStartDate ? format(startDate, "h:mm a") : "Invalid")
+  console.log("[v0] End formatted:", isValidEndDate ? format(endDate, "h:mm a") : "Invalid")
+
   const normalizePhone = (raw?: string | null) => {
     const digits = (raw || "").replace(/\D/g, "")
     if (!digits) return null
@@ -120,15 +131,68 @@ export function CompanyAppointmentDetailsModal({
 
   const handleOnMyWay = () => {
     const phone = normalizePhone(appointment.customer?.phone as any)
-    if (!phone) { alert("Client phone not available."); return }
+    if (!phone) {
+      alert("Client phone not available.")
+      return
+    }
     const name = appointment.customer?.name || ""
-    const companyName = appointment.company?.name || (typeof window !== "undefined" ? (localStorage.getItem("company_name") || "our") : "our")
+    const companyName =
+      appointment.company?.name ||
+      (typeof window !== "undefined" ? localStorage.getItem("company_name") || "our" : "our")
     const eta = "15 minutes"
     const message = `Hi ${name}, hope your having a nice day. Your ${companyName} team is on the way, ${eta} from your house`
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
     if (typeof window !== "undefined") window.open(url, "_blank")
   }
-return (
+
+  const handleCreateCheckRecord = async () => {
+    if (!appointment) return
+
+    setIsCreatingCheckRecord(true)
+
+    try {
+      // Check if a check record already exists for this appointment
+      const existingRecords = await getCheckRecords({
+        appointmentId: appointment.id,
+        companyId: appointment.companyId,
+      })
+
+      if (existingRecords.results && existingRecords.results.length > 0) {
+        // Check record already exists, navigate to check records page
+        toast({
+          title: "Check Record Already Exists",
+          description: "A check record has already been created for this appointment.",
+          variant: "default",
+        })
+
+        onClose()
+        return
+      }
+
+      // No existing check record, create a new one
+      await createCheckRecordFromAppointment(appointment)
+
+      toast({
+        title: "Success",
+        description: "Check record created successfully and appointment status updated to In Progress",
+      })
+
+      await fetchAppointments()
+
+      onClose()
+    } catch (error) {
+      console.error("Error creating check record:", error)
+      toast({
+        title: "Error",
+        description: "Failed to create check record. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsCreatingCheckRecord(false)
+    }
+  }
+
+  return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-2xl bg-[#1a2234] border-[#2a3349] text-white">
@@ -142,10 +206,7 @@ return (
                 <Badge variant="outline" className={getPriorityColor(appointment.priority || 0)}>
                   {getPriorityText(appointment.priority || 0)}
                 </Badge>
-              
-                <Button variant="outline" size="sm" className="border-[#2a3349] text-white hover:bg-[#2a3349]" onClick={handleOnMyWay}>
-                  On my way
-                </Button></div>
+              </div>
             </div>
           </DialogHeader>
 
@@ -290,12 +351,22 @@ return (
           <div className="flex justify-end gap-3 pt-4 border-t border-[#2a3349]">
             <Button
               variant="outline"
-              onClick={() => setIsCheckRecordModalOpen(true)}
-              className="border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
+              onClick={handleOnMyWay}
+              className="border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-white bg-transparent"
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Create Check Record
+              On my way
             </Button>
+            {appointment.status === 0 && (
+              <Button
+                variant="outline"
+                onClick={handleCreateCheckRecord}
+                disabled={isCreatingCheckRecord}
+                className="border-green-500 text-green-500 hover:bg-green-500 hover:text-white bg-transparent"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {isCreatingCheckRecord ? "Creating..." : "Create Check Record"}
+              </Button>
+            )}
             <Button
               variant="outline"
               onClick={() => onEdit(appointment)}
@@ -315,25 +386,6 @@ return (
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Check Record Modal */}
-      <CompanyCheckRecordModal
-        isOpen={isCheckRecordModalOpen}
-        onClose={() => setIsCheckRecordModalOpen(false)}
-        onSuccess={() => {
-          setIsCheckRecordModalOpen(false)
-          toast({
-            title: "Success",
-            description: "Check record created successfully",
-          })
-        }}
-        prefilledData={{
-          appointmentId: appointment?.id?.toString() || "",
-          customerId: appointment?.customer?.id?.toString() || "",
-          address: appointment?.address || "",
-          professionalId: appointment?.professional?.id?.toString() || "",
-        }}
-      />
     </>
   )
 }

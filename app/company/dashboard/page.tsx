@@ -158,7 +158,7 @@ export default function CompanyDashboardPage() {
 
         const [customersRes, appointmentsRes, paymentsRes, professionalsRes, teamsRes] = await Promise.allSettled([
           fetchApi<{ results: Customer[] }>(`/Customer?CompanyId=${companyId}&PageSize=100`),
-          fetchApi<{ results: Appointment[] }>(`/Appointment?CompanyId=${companyId}&PageSize=100`),
+          fetchApi<{ results: Appointment[] }>(`/Appointment?CompanyId=${companyId}&PageSize=1000`),
           fetchApi<{ results: Payment[] }>(`/Payments?CompanyId=${companyId}&PageSize=100`),
           fetchApi<{ results: Professional[] }>(`/Professional/paged?CompanyId=${companyId}&PageSize=100`),
           fetchApi<{ results: Team[] }>(`/Team/paged?CompanyId=${companyId}&PageSize=100`),
@@ -176,15 +176,24 @@ export default function CompanyDashboardPage() {
             : []
         const teams = teamsRes.status === "fulfilled" && teamsRes.value?.results ? teamsRes.value.results : []
 
+        const now = new Date()
+        const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+        const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
+
+        const currentMonthAppointments = appointments.filter((apt) => {
+          const aptDate = new Date(apt.scheduledDate || apt.start || apt.createdDate)
+          return aptDate >= currentMonthStart && aptDate <= currentMonthEnd
+        })
+
         setStats({
           totalCustomers: customers.length,
-          totalAppointments: appointments.length,
+          totalAppointments: currentMonthAppointments.length,
           totalRevenue: payments.reduce((sum, payment) => sum + (payment.amount || 0), 0),
           activeProfessionals: professionals.filter((p) => p.status?.toLowerCase() === "active").length,
           activeTeams: teams.filter((t) => t.status === 1).length,
         })
 
-        const appointmentStatusCounts = appointments.reduce(
+        const appointmentStatusCounts = currentMonthAppointments.reduce(
           (acc, apt) => {
             // Map numeric status to string status
             let status = "scheduled" // default
@@ -345,7 +354,7 @@ export default function CompanyDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-lg sm:text-2xl font-bold">{stats.totalAppointments}</div>
-            <p className="text-xs text-muted-foreground">All time appointments</p>
+            <p className="text-xs text-muted-foreground">This month</p>
           </CardContent>
         </Card>
 

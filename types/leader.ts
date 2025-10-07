@@ -18,9 +18,8 @@ export interface CreateLeaderRequest {
 }
 
 export interface UpdateLeaderRequest {
-  userId: number
-  region: string
   name: string
   email: string
   phone: string
+  status: string
 }

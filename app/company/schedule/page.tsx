@@ -73,6 +73,7 @@ function CompanyScheduleContent() {
       await addAppointment(data)
     }
     setIsAppointmentModalOpen(false)
+    await fetchAppointments()
   }
 
   const handleClearFilters = () => {

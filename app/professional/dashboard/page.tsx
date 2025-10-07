@@ -104,6 +104,8 @@ export default function ProfessionalDashboardPage() {
       try {
         const professionalId = user.professionalId.toString()
         const today = new Date()
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
+        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59)
         const startDate = format(today, "yyyy-MM-dd")
         const endDate = format(today, "yyyy-MM-dd")
 
@@ -126,6 +128,11 @@ export default function ProfessionalDashboardPage() {
           return aptDate.toDateString() === today.toDateString()
         })
 
+        const monthAppointments = appointments.filter((apt) => {
+          const aptDate = new Date(apt.start)
+          return aptDate >= startOfMonth && aptDate <= endOfMonth
+        })
+
         setAppointments(todayAppointments)
         setCheckRecords(checkRecords.slice(0, 10))
         setFeedbacks(feedbacks.slice(0, 5))
@@ -138,7 +145,7 @@ export default function ProfessionalDashboardPage() {
           openFeedbacks: feedbacks.filter((feedback) => feedback.status === 0 || feedback.status === "pending").length,
         })
 
-        const appointmentStatusCounts = appointments.reduce(
+        const appointmentStatusCounts = monthAppointments.reduce(
           (acc, apt) => {
             let status = "scheduled"
 
@@ -396,7 +403,7 @@ export default function ProfessionalDashboardPage() {
             <CardTitle className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               <span className="flex items-center gap-2 text-sm md:text-base">
                 <Calendar className="h-4 w-4 md:h-5 md:w-5" />
-                Appointment Status
+                Monthly Appointment Status
               </span>
               <Button asChild variant="outline" size="sm" className="w-full md:w-auto bg-transparent">
                 <Link href="/professional/history">View All</Link>

@@ -41,7 +41,7 @@ export function AppointmentsProvider({ children }: { children: ReactNode }) {
       const data = await getAppointments(filters)
 
       // Convert string dates to Date objects for the frontend
-      const formattedAppointments = data.map((appointment) => ({
+      const formattedAppointments = (Array.isArray(data) ? data : []).map((appointment) => ({
         ...appointment,
         start: new Date(appointment.start),
         end: new Date(appointment.end),

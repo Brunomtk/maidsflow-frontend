@@ -170,15 +170,26 @@ export async function updateTeam(id: string, data: UpdateTeamRequest): Promise<A
 export async function deleteTeam(id: string): Promise<ApiResponse<void>> {
   try {
     const url = `${getApiUrl()}/Team/${id}`
-    console.log("Deleting team at URL:", url)
+    console.log("[v0] Deleting team at URL:", url, "with ID:", id)
 
     const response = await fetch(url, {
       method: "DELETE",
       headers: createHeaders(),
     })
 
+    console.log("[v0] Delete response status:", response.status)
+
+    if (response.status === 204 || response.status === 200) {
+      return {
+        status: 200,
+        message: "Team deleted successfully",
+      }
+    }
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      const errorText = await response.text().catch(() => "Unknown error")
+      console.error("[v0] Delete team error response:", errorText)
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`)
     }
 
     return {
@@ -186,7 +197,7 @@ export async function deleteTeam(id: string): Promise<ApiResponse<void>> {
       message: "Team deleted successfully",
     }
   } catch (error) {
-    console.error("Error deleting team:", error)
+    console.error("[v0] Error deleting team:", error)
     return {
       status: 500,
       error: error instanceof Error ? error.message : "Failed to delete team",

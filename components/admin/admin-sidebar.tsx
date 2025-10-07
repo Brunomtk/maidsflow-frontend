@@ -14,6 +14,7 @@ import {
   ChevronRight,
   ClipboardList,
   CreditCard,
+  Crown,
   Home,
   MapPin,
   MessageSquare,
@@ -81,6 +82,7 @@ export function AdminSidebar() {
   const navItems = [
     { href: "/admin/dashboard", label: "Dashboard", icon: Home },
     { href: "/admin/users", label: "Users", icon: UserCog },
+    { href: "/admin/leaders", label: "Leaders", icon: Crown }, // Added Leaders navigation item
     { href: "/admin/companies", label: "Companies", icon: Building2 },
     { href: "/admin/customers", label: "Customers", icon: Users },
     { href: "/admin/professionals", label: "Professionals", icon: Users },
@@ -117,6 +119,8 @@ export function AdminSidebar() {
         return "Professional"
       case "operador":
         return "Operator"
+      case "leader": // Added case for Leaders
+        return "Leader"
       default:
         return role || "User"
     }

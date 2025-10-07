@@ -1,4 +1,7 @@
 import { apiRequest } from "./utils"
+import { gpsTrackingApi } from "./gps-tracking"
+import { geocodeAddress, geocodeAddressFallback } from "@/lib/geocoding"
+import { updateCompanyAppointment } from "./company-appointments"
 
 export interface CheckRecord {
   id: number
@@ -18,6 +21,7 @@ export interface CheckRecord {
   notes: string
   createdDate: string
   updatedDate: string
+  gpsTrackingId?: number // Added for storing GPS tracking ID
 }
 
 export interface CreateCheckRecordData {
@@ -198,9 +202,8 @@ export async function performCheckIn(data: CheckInData): Promise<CheckRecord> {
       professionalId: Number(data.professionalId),
       professionalName: data.professionalName || "",
       companyId: Number(data.companyId),
-      customerId: Number(data.customerId),
-      customerName: data.customerName || "",
-      appointmentId: Number(data.appointmentId),
+      companyName: "", // Will be filled by the API
+      vehicle: "N/A", // Default value as requested
       address: data.address || "",
       teamId: data.teamId ? Number(data.teamId) : null,
       teamName: data.teamName || null,
@@ -208,12 +211,59 @@ export async function performCheckIn(data: CheckInData): Promise<CheckRecord> {
       notes: data.notes || "",
     }
 
+    console.log("Sending payload to API:", payload)
+
     const response = await apiRequest("/CheckRecord/check-in", {
       method: "POST",
       body: JSON.stringify(payload),
     })
 
     console.log("Check-in performed successfully:", response)
+
+    try {
+      // Geocode the client's address to get coordinates
+      let geocodeResult
+      try {
+        geocodeResult = await geocodeAddress(data.address || "")
+      } catch (geocodeError) {
+        console.warn("Geocoding failed, using fallback:", geocodeError)
+        geocodeResult = geocodeAddressFallback(data.address || "")
+      }
+
+      // Create GPS tracking record
+      const gpsTrackingData = {
+        professionalId: Number(data.professionalId),
+        professionalName: data.professionalName || "",
+        companyId: Number(data.companyId),
+        companyName: "", // Will be filled by the API
+        vehicle: "N/A", // Default value as requested
+        latitude: geocodeResult.latitude,
+        longitude: geocodeResult.longitude,
+        address: geocodeResult.address || data.address || "",
+        accuracy: geocodeResult.accuracy,
+        speed: 0, // Default value as requested
+        status: 1, // 1 = active
+        battery: 0, // Default value as requested
+        notes: `Check-in at ${data.customerName || "customer location"}`,
+        timestamp: new Date().toISOString(),
+      }
+
+      const gpsResult = await gpsTrackingApi.create(gpsTrackingData)
+      console.log("GPS tracking created:", gpsResult)
+
+      // Store GPS tracking ID in the response for later deletion
+      if (gpsResult.data) {
+        response.gpsTrackingId = gpsResult.data.id
+      }
+    } catch (gpsError) {
+      console.error("Failed to create GPS tracking, but check-in was successful:", gpsError)
+      // Don't fail the check-in if GPS tracking fails
+    }
+
+    setTimeout(() => {
+      window.location.reload()
+    }, 500)
+
     return response
   } catch (error) {
     console.error("Error performing check-in:", error)
@@ -231,6 +281,59 @@ export async function performCheckOut(id: string): Promise<CheckRecord> {
     })
 
     console.log("Check-out performed successfully:", response)
+
+    try {
+      // Find the GPS tracking record for this professional and delete it
+      const checkRecord = response
+      if (checkRecord.professionalId && checkRecord.companyId) {
+        // Get active GPS tracking records for this professional
+        const gpsRecords = await gpsTrackingApi.getRecords({
+          professionalId: checkRecord.professionalId,
+          companyId: checkRecord.companyId.toString(),
+          status: 1, // Active status
+        })
+
+        if (gpsRecords.data && gpsRecords.data.data.length > 0) {
+          // Delete the most recent active GPS tracking record
+          const activeRecord = gpsRecords.data.data[0]
+          const deleteResult = await gpsTrackingApi.delete(activeRecord.id)
+
+          if (deleteResult.success) {
+            console.log("GPS tracking deleted successfully:", activeRecord.id)
+          } else {
+            console.error("Failed to delete GPS tracking:", deleteResult.error)
+          }
+        } else {
+          console.warn("No active GPS tracking record found for this professional")
+        }
+      }
+    } catch (gpsError) {
+      console.error("Failed to delete GPS tracking, but check-out was successful:", gpsError)
+      // Don't fail the check-out if GPS tracking deletion fails
+    }
+
+    try {
+      if (response.appointmentId) {
+        // Fetch the appointment to get all required fields
+        const appointmentResponse = await apiRequest(`/Appointment/${response.appointmentId}`)
+
+        if (appointmentResponse) {
+          await updateCompanyAppointment(response.appointmentId, {
+            ...appointmentResponse,
+            status: 2, // Completed
+            start: new Date(appointmentResponse.start).toISOString(),
+            end: new Date(appointmentResponse.end).toISOString(),
+          })
+          console.log("Appointment status updated to Completed")
+        }
+      }
+    } catch (appointmentError) {
+      console.error("Failed to update appointment status:", appointmentError)
+      // Don't fail the check-out if appointment update fails
+    }
+
+    // The calling page will handle the reload after payment confirmation
+
     return response
   } catch (error) {
     console.error("Error performing check-out:", error)
@@ -352,5 +455,120 @@ export async function getCheckRecordsByDate(date: string): Promise<CheckRecord[]
   } catch (error) {
     console.error("Error fetching check records by date:", error)
     throw error
+  }
+}
+
+export async function createCheckRecordFromAppointment(appointment: any): Promise<CheckRecord> {
+  try {
+    console.log("[v0] Creating check record from appointment:", appointment)
+
+    let geocodeResult
+    try {
+      geocodeResult = await geocodeAddress(appointment.address || "")
+      console.log("[v0] Geocode result:", geocodeResult)
+    } catch (geocodeError) {
+      console.warn("[v0] Geocoding failed, using fallback:", geocodeError)
+      geocodeResult = geocodeAddressFallback(appointment.address || "")
+    }
+
+    // Structure matching the check-in API endpoint
+    const payload = {
+      professionalId: Number(appointment.professionalId || appointment.professional?.id),
+      professionalName: appointment.professional?.name || "",
+      companyId: Number(appointment.companyId || appointment.company?.id),
+      customerId: Number(appointment.customerId || appointment.customer?.id),
+      customerName: appointment.customer?.name || "",
+      appointmentId: Number(appointment.id),
+      address: appointment.address || "",
+      teamId: appointment.teamId ? Number(appointment.teamId) : null,
+      teamName: appointment.team?.name || null,
+      serviceType: getServiceTypeText(appointment.type),
+      notes: appointment.notes || "",
+    }
+
+    console.log("[v0] Sending check-in payload:", payload)
+
+    // Call the check-in endpoint to create the check record
+    const response = await apiRequest("/CheckRecord/check-in", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    })
+
+    console.log("[v0] Check record created successfully:", response)
+
+    try {
+      const gpsTrackingData = {
+        professionalId: Number(appointment.professionalId || appointment.professional?.id),
+        professionalName: appointment.professional?.name || "",
+        companyId: Number(appointment.companyId || appointment.company?.id),
+        companyName: appointment.company?.name || "",
+        vehicle: "N/A",
+        latitude: geocodeResult.latitude,
+        longitude: geocodeResult.longitude,
+        address: geocodeResult.address || appointment.address || "",
+        accuracy: geocodeResult.accuracy,
+        speed: 0,
+        status: 1,
+        battery: 0,
+        notes: `Check-in at ${appointment.customer?.name || "customer location"}`,
+        timestamp: new Date().toISOString(),
+      }
+
+      console.log("[v0] Creating GPS tracking with data:", gpsTrackingData)
+      const gpsResult = await gpsTrackingApi.create(gpsTrackingData)
+      console.log("[v0] GPS tracking created:", gpsResult)
+
+      if (gpsResult.data) {
+        response.gpsTrackingId = gpsResult.data.id
+      }
+    } catch (gpsError) {
+      console.error("[v0] Failed to create GPS tracking, but check-in was successful:", gpsError)
+    }
+
+    try {
+      console.log("[v0] Updating appointment status to InProgress for appointment ID:", appointment.id)
+
+      const updatePayload = {
+        title: appointment.title,
+        address: appointment.address,
+        start: new Date(appointment.start).toISOString(),
+        end: new Date(appointment.end).toISOString(),
+        companyId: Number(appointment.companyId || appointment.company?.id),
+        customerId: Number(appointment.customerId || appointment.customer?.id),
+        teamId: appointment.teamId ? Number(appointment.teamId) : null,
+        professionalId: Number(appointment.professionalId || appointment.professional?.id),
+        status: 1, // InProgress
+        type: appointment.type,
+        notes: appointment.notes || "",
+      }
+
+      console.log("[v0] Appointment update payload:", updatePayload)
+
+      const updateResult = await updateCompanyAppointment(appointment.id, updatePayload)
+      console.log("[v0] Appointment status updated successfully:", updateResult)
+    } catch (appointmentError) {
+      console.error("[v0] Failed to update appointment status:", appointmentError)
+      if (appointmentError instanceof Error) {
+        console.error("[v0] Error details:", appointmentError.message)
+      }
+    }
+
+    return response
+  } catch (error) {
+    console.error("[v0] Error creating check record from appointment:", error)
+    throw error
+  }
+}
+
+function getServiceTypeText(type: number): string {
+  switch (type) {
+    case 0:
+      return "Regular Cleaning"
+    case 1:
+      return "Deep Cleaning"
+    case 2:
+      return "Move-in/Move-out"
+    default:
+      return "Other"
   }
 }

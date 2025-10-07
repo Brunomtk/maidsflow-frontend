@@ -190,7 +190,7 @@ export const CheckRecordsProvider = ({ children, initialFilters = {} }: CheckRec
       setRecords((prev) => [...prev, newRecord])
       toast({
         title: "Success",
-        description: "Check-in performed successfully",
+        description: "Check-in performed successfully with GPS tracking",
       })
       return newRecord
     } catch (err) {
@@ -215,7 +215,7 @@ export const CheckRecordsProvider = ({ children, initialFilters = {} }: CheckRec
       setRecords((prev) => prev.map((record) => (record.id === id ? updatedRecord : record)))
       toast({
         title: "Success",
-        description: "Check-out performed successfully",
+        description: "Check-out performed successfully and GPS tracking deleted",
       })
       return updatedRecord
     } catch (err) {
