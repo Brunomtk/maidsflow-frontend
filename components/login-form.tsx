@@ -35,7 +35,7 @@ export function LoginForm() {
     setIsLoading(true)
 
     try {
-      const success = await login({ email, password })
+      const success = await login({ email, password, rememberMe })
 
       if (success) {
         if (rememberMe) {

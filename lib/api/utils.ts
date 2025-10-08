@@ -1,7 +1,8 @@
 // Base API URL
 const ENV_URL = typeof process !== "undefined" ? process.env.NEXT_PUBLIC_API_URL : undefined
 const LS_URL = typeof window !== "undefined" ? (localStorage.getItem("api_base_url") ?? undefined) : undefined
-export const API_BASE_URL = (LS_URL || ENV_URL || "http://209.97.149.15:5000/api").replace(/\/+$/,"")
+
+export const API_BASE_URL = "https://api.maidsflow.com/api"
 export const API_URL = API_BASE_URL
 
 // Get API URL
@@ -44,6 +45,8 @@ export async function apiRequest(endpoint: string, options: RequestInit = {}): P
 
   const config: RequestInit = {
     ...options,
+    mode: "cors", // Enable CORS mode for cross-origin requests
+    credentials: "include", // Include credentials (cookies, authorization headers)
     headers: {
       ...createHeaders(),
       ...options.headers,
@@ -56,7 +59,14 @@ export async function apiRequest(endpoint: string, options: RequestInit = {}): P
     console.log(`Response status: ${response.status}`)
 
     if (!response.ok) {
-      const errorText = await response.text()
+      let errorText = "Unknown error"
+      try {
+        if (response.text && typeof response.text === "function") {
+          errorText = await response.text()
+        }
+      } catch (e) {
+        console.error("Failed to read error response:", e)
+      }
       console.error(`API Error: ${response.status} - ${errorText}`)
       throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`)
     }
