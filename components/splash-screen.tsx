@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Flame } from "lucide-react"
+import Image from "next/image"
 
 export default function SplashScreen({ onComplete }: { onComplete: () => void }) {
   const [isVisible, setIsVisible] = useState(true)
@@ -29,9 +29,8 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
             <div className="w-32 h-32 bg-cyan-500 rounded-full" />
           </div>
 
-          {/* Logo */}
           <div className="relative bg-gradient-to-br from-cyan-400 to-cyan-600 p-8 rounded-3xl shadow-2xl">
-            <Flame className="w-24 h-24 text-white" strokeWidth={1.5} />
+            <Image src="/logo.png" alt="Maids Flow Logo" width={96} height={96} className="w-24 h-24" priority />
           </div>
         </div>
 

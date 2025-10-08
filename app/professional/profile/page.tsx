@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Separator } from "@/components/ui/separator"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,15 +23,18 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { User, Mail, Shield, Trash2, Eye, EyeOff } from "lucide-react"
+import { User, Mail, Shield, Trash2, Eye, EyeOff, Sun, Moon, Globe } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import { apiRequest } from "@/lib/api/utils"
+import { useTheme } from "next-themes"
 
 export default function ProfessionalProfile() {
   const { user, refreshUser, logout } = useAuth()
   const { toast } = useToast()
+  const { setTheme } = useTheme()
   const [isLoading, setIsLoading] = useState(false)
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -40,6 +45,9 @@ export default function ProfessionalProfile() {
     email: "",
     role: "",
     status: 1,
+    theme: "dark",
+    language: "pt-BR",
+    currentPassword: "",
   })
 
   const [passwordData, setPasswordData] = useState({
@@ -55,6 +63,9 @@ export default function ProfessionalProfile() {
         email: user.email || "",
         role: user.role || "",
         status: user.status || 1,
+        theme: user.theme || "dark",
+        language: user.language || "pt-BR",
+        currentPassword: "",
       })
     }
   }, [user])
@@ -93,6 +104,15 @@ export default function ProfessionalProfile() {
     e.preventDefault()
     if (!user?.id) return
 
+    if (!profileData.currentPassword) {
+      toast({
+        title: "Error",
+        description: "Current password is required to save changes.",
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsLoading(true)
     try {
       const updateData = {
@@ -102,6 +122,9 @@ export default function ProfessionalProfile() {
         status: profileData.status,
         companyId: user.companyId,
         professionalId: user.professionalId,
+        theme: profileData.theme,
+        language: profileData.language,
+        password: profileData.currentPassword,
       }
 
       const response = await apiRequest(`/Users/${user.id}`, {
@@ -114,7 +137,14 @@ export default function ProfessionalProfile() {
           title: "Success",
           description: "Profile updated successfully!",
         })
+
+        setTheme(profileData.theme)
+
         await refreshUser()
+
+        setTimeout(() => {
+          window.location.reload()
+        }, 500)
       }
     } catch (error) {
       console.error("Error updating profile:", error)
@@ -132,10 +162,19 @@ export default function ProfessionalProfile() {
     e.preventDefault()
     if (!user?.id) return
 
+    if (!passwordData.currentPassword) {
+      toast({
+        title: "Error",
+        description: "Current password is required.",
+        variant: "destructive",
+      })
+      return
+    }
+
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       toast({
         title: "Error",
-        description: "Passwords don't match.",
+        description: "New passwords don't match.",
         variant: "destructive",
       })
       return
@@ -160,6 +199,8 @@ export default function ProfessionalProfile() {
         status: profileData.status,
         companyId: user.companyId,
         professionalId: user.professionalId,
+        theme: profileData.theme,
+        language: profileData.language,
       }
 
       const response = await apiRequest(`/Users/${user.id}`, {
@@ -261,60 +302,161 @@ export default function ProfessionalProfile() {
             <Card>
               <CardHeader>
                 <CardTitle>Personal Data</CardTitle>
-                <CardDescription>Update your personal information</CardDescription>
+                <CardDescription>Update your personal information and preferences</CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleProfileUpdate} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Name</Label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="name"
-                          type="text"
-                          placeholder="Your full name"
-                          value={profileData.name}
-                          onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-                          className="pl-10"
-                          required
-                        />
+                <form onSubmit={handleProfileUpdate} className="space-y-6">
+                  {/* Personal Information */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Personal Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Name</Label>
+                        <div className="relative">
+                          <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="name"
+                            type="text"
+                            placeholder="Your full name"
+                            value={profileData.name}
+                            onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                            className="pl-10"
+                            required
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="your@email.com"
-                          value={profileData.email}
-                          onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                          className="pl-10"
-                          required
-                        />
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="email"
+                            type="email"
+                            placeholder="your@email.com"
+                            value={profileData.email}
+                            onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                            className="pl-10"
+                            required
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="role">Role</Label>
-                      <div className="relative">
-                        <Shield className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="role"
-                          type="text"
-                          value={getRoleLabel(profileData.role)}
-                          className="pl-10"
-                          disabled
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="status">Status</Label>
-                      <Input id="status" type="text" value={getStatusLabel(profileData.status)} disabled />
                     </div>
                   </div>
-                  <Button type="submit" disabled={isLoading}>
+
+                  <Separator />
+
+                  {/* Preferences */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Preferences</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="theme">Theme</Label>
+                        <Select
+                          value={profileData.theme}
+                          onValueChange={(value) => setProfileData({ ...profileData, theme: value })}
+                        >
+                          <SelectTrigger id="theme">
+                            <SelectValue placeholder="Select theme" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="light">
+                              <div className="flex items-center gap-2">
+                                <Sun className="h-4 w-4" />
+                                Light
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="dark">
+                              <div className="flex items-center gap-2">
+                                <Moon className="h-4 w-4" />
+                                Dark
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="language">Language</Label>
+                        <Select
+                          value={profileData.language}
+                          onValueChange={(value) => setProfileData({ ...profileData, language: value })}
+                        >
+                          <SelectTrigger id="language">
+                            <SelectValue placeholder="Select language" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pt-BR">
+                              <div className="flex items-center gap-2">
+                                <Globe className="h-4 w-4" />
+                                Português (BR)
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="en">
+                              <div className="flex items-center gap-2">
+                                <Globe className="h-4 w-4" />
+                                English
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Account Information */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Account Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="role">Role</Label>
+                        <div className="relative">
+                          <Shield className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="role"
+                            type="text"
+                            value={getRoleLabel(profileData.role)}
+                            className="pl-10"
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="status">Status</Label>
+                        <Input id="status" type="text" value={getStatusLabel(profileData.status)} disabled />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Current Password */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Current Password (Required)</h3>
+                    <p className="text-sm text-muted-foreground">Enter your current password to confirm changes</p>
+                    <div className="space-y-2">
+                      <Label htmlFor="currentPasswordProfile">Current Password *</Label>
+                      <div className="relative">
+                        <Input
+                          id="currentPasswordProfile"
+                          type={showCurrentPassword ? "text" : "password"}
+                          placeholder="Enter your current password"
+                          value={profileData.currentPassword}
+                          onChange={(e) => setProfileData({ ...profileData, currentPassword: e.target.value })}
+                          required
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                        >
+                          {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
                     {isLoading ? "Saving..." : "Save Changes"}
                   </Button>
                 </form>
@@ -330,6 +472,29 @@ export default function ProfessionalProfile() {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handlePasswordChange} className="space-y-4">
+                  {/* Current Password */}
+                  <div className="space-y-2">
+                    <Label htmlFor="currentPasswordChange">Current Password *</Label>
+                    <div className="relative">
+                      <Input
+                        id="currentPasswordChange"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter your current password"
+                        value={passwordData.currentPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="newPassword">New Password</Label>
                     <div className="relative">

@@ -15,7 +15,6 @@ import {
 import { useSidebar } from "@/components/admin/admin-sidebar"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter } from "next/navigation"
-import { ThemeToggle } from "@/components/theme-toggle"
 
 export function AdminHeader() {
   const { toggleSidebar, isMobile } = useSidebar()
@@ -67,8 +66,6 @@ export function AdminHeader() {
       </div>
 
       <div className="flex items-center gap-2 md:gap-3">
-        <ThemeToggle />
-
         <div className="relative">
           <Button
             variant="ghost"

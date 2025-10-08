@@ -1,9 +1,12 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import type { User, LoginCredentials, RegisterData } from "@/types"
+import type { User } from "@/types/user"
+import type { LoginCredentials, AuthResponse } from "@/types/auth"
+import type { RegisterData } from "@/types"
 import { fetchApi } from "@/lib/api/utils"
 import { toast } from "sonner"
+import { useTheme } from "next-themes"
 
 interface AuthContextType {
   user: User | null
@@ -14,6 +17,7 @@ interface AuthContextType {
   register: (data: RegisterData) => Promise<boolean>
   logout: () => void
   checkAuth: () => Promise<void>
+  refreshUser: () => Promise<void>
   getToken: () => string | null
   getUserId: () => string | null
   getCompanyId: () => string | null
@@ -25,31 +29,78 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const { setTheme } = useTheme()
+
+  useEffect(() => {
+    const checkTokenExpiration = () => {
+      const refreshToken = localStorage.getItem("noah_refresh_token")
+      const refreshTokenExpiry = localStorage.getItem("noah_refresh_token_expiry")
+      const currentToken = localStorage.getItem("noah_token")
+
+      if (!refreshToken || !refreshTokenExpiry || !currentToken) return
+
+      const expiryDate = new Date(refreshTokenExpiry)
+      const now = new Date()
+      const timeUntilExpiry = expiryDate.getTime() - now.getTime()
+
+      // Refresh token 5 minutes before expiration
+      if (timeUntilExpiry < 5 * 60 * 1000 && timeUntilExpiry > 0) {
+        refreshTokens()
+      }
+    }
+
+    const interval = setInterval(checkTokenExpiration, 60000) // Check every minute
+    return () => clearInterval(interval)
+  }, [])
+
+  const refreshTokens = async () => {
+    try {
+      const currentToken = localStorage.getItem("noah_token")
+      const refreshToken = localStorage.getItem("noah_refresh_token")
+
+      if (!currentToken || !refreshToken) return
+
+      const response = await fetchApi<AuthResponse>("/Users/refresh-token", {
+        method: "POST",
+        body: JSON.stringify({ token: currentToken, refreshToken }),
+      })
+
+      localStorage.setItem("noah_token", response.token)
+      localStorage.setItem("noah_refresh_token", response.refreshToken)
+      if (response.refreshTokenExpiresAt) {
+        localStorage.setItem("noah_refresh_token_expiry", response.refreshTokenExpiresAt)
+      }
+      setToken(response.token)
+    } catch (error) {
+      console.error("Token refresh failed:", error)
+      logout()
+    }
+  }
 
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
     try {
       setIsLoading(true)
-      const response = await fetchApi<{
-        token: string
-        id: number
-        name: string
-        email: string
-        role: string
-        status: number
-        avatar?: string
-        companyId?: string
-        professionalId?: string
-        createdDate: string
-        updatedDate: string
-      }>("/Users/authenticate", {
+      const response = await fetchApi<AuthResponse>("/Users/authenticate", {
         method: "POST",
-        body: JSON.stringify(credentials),
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password,
+          rememberMe: credentials.rememberMe || false,
+        }),
       })
-      // fetchApi throws on non-ok, so if we’re here we have data
+
       localStorage.setItem("noah_token", response.token)
-      if (credentials.rememberEmail) {
-        localStorage.setItem("noah_remember_email", credentials.email)
+      if (response.refreshToken) {
+        localStorage.setItem("noah_refresh_token", response.refreshToken)
       }
+      if (response.refreshTokenExpiresAt) {
+        localStorage.setItem("noah_refresh_token_expiry", response.refreshTokenExpiresAt)
+      }
+
+      if (response.theme) {
+        setTheme(response.theme)
+      }
+
       setToken(response.token)
       setUser({
         id: response.id,
@@ -60,9 +111,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         avatar: response.avatar,
         companyId: response.companyId,
         professionalId: response.professionalId,
+        language: response.language,
+        theme: response.theme,
+        refreshToken: response.refreshToken,
+        refreshTokenExpiresAt: response.refreshTokenExpiresAt,
         createdDate: response.createdDate,
         updatedDate: response.updatedDate,
       })
+
       toast.success("Login successful!")
       return true
     } catch (err: any) {
@@ -107,6 +163,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     localStorage.removeItem("noah_token")
+    localStorage.removeItem("noah_refresh_token")
+    localStorage.removeItem("noah_refresh_token_expiry")
     localStorage.removeItem("noah_remember_email")
     setUser(null)
     setToken(null)
@@ -155,18 +213,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const t = localStorage.getItem("noah_token")
       if (!t) return
       const p = JSON.parse(atob(t.split(".")[1]))
-      const userId = p.UserId || p.userId
+      const userId = p.UserId || p.userId || p.nameid
       if (!userId) throw new Error("Invalid token")
       const userData = await fetchApi<User>(`/Users/${userId}`)
+
+      if (userData.theme) {
+        setTheme(userData.theme)
+      }
+
       setUser(userData)
       setToken(t)
     } catch (err) {
       console.error("Auth check error:", err)
       localStorage.removeItem("noah_token")
+      localStorage.removeItem("noah_refresh_token")
+      localStorage.removeItem("noah_refresh_token_expiry")
       setUser(null)
       setToken(null)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const refreshUser = async () => {
+    try {
+      const t = getToken()
+      if (!t) return
+      const p = JSON.parse(atob(t.split(".")[1]))
+      const userId = p.UserId || p.userId || p.nameid
+      if (!userId) throw new Error("Invalid token")
+      const userData = await fetchApi<User>(`/Users/${userId}`)
+
+      // Apply user's theme
+      if (userData.theme) {
+        setTheme(userData.theme)
+      }
+
+      setUser(userData)
+    } catch (err) {
+      console.error("Refresh user error:", err)
     }
   }
 
@@ -183,6 +268,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     register,
     logout,
     checkAuth,
+    refreshUser,
     getToken,
     getUserId,
     getCompanyId,

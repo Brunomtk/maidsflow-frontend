@@ -16,7 +16,6 @@ import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter } from "next/navigation"
 import { useCompanySidebar } from "./company-sidebar-context"
-import { ThemeToggle } from "@/components/theme-toggle"
 
 export function CompanyHeader() {
   const { user, logout } = useAuth()
@@ -91,7 +90,6 @@ export function CompanyHeader() {
           </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
-          <ThemeToggle />
           <Button
             variant="ghost"
             size="icon"

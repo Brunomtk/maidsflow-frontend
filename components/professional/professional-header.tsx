@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { ThemeToggle } from "@/components/theme-toggle"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -73,7 +72,6 @@ export function ProfessionalHeader({ onMenuClick }: ProfessionalHeaderProps) {
         </div>
 
         <div className="flex items-center gap-2 md:gap-4">
-          <ThemeToggle />
           <Button
             variant="ghost"
             size="icon"

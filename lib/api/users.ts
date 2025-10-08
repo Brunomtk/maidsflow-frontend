@@ -1,5 +1,5 @@
 import { apiRequest } from "./utils"
-import type { User, RegisterUserData } from "@/types/user"
+import type { User, RegisterUserData, AuthResponse } from "@/types/user"
 import type { ApiResponse, PaginatedResponse } from "@/types/api"
 
 export const usersApi = {
@@ -218,6 +218,24 @@ export const usersApi = {
       console.error("Failed to fetch professionals:", error)
       return {
         error: error instanceof Error ? error.message : "Failed to fetch professionals",
+        status: 500,
+      }
+    }
+  },
+
+  refreshToken: async (token: string, refreshToken: string): Promise<ApiResponse<AuthResponse>> => {
+    try {
+      const response = await apiRequest<AuthResponse>("/Users/refresh-token", {
+        method: "POST",
+        body: JSON.stringify({ token, refreshToken }),
+      })
+      return {
+        data: response,
+        status: 200,
+      }
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error.message : "Failed to refresh token",
         status: 500,
       }
     }
