@@ -164,8 +164,18 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
     const startParts = parseDateOnly(startDateStr)
     if (!startParts) return occurrences
 
-    const untilParts = parseDateOnly(untilStr)
-    if (!untilParts) return occurrences
+    let untilParts
+    if (untilStr === "forever") {
+      const oneYearLater = new Date(startParts.y + 1, startParts.m - 1, startParts.d)
+      untilParts = {
+        y: oneYearLater.getFullYear(),
+        m: oneYearLater.getMonth() + 1,
+        d: oneYearLater.getDate(),
+      }
+    } else {
+      untilParts = parseDateOnly(untilStr)
+      if (!untilParts) return occurrences
+    }
 
     let cur = new Date(startParts.y, startParts.m - 1, startParts.d)
     const until = new Date(untilParts.y, untilParts.m - 1, untilParts.d)
@@ -190,9 +200,10 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
       return nd
     }
 
+    const maxOccurrences = untilStr === "forever" ? 52 : 200 // 52 weeks for forever
     pushOccurrence(cur)
     let guard = 0
-    while (guard++ < 200) {
+    while (guard++ < maxOccurrences) {
       cur = addInterval(cur)
       if (cur > until) break
       pushOccurrence(cur)
@@ -261,12 +272,33 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
     setIsLoading(true)
 
     try {
+      if (!formData.customerId) {
+        toast({
+          title: "Error",
+          description: "Please select a customer for the appointment.",
+          variant: "destructive",
+        })
+        setIsLoading(false)
+        return
+      }
+
+      if (!formData.professionalId || formData.professionalId === "none") {
+        toast({
+          title: "Error",
+          description: "Please select a professional for the appointment.",
+          variant: "destructive",
+        })
+        setIsLoading(false)
+        return
+      }
+
       if (!formData.date) {
         toast({
           title: "Error",
           description: "Please select a date for the appointment.",
           variant: "destructive",
         })
+        setIsLoading(false)
         return
       }
 
@@ -276,6 +308,7 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
           description: "Please select start and end times.",
           variant: "destructive",
         })
+        setIsLoading(false)
         return
       }
 
@@ -306,6 +339,7 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
             description: "End time must be after start time.",
             variant: "destructive",
           })
+          setIsLoading(false)
           return
         }
       }
@@ -337,22 +371,58 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
         notes: formData.notes,
       }
 
-      if (recurrenceEnabled && repeatUntil) {
-        const occs = buildOccurrences(formData.date, formData.date, repeatUntil, recurrenceType)
-        for (const occ of occs) {
-          const body = { ...appointmentData, start: occ.start, end: occ.end }
-          await appointmentsApi.createAppointment(body as any)
+      if (recurrenceEnabled && (repeatUntil || repeatUntil === "forever")) {
+        if (repeatUntil !== "forever" && !repeatUntil) {
+          toast({
+            title: "Error",
+            description: "Please select a repeat until date or choose 'Forever'.",
+            variant: "destructive",
+          })
+          setIsLoading(false)
+          return
         }
+
+        const occs = buildOccurrences(formData.date, formData.date, repeatUntil, recurrenceType)
+
+        if (occs.length === 0) {
+          toast({
+            title: "Error",
+            description: "No occurrences could be generated. Please check your dates.",
+            variant: "destructive",
+          })
+          setIsLoading(false)
+          return
+        }
+
+        console.log(`[v0] Creating ${occs.length} recurring appointments`)
+
+        let successCount = 0
+        for (const occ of occs) {
+          try {
+            const body = { ...appointmentData, start: occ.start, end: occ.end }
+            await appointmentsApi.createAppointment(body as any)
+            successCount++
+          } catch (error) {
+            console.error("[v0] Error creating recurring appointment:", error)
+          }
+        }
+
+        toast({
+          title: "Success",
+          description: `Created ${successCount} recurring appointments successfully!`,
+          variant: "default",
+        })
+
         await onSubmit(appointmentData)
       } else {
         await onSubmit(appointmentData)
-      }
 
-      toast({
-        title: "Success",
-        description: appointment ? "Appointment updated successfully!" : "Appointment created successfully!",
-        variant: "default",
-      })
+        toast({
+          title: "Success",
+          description: appointment ? "Appointment updated successfully!" : "Appointment created successfully!",
+          variant: "default",
+        })
+      }
 
       onClose()
     } catch (error) {
@@ -408,7 +478,7 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="title">Title</Label>
                 <Input
@@ -454,7 +524,7 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="company">Company</Label>
                 <Input
@@ -486,7 +556,7 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="team">Team (Optional)</Label>
                 <Select
@@ -501,11 +571,13 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
                     <SelectItem value="none" className="hover:bg-muted">
                       No team
                     </SelectItem>
-                    {teams.map((team) => (
-                      <SelectItem key={team.id} value={team.id.toString()} className="hover:bg-muted">
-                        {team.name || `Team #${team.id}`}
-                      </SelectItem>
-                    ))}
+                    {teams
+                      .filter((team) => String(team.companyId) === String(formData.companyId || user?.companyId))
+                      .map((team) => (
+                        <SelectItem key={team.id} value={team.id.toString()} className="hover:bg-muted">
+                          {team.name || `Team #${team.id}`}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -534,7 +606,7 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="grid gap-2">
                 <Label>Date</Label>
                 <Input
@@ -605,19 +677,19 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
               />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
-              className="border-border text-foreground hover:bg-muted bg-transparent"
+              className="border-border text-foreground hover:bg-muted bg-transparent w-full sm:w-auto"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isLoading || loadingData}
-              className="bg-[#06b6d4] hover:bg-[#0891b2] text-white"
+              className="bg-[#06b6d4] hover:bg-[#0891b2] text-white w-full sm:w-auto"
             >
               {isLoading ? (
                 <>
@@ -683,7 +755,7 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
                   <SelectItem value="forever">Forever</SelectItem>
                 </SelectContent>
               </Select>
-              {repeatUntil !== "forever" && (
+              {repeatUntil !== "forever" && recurrenceEnabled && (
                 <Input
                   id="repeatUntilDate"
                   type="date"
@@ -691,11 +763,12 @@ export function CompanyAppointmentModal({ isOpen, onClose, onSubmit, appointment
                   onChange={(e) => setRepeatUntil(e.target.value)}
                   disabled={!recurrenceEnabled}
                   className="mt-2 bg-muted border-border text-foreground"
+                  min={formData.date}
                 />
               )}
               <p className="text-xs text-muted-foreground mt-1">
                 {repeatUntil === "forever"
-                  ? "Appointments will repeat indefinitely"
+                  ? "Appointments will repeat for 1 year (52 occurrences)"
                   : "We will create appointments from the selected Date, repeating until this date (inclusive)."}
               </p>
             </div>

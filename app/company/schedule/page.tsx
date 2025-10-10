@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar, Plus } from "lucide-react"
+import { Calendar, Plus, RefreshCw } from "lucide-react"
 import { CompanyScheduleCalendar } from "@/components/company/company-schedule-calendar"
 import CompanyAppointmentModal from "@/components/company/company-appointment-modal"
 import { CompanyAppointmentDetailsModal } from "@/components/company/company-appointment-details-modal"
@@ -63,6 +63,7 @@ function CompanyScheduleContent() {
   const handleDeleteAppointment = async (appointment: Appointment) => {
     if (appointment.id) {
       await removeAppointment(appointment.id)
+      await handleRefresh() // Use handleRefresh instead of fetchAppointments
     }
   }
 
@@ -73,13 +74,17 @@ function CompanyScheduleContent() {
       await addAppointment(data)
     }
     setIsAppointmentModalOpen(false)
-    await fetchAppointments()
+    await handleRefresh() // Use handleRefresh instead of fetchAppointments
   }
 
   const handleClearFilters = () => {
     setFilterStatus("all")
     setFilterType("all")
     setFilterProfessional("all")
+  }
+
+  const handleRefresh = async () => {
+    await fetchAppointments()
   }
 
   // Get unique professionals from appointments for filter
@@ -108,10 +113,21 @@ function CompanyScheduleContent() {
           <h1 className="text-2xl font-bold text-foreground mb-1">Schedule</h1>
           <p className="text-muted-foreground">View and manage your scheduled services</p>
         </div>
-        <Button onClick={() => handleAddAppointment()} className="bg-[#06b6d4] hover:bg-[#0891b2] text-white">
-          <Plus className="h-4 w-4 mr-2" />
-          New Appointment
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleRefresh}
+            className="border-border text-foreground hover:bg-muted bg-transparent"
+            disabled={isLoading}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+          <Button onClick={() => handleAddAppointment()} className="bg-[#06b6d4] hover:bg-[#0891b2] text-white">
+            <Plus className="h-4 w-4 mr-2" />
+            New Appointment
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}

@@ -171,11 +171,11 @@ export default function AppointmentsPage() {
   const handleAddAppointment = async (data: any) => {
     const success = await addAppointment(data)
     if (success) {
-      // Sempre fechar o modal primeiro
       setIsModalOpen(false)
       setSelectedAppointment(null)
 
-      // Mostrar SweetAlert com opções
+      await loadAppointments()
+
       const result = await Swal.fire({
         title: "Appointment Created!",
         text: "What would you like to do next?",
@@ -195,14 +195,13 @@ export default function AppointmentsPage() {
       })
 
       if (result.isConfirmed) {
-        // Preparar dados para o check record baseado no appointment
         const checkRecordData = {
           professionalId: data.professionalId || "",
           professionalName: "",
           companyId: data.companyId || "",
           customerId: data.customerId || "",
           customerName: "",
-          appointmentId: "", // Será preenchido com o ID do appointment criado se disponível
+          appointmentId: "",
           address: data.address || "",
           teamId: data.teamId || "",
           teamName: "",
@@ -222,6 +221,7 @@ export default function AppointmentsPage() {
       if (success) {
         setIsModalOpen(false)
         setSelectedAppointment(null)
+        await loadAppointments()
       }
     }
   }
@@ -231,6 +231,7 @@ export default function AppointmentsPage() {
       const success = await removeAppointment(appointmentToDelete.id)
       if (success) {
         setAppointmentToDelete(null)
+        await loadAppointments()
       }
     }
   }
@@ -298,7 +299,6 @@ export default function AppointmentsPage() {
   const handleDisplayModeChange = (mode: string) => {
     setDisplayMode(mode as "list" | "calendar")
     if (mode === "calendar") {
-      // Load more appointments for calendar view
       setCurrentPage(1)
       loadAppointments()
     }
@@ -344,7 +344,6 @@ export default function AppointmentsPage() {
     }
   }
 
-  // Filter professionals based on selected company
   const filteredProfessionals = companyFilter
     ? professionals.filter((prof) => prof.companyId === companyFilter)
     : professionals
@@ -484,7 +483,6 @@ export default function AppointmentsPage() {
               </TabsList>
             </Tabs>
 
-            {/* Calendar View Options */}
             {displayMode === "calendar" && (
               <Tabs value={calendarView} onValueChange={(value) => setCalendarView(value as "day" | "week" | "month")}>
                 <TabsList className="bg-background border border-border">
@@ -529,7 +527,6 @@ export default function AppointmentsPage() {
                 onDelete={setAppointmentToDelete}
               />
 
-              {/* Pagination */}
               {pagination.pageCount > 1 && (
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-muted-foreground">

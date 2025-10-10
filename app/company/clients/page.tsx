@@ -6,7 +6,20 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Search, User, Users, Building, Calendar, Phone, Mail, Download, ArrowUpDown, Trash2 } from "lucide-react"
+import {
+  Plus,
+  Search,
+  User,
+  Users,
+  Building,
+  Calendar,
+  Phone,
+  Mail,
+  Download,
+  ArrowUpDown,
+  Trash2,
+  RefreshCw,
+} from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -227,6 +240,8 @@ export default function ClientsPage() {
         title: "Client deleted",
         description: `${clientToDelete.name} has been deleted successfully.`,
       })
+
+      await handleRefresh() // Use handleRefresh instead of handleClientSaved
     } catch (error) {
       console.error("Error deleting client:", error)
       toast({
@@ -258,6 +273,10 @@ export default function ClientsPage() {
     }
   }
 
+  const handleRefresh = async () => {
+    await handleClientSaved()
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -273,10 +292,21 @@ export default function ClientsPage() {
           <h1 className="text-2xl font-bold text-foreground mb-1">Client Management</h1>
           <p className="text-muted-foreground">Manage your client database and view their service history</p>
         </div>
-        <Button className="bg-[#06b6d4] hover:bg-[#0891b2] text-white" onClick={handleAddClient}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Client
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleRefresh}
+            className="border-border text-foreground hover:bg-muted bg-transparent"
+            disabled={loading}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+          <Button className="bg-[#06b6d4] hover:bg-[#0891b2] text-white" onClick={handleAddClient}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Client
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

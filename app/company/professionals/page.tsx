@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Search, User, Phone, Clock, Users, Star, Mail } from "lucide-react"
+import { Plus, Search, User, Phone, Clock, Users, Star, Mail, RefreshCw } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ProfessionalModal } from "@/components/company/professional-modal"
@@ -111,6 +111,10 @@ export default function ProfessionalsPage() {
     }
   }
 
+  const handleRefresh = async () => {
+    await fetchProfessionals()
+  }
+
   useEffect(() => {
     if (companyId) {
       fetchProfessionals()
@@ -153,7 +157,7 @@ export default function ProfessionalsPage() {
         description: `Professional ${selectedProfessional ? "updated" : "created"} successfully`,
       })
       setIsEditModalOpen(false)
-      fetchProfessionals()
+      await fetchProfessionals()
     } catch (error) {
       console.error("Error saving professional:", error)
       toast({
@@ -174,7 +178,7 @@ export default function ProfessionalsPage() {
         title: "Success",
         description: "Professional deleted successfully",
       })
-      fetchProfessionals()
+      await fetchProfessionals()
     } catch (error) {
       console.error("Error deleting professional:", error)
       toast({
@@ -209,13 +213,24 @@ export default function ProfessionalsPage() {
             Manage your cleaning professionals and track their performance
           </p>
         </div>
-        <Button
-          className="bg-[#06b6d4] hover:bg-[#0891b2] text-white w-full sm:w-auto"
-          onClick={() => handleOpenEditModal()}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Professional
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleRefresh}
+            className="border-border text-foreground hover:bg-muted bg-transparent"
+            disabled={isLoading}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+          <Button
+            className="bg-[#06b6d4] hover:bg-[#0891b2] text-white w-full sm:w-auto"
+            onClick={() => handleOpenEditModal()}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Professional
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">

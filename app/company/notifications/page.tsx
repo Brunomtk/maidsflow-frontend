@@ -11,7 +11,7 @@ import { CompanyNotificationDetailsModal } from "@/components/company/company-no
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { AlertCircle, Bell, Eye, PenSquare, Search, Trash2, Users } from "lucide-react"
+import { AlertCircle, Bell, Eye, PenSquare, Search, Trash2, Users, RefreshCw } from "lucide-react"
 import { useCompanyNotifications } from "@/hooks/use-company-notifications"
 
 export default function CompanyNotificationsPage() {
@@ -21,8 +21,8 @@ export default function CompanyNotificationsPage() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const [selectedNotification, setSelectedNotification] = useState<any>(null)
   const [activeTab, setActiveTab] = useState("all")
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
-  // Use the company notifications hook
   const {
     notifications,
     loading,
@@ -33,12 +33,10 @@ export default function CompanyNotificationsPage() {
     setFilters,
   } = useCompanyNotifications()
 
-  // Load notifications on component mount
   useEffect(() => {
     fetchCompanyNotifications()
   }, [fetchCompanyNotifications])
 
-  // Update filters when search or priority changes (debounced)
   const updateFilters = useCallback(() => {
     setFilters({
       search: searchQuery || undefined,
@@ -51,6 +49,12 @@ export default function CompanyNotificationsPage() {
     const timeoutId = setTimeout(updateFilters, 300) // Debounce
     return () => clearTimeout(timeoutId)
   }, [updateFilters])
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    await fetchCompanyNotifications()
+    setIsRefreshing(false)
+  }
 
   const handleOpenDetailsModal = (notification: any) => {
     setSelectedNotification(notification)
@@ -120,16 +124,27 @@ export default function CompanyNotificationsPage() {
     <div className="space-y-6 max-w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
-        <Button
-          onClick={() => {
-            setSelectedNotification(null)
-            setIsNotificationModalOpen(true)
-          }}
-          className="bg-primary hover:bg-primary/90"
-        >
-          <PenSquare className="h-4 w-4 mr-2" />
-          Create Notification
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleRefresh}
+            className="border-border text-foreground hover:bg-muted bg-transparent"
+            disabled={loading || isRefreshing}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+          <Button
+            onClick={() => {
+              setSelectedNotification(null)
+              setIsNotificationModalOpen(true)
+            }}
+            className="bg-primary hover:bg-primary/90"
+          >
+            <PenSquare className="h-4 w-4 mr-2" />
+            Create Notification
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

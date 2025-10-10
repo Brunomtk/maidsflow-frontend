@@ -3,6 +3,7 @@
 import type React from "react"
 import { createContext, useContext, useState, useCallback, useEffect, useRef } from "react"
 import { cancellationsApi } from "@/lib/api/cancellations"
+import { customersApi } from "@/lib/api/customers"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
 import type {
@@ -53,6 +54,16 @@ export function CompanyCancellationsProvider({ children }: CompanyCancellationsP
 
   const initialLoadRef = useRef(false)
 
+  const fetchCustomerName = async (customerId: number): Promise<string> => {
+    try {
+      const customer = await customersApi.getById(customerId)
+      return customer.name || "Unknown Customer"
+    } catch (error) {
+      console.error(`Error fetching customer ${customerId}:`, error)
+      return "Unknown Customer"
+    }
+  }
+
   const fetchCancellations = useCallback(async () => {
     if (!user?.companyId) return
 
@@ -73,16 +84,26 @@ export function CompanyCancellationsProvider({ children }: CompanyCancellationsP
         filteredData = data.filter((c) => c.refundStatus === filters.refundStatus)
       }
 
-      setCancellations(filteredData)
+      const cancellationsWithNames = await Promise.all(
+        filteredData.map(async (cancellation) => {
+          if (!cancellation.customerName && cancellation.customerId) {
+            const customerName = await fetchCustomerName(cancellation.customerId)
+            return { ...cancellation, customerName }
+          }
+          return cancellation
+        }),
+      )
+
+      setCancellations(cancellationsWithNames)
 
       const calculatedStats: CancellationStats = {
-        total: filteredData.length,
-        pending: filteredData.filter((c) => c.refundStatus === 0).length,
-        processed: filteredData.filter((c) => c.refundStatus === 1).length,
-        rejected: filteredData.filter((c) => c.refundStatus === 2).length,
-        totalRefunded: filteredData.filter((c) => c.refundStatus === 1).length,
+        total: cancellationsWithNames.length,
+        pending: cancellationsWithNames.filter((c) => c.refundStatus === 0).length,
+        processed: cancellationsWithNames.filter((c) => c.refundStatus === 1).length,
+        rejected: cancellationsWithNames.filter((c) => c.refundStatus === 2).length,
+        totalRefunded: cancellationsWithNames.filter((c) => c.refundStatus === 1).length,
         averageRefundTime: 2.5,
-        topReasons: calculateTopReasons(filteredData),
+        topReasons: calculateTopReasons(cancellationsWithNames),
       }
       setStats(calculatedStats)
     } catch (err) {
@@ -118,6 +139,12 @@ export function CompanyCancellationsProvider({ children }: CompanyCancellationsP
       try {
         setLoading(true)
         const newCancellation = await cancellationsApi.createCancellation(data)
+
+        if (newCancellation.customerId && !newCancellation.customerName) {
+          const customerName = await fetchCustomerName(newCancellation.customerId)
+          newCancellation.customerName = customerName
+        }
+
         setCancellations((prev) => [newCancellation, ...prev])
         await refreshData()
         toast({

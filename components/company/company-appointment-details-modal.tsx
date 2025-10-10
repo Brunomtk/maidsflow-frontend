@@ -6,12 +6,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Calendar, Clock, MapPin, User, Phone, Mail, FileText, Edit, Trash2, Plus } from "lucide-react"
+import { Calendar, Clock, MapPin, User, Phone, Mail, FileText, Edit, Trash2, Plus, XCircle } from "lucide-react"
 import { format, isValid } from "date-fns"
 import type { Appointment } from "@/types/appointment"
 import { useToast } from "@/hooks/use-toast"
 import { getCheckRecords, createCheckRecordFromAppointment } from "@/lib/api/check-records"
 import { useCompanyAppointments } from "@/contexts/company-appointments-context"
+import { CompanyCancellationModal } from "@/components/company/company-cancellation-modal"
 
 interface CompanyAppointmentDetailsModalProps {
   appointment: Appointment | null
@@ -102,6 +103,7 @@ export function CompanyAppointmentDetailsModal({
   onDelete,
 }: CompanyAppointmentDetailsModalProps) {
   const [isCreatingCheckRecord, setIsCreatingCheckRecord] = useState(false)
+  const [isCancellationModalOpen, setIsCancellationModalOpen] = useState(false)
   const { toast } = useToast()
   const { fetchAppointments } = useCompanyAppointments()
   const router = useRouter()
@@ -184,7 +186,7 @@ export function CompanyAppointmentDetailsModal({
       console.error("Error creating check record:", error)
       toast({
         title: "Error",
-        description: "Failed to create check record. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to create check record. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -192,16 +194,34 @@ export function CompanyAppointmentDetailsModal({
     }
   }
 
+  const handleCancelAppointment = () => {
+    setIsCancellationModalOpen(true)
+  }
+
+  const handleCancellationSuccess = async () => {
+    setIsCancellationModalOpen(false)
+    onClose()
+
+    toast({
+      title: "Appointment Cancelled",
+      description: "The appointment has been cancelled successfully.",
+    })
+
+    await fetchAppointments()
+
+    router.push("/company/cancellations")
+  }
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-2xl bg-[#1a2234] border-[#2a3349] text-white">
+        <DialogContent className="max-w-2xl max-h-[85vh] bg-[#1a2234] border-[#2a3349] text-white">
           <DialogHeader>
-            <div className="flex items-center justify-between">
-              <DialogTitle className="text-xl font-semibold text-white">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <DialogTitle className="text-lg sm:text-xl font-semibold text-white break-words">
                 {appointment.title || "Appointment Details"}
               </DialogTitle>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Badge className={getStatusColor(appointment.status)}>{getStatusText(appointment.status)}</Badge>
                 <Badge variant="outline" className={getPriorityColor(appointment.priority || 0)}>
                   {getPriorityText(appointment.priority || 0)}
@@ -210,21 +230,21 @@ export function CompanyAppointmentDetailsModal({
             </div>
           </DialogHeader>
 
-          <div className="space-y-6">
+          <div className="space-y-4 overflow-y-auto max-h-[calc(85vh-180px)] pr-2">
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2 text-gray-300">
-                  <Calendar className="h-4 w-4" />
+                  <Calendar className="h-4 w-4 flex-shrink-0" />
                   <span className="text-sm font-medium">Date & Time</span>
                 </div>
                 <div className="pl-6 space-y-1">
-                  <p className="text-white">
+                  <p className="text-white text-sm">
                     {isValidStartDate ? format(startDate, "EEEE, MMMM d, yyyy") : "Invalid date"}
                   </p>
                   <div className="flex items-center gap-2 text-gray-400">
-                    <Clock className="h-3 w-3" />
-                    <span className="text-sm">
+                    <Clock className="h-3 w-3 flex-shrink-0" />
+                    <span className="text-xs">
                       {isValidStartDate && isValidEndDate
                         ? `${format(startDate, "h:mm a")} - ${format(endDate, "h:mm a")}`
                         : "Invalid time"}
@@ -233,13 +253,13 @@ export function CompanyAppointmentDetailsModal({
                 </div>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2 text-gray-300">
-                  <FileText className="h-4 w-4" />
+                  <FileText className="h-4 w-4 flex-shrink-0" />
                   <span className="text-sm font-medium">Service Type</span>
                 </div>
                 <div className="pl-6">
-                  <p className="text-white">{getTypeText(appointment.type)}</p>
+                  <p className="text-white text-sm">{getTypeText(appointment.type)}</p>
                 </div>
               </div>
             </div>
@@ -248,23 +268,23 @@ export function CompanyAppointmentDetailsModal({
 
             {/* Customer Information */}
             {appointment.customer && (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2 text-gray-300">
-                  <User className="h-4 w-4" />
+                  <User className="h-4 w-4 flex-shrink-0" />
                   <span className="text-sm font-medium">Customer Information</span>
                 </div>
-                <div className="pl-6 space-y-2">
-                  <p className="text-white font-medium">{appointment.customer.name}</p>
+                <div className="pl-6 space-y-1">
+                  <p className="text-white font-medium text-sm break-words">{appointment.customer.name}</p>
                   {appointment.customer.email && (
                     <div className="flex items-center gap-2 text-gray-400">
-                      <Mail className="h-3 w-3" />
-                      <span className="text-sm">{appointment.customer.email}</span>
+                      <Mail className="h-3 w-3 flex-shrink-0" />
+                      <span className="text-xs break-all">{appointment.customer.email}</span>
                     </div>
                   )}
                   {appointment.customer.phone && (
                     <div className="flex items-center gap-2 text-gray-400">
-                      <Phone className="h-3 w-3" />
-                      <span className="text-sm">{appointment.customer.phone}</span>
+                      <Phone className="h-4 w-4 flex-shrink-0" />
+                      <span className="text-xs">{appointment.customer.phone}</span>
                     </div>
                   )}
                 </div>
@@ -275,13 +295,13 @@ export function CompanyAppointmentDetailsModal({
             {appointment.address && (
               <>
                 <Separator className="bg-[#2a3349]" />
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <div className="flex items-center gap-2 text-gray-300">
-                    <MapPin className="h-4 w-4" />
+                    <MapPin className="h-4 w-4 flex-shrink-0" />
                     <span className="text-sm font-medium">Location</span>
                   </div>
                   <div className="pl-6">
-                    <p className="text-white">{appointment.address}</p>
+                    <p className="text-white text-sm break-words">{appointment.address}</p>
                   </div>
                 </div>
               </>
@@ -291,13 +311,13 @@ export function CompanyAppointmentDetailsModal({
             {appointment.notes && (
               <>
                 <Separator className="bg-[#2a3349]" />
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <div className="flex items-center gap-2 text-gray-300">
-                    <FileText className="h-4 w-4" />
+                    <FileText className="h-4 w-4 flex-shrink-0" />
                     <span className="text-sm font-medium">Notes</span>
                   </div>
                   <div className="pl-6">
-                    <p className="text-gray-300 text-sm leading-relaxed">{appointment.notes}</p>
+                    <p className="text-gray-300 text-sm leading-relaxed break-words">{appointment.notes}</p>
                   </div>
                 </div>
               </>
@@ -307,17 +327,17 @@ export function CompanyAppointmentDetailsModal({
             {appointment.professional && (
               <>
                 <Separator className="bg-[#2a3349]" />
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <div className="flex items-center gap-2 text-gray-300">
-                    <User className="h-4 w-4" />
+                    <User className="h-4 w-4 flex-shrink-0" />
                     <span className="text-sm font-medium">Assigned Professional</span>
                   </div>
                   <div className="pl-6">
-                    <p className="text-white font-medium">{appointment.professional.name}</p>
+                    <p className="text-white font-medium text-sm break-words">{appointment.professional.name}</p>
                     {appointment.professional.email && (
                       <div className="flex items-center gap-2 text-gray-400 mt-1">
-                        <Mail className="h-3 w-3" />
-                        <span className="text-sm">{appointment.professional.email}</span>
+                        <Mail className="h-3 w-3 flex-shrink-0" />
+                        <span className="text-xs break-all">{appointment.professional.email}</span>
                       </div>
                     )}
                   </div>
@@ -327,7 +347,7 @@ export function CompanyAppointmentDetailsModal({
 
             {/* Additional Details */}
             <Separator className="bg-[#2a3349]" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div>
                 <span className="text-gray-400">Created:</span>
                 <p className="text-white">
@@ -347,45 +367,72 @@ export function CompanyAppointmentDetailsModal({
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-[#2a3349]">
-            <Button
-              variant="outline"
-              onClick={handleOnMyWay}
-              className="border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-white bg-transparent"
-            >
-              On my way
-            </Button>
-            {appointment.status === 0 && (
+          <div className="flex flex-col gap-2 pt-4 border-t border-[#2a3349]">
+            {/* First line: On my way + Create Check Record */}
+            <div className="flex flex-col sm:flex-row gap-2">
               <Button
                 variant="outline"
-                onClick={handleCreateCheckRecord}
-                disabled={isCreatingCheckRecord}
-                className="border-green-500 text-green-500 hover:bg-green-500 hover:text-white bg-transparent"
+                onClick={handleOnMyWay}
+                className="flex-1 border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-white bg-transparent"
               >
-                <Plus className="h-4 w-4 mr-2" />
-                {isCreatingCheckRecord ? "Creating..." : "Create Check Record"}
+                On my way
+              </Button>
+              {appointment.status === 0 && (
+                <Button
+                  variant="outline"
+                  onClick={handleCreateCheckRecord}
+                  disabled={isCreatingCheckRecord}
+                  className="flex-1 border-green-500 text-green-500 hover:bg-green-500 hover:text-white bg-transparent"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  {isCreatingCheckRecord ? "Creating..." : "Create Check Record"}
+                </Button>
+              )}
+            </div>
+
+            {/* Second line: Cancel Appointment (only if not already cancelled) */}
+            {appointment.status !== 3 && (
+              <Button
+                variant="outline"
+                onClick={handleCancelAppointment}
+                className="w-full border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white bg-transparent"
+              >
+                <XCircle className="h-4 w-4 mr-2" />
+                Cancel Appointment
               </Button>
             )}
-            <Button
-              variant="outline"
-              onClick={() => onEdit(appointment)}
-              className="border-[#2a3349] text-white hover:bg-[#2a3349]"
-            >
-              <Edit className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => onDelete(appointment)}
-              className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete
-            </Button>
+
+            {/* Third line: Delete + Edit */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button
+                variant="outline"
+                onClick={() => onDelete(appointment)}
+                className="flex-1 border-red-500 text-red-500 hover:bg-red-500 hover:text-white bg-transparent"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => onEdit(appointment)}
+                className="flex-1 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white bg-transparent dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-400"
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
+
+      {isCancellationModalOpen && appointment && (
+        <CompanyCancellationModal
+          isOpen={isCancellationModalOpen}
+          onClose={() => setIsCancellationModalOpen(false)}
+          appointment={appointment}
+          onSuccess={handleCancellationSuccess}
+        />
+      )}
     </>
   )
 }

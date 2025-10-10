@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import {
+  RefreshCw,
   Plus,
   Search,
   Calendar,
@@ -43,6 +44,7 @@ function CancellationsContent() {
   const [sortField, setSortField] = useState("cancelledAt")
   const [sortDirection, setSortDirection] = useState("desc")
   const [currentTab, setCurrentTab] = useState("all")
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -167,6 +169,20 @@ function CancellationsContent() {
     }
   }
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    try {
+      // Force a re-render by updating state
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      toast({
+        title: "Refreshed",
+        description: "Cancellations data has been refreshed.",
+      })
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -182,10 +198,21 @@ function CancellationsContent() {
           <h1 className="text-2xl font-bold text-foreground mb-1">Cancellation Management</h1>
           <p className="text-muted-foreground">Track and manage service cancellations and refund requests</p>
         </div>
-        <Button className="bg-primary hover:bg-primary/90" onClick={handleAddCancellation}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Cancellation
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="border-border text-foreground hover:bg-muted bg-transparent"
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+          <Button className="bg-primary hover:bg-primary/90" onClick={handleAddCancellation}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Cancellation
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

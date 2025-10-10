@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Clock, Route, Plus, Search, Filter } from "lucide-react"
+import { MapPin, Clock, Route, Plus, Search, Filter, RefreshCw } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { useCompanyGpsTracking } from "@/contexts/company-gps-tracking-context"
 import { CompanyGpsTrackingProvider } from "@/contexts/company-gps-tracking-context"
 import { GpsTrackingModal } from "@/components/company/company-gps-tracking-modal"
 import { GpsTrackingDetailsModal } from "@/components/company/company-gps-tracking-details-modal"
+import { GoogleMap } from "@/components/company/google-map"
 import type { GPSTracking } from "@/types/gps-tracking"
 import { useAuth } from "@/contexts/auth-context"
 
@@ -40,6 +41,7 @@ function CompanyGpsTrackingContent() {
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [selectedProfessional, setSelectedProfessional] = useState<number | null>(null)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   const { user } = useAuth()
   const companyId = user?.companyId?.toString() || "1"
@@ -60,6 +62,12 @@ function CompanyGpsTrackingContent() {
 
     return () => clearTimeout(delayedSearch)
   }, [searchQuery, statusFilter])
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    await fetchGpsRecords(companyId)
+    setIsRefreshing(false)
+  }
 
   const handleCreateRecord = async (data: any) => {
     try {
@@ -141,6 +149,17 @@ function CompanyGpsTrackingContent() {
     }).format(date)
   }
 
+  const mapMarkers = gpsRecords.map((record) => ({
+    id: record.id,
+    position: {
+      lat: record.location.latitude,
+      lng: record.location.longitude,
+    },
+    title: record.professionalName || `Professional ${record.professionalId}`,
+    address: record.location.address,
+    status: getStatusLabel(record.status).toLowerCase(),
+  }))
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -148,10 +167,21 @@ function CompanyGpsTrackingContent() {
           <h1 className="text-2xl font-bold text-foreground mb-1">GPS Tracking</h1>
           <p className="text-muted-foreground">Track your cleaning professionals in real-time</p>
         </div>
-        <Button onClick={() => setIsCreateModalOpen(true)} className="bg-[#06b6d4] hover:bg-[#0891b2] text-white">
-          <Plus className="h-4 w-4 mr-2" />
-          Add GPS Record
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleRefresh}
+            className="border-border text-foreground hover:bg-muted bg-transparent"
+            disabled={isLoading || isRefreshing}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+          <Button onClick={() => setIsCreateModalOpen(true)} className="bg-[#06b6d4] hover:bg-[#0891b2] text-white">
+            <Plus className="h-4 w-4 mr-2" />
+            Add GPS Record
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -193,12 +223,18 @@ function CompanyGpsTrackingContent() {
             <CardHeader>
               <CardTitle className="text-foreground text-lg">Live Map</CardTitle>
             </CardHeader>
-            <CardContent className="flex items-center justify-center h-[400px] bg-muted rounded-md">
-              <div className="text-center text-muted-foreground">
-                <MapPin className="h-12 w-12 mx-auto mb-4 text-[#06b6d4]" />
-                <p>Map view would be displayed here</p>
-                <p className="text-sm mt-2">Showing {gpsRecords.length} professionals</p>
-              </div>
+            <CardContent className="h-[420px]">
+              <GoogleMap
+                markers={mapMarkers}
+                zoom={12}
+                className="w-full h-full"
+                onMarkerClick={(marker) => {
+                  const record = gpsRecords.find((r) => r.id === marker.id)
+                  if (record) {
+                    setSelectedProfessional(record.id)
+                  }
+                }}
+              />
             </CardContent>
           </Card>
         </div>

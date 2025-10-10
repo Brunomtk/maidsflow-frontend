@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Search, Users, Calendar, Star, MapPin, Filter } from "lucide-react"
+import { Plus, Search, Users, Calendar, Star, MapPin, Filter, RefreshCw } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CompanyTeamModal } from "@/components/company/company-team-modal"
 import { CompanyTeamDetailsModal } from "@/components/company/company-team-details-modal"
@@ -30,6 +30,7 @@ export default function CompanyTeamsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   const handleCreateTeam = () => {
     setSelectedTeam(null)
@@ -54,11 +55,28 @@ export default function CompanyTeamsPage() {
       await addTeam(data as CreateTeamRequest)
     }
     setIsModalOpen(false)
+    await handleRefresh()
   }
 
   const handleDeleteTeam = async (id: number) => {
     if (confirm("Are you sure you want to delete this team?")) {
       await removeTeam(id.toString())
+      await handleRefresh()
+    }
+  }
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    try {
+      const currentSearch = searchQuery
+      const currentStatus = statusFilter
+      setSearchQuery("")
+      setStatusFilter("all")
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      setSearchQuery(currentSearch)
+      setStatusFilter(currentStatus)
+    } finally {
+      setIsRefreshing(false)
     }
   }
 
@@ -70,7 +88,6 @@ export default function CompanyTeamsPage() {
     )
   }
 
-  // Calculate stats
   const activeTeams = teams.filter((team) => team.status === 1).length
   const totalServices = teams.reduce((sum, team) => sum + team.completedServices, 0)
   const averageRating = teams.length > 0 ? teams.reduce((sum, team) => sum + team.rating, 0) / teams.length : 0
@@ -82,10 +99,21 @@ export default function CompanyTeamsPage() {
           <h1 className="text-2xl font-bold text-foreground mb-1">Teams</h1>
           <p className="text-muted-foreground">Manage your work teams</p>
         </div>
-        <Button className="bg-[#06b6d4] hover:bg-[#0891b2] text-white" onClick={handleCreateTeam}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Team
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleRefresh}
+            className="border-border text-foreground hover:bg-muted bg-transparent"
+            disabled={isRefreshing}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+          <Button className="bg-[#06b6d4] hover:bg-[#0891b2] text-white" onClick={handleCreateTeam}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Team
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -265,7 +293,6 @@ export default function CompanyTeamsPage() {
         </CardContent>
       </Card>
 
-      {/* Team Modal for creating/editing teams */}
       <CompanyTeamModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -273,7 +300,6 @@ export default function CompanyTeamsPage() {
         team={selectedTeam}
       />
 
-      {/* Team Details Modal */}
       <CompanyTeamDetailsModal
         isOpen={isDetailsModalOpen}
         onClose={() => setIsDetailsModalOpen(false)}

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Search, Eye, Edit, Trash2 } from "lucide-react"
+import { Plus, Search, Eye, Edit, Trash2, RefreshCw } from "lucide-react"
 import { CompanyUserModal } from "@/components/company/company-user-modal"
 import { CompanyUserDetailsModal } from "@/components/company/company-user-details-modal"
 import { PlanLimitBar } from "@/components/company/plan-limit-bar"
@@ -57,6 +57,7 @@ export default function CompanyUsersPage() {
   const [professionals, setProfessionals] = useState<Professional[]>([])
   const [plan, setPlan] = useState<Plan | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
@@ -244,6 +245,19 @@ export default function CompanyUsersPage() {
 
   const isAtLimit = plan ? users.length >= plan.professionalsLimit : false
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    try {
+      await loadUsers()
+      toast({ title: "Success", description: "Users refreshed successfully" })
+    } catch (error) {
+      console.error("Failed to refresh users:", error)
+      toast({ title: "Error", description: "Failed to refresh users", variant: "destructive" })
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -260,34 +274,45 @@ export default function CompanyUsersPage() {
             <h1 className="text-2xl font-bold text-foreground mb-1">User Management</h1>
             <p className="text-muted-foreground">Manage professional user accounts for your company.</p>
           </div>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className="bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={() => {
-                  if (isAtLimit) {
-                    toast({
-                      title: "Plan Limit Reached",
-                      description: "Please upgrade your plan to add more professionals.",
-                      variant: "destructive",
-                    })
-                    return
-                  }
-                  setSelectedUser(null)
-                  setIsModalOpen(true)
-                }}
-                disabled={isAtLimit}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                New User
-              </Button>
-            </TooltipTrigger>
-            {isAtLimit && (
-              <TooltipContent>
-                <p>Plan limit reached. Upgrade to add more users.</p>
-              </TooltipContent>
-            )}
-          </Tooltip>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="border-border text-foreground hover:bg-muted bg-transparent"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => {
+                    if (isAtLimit) {
+                      toast({
+                        title: "Plan Limit Reached",
+                        description: "Please upgrade your plan to add more professionals.",
+                        variant: "destructive",
+                      })
+                      return
+                    }
+                    setSelectedUser(null)
+                    setIsModalOpen(true)
+                  }}
+                  disabled={isAtLimit}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  New User
+                </Button>
+              </TooltipTrigger>
+              {isAtLimit && (
+                <TooltipContent>
+                  <p>Plan limit reached. Upgrade to add more users.</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </div>
         </div>
 
         {plan && (

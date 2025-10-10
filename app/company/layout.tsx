@@ -5,6 +5,7 @@ import { CompanySidebar } from "@/components/company/company-sidebar"
 import { CompanyHeader } from "@/components/company/company-header"
 import { CompanySidebarProvider } from "@/components/company/company-sidebar-context"
 import { CompanyGpsTrackingProvider } from "@/contexts/company-gps-tracking-context"
+import { CompanyCancellationsProvider } from "@/contexts/company-cancellations-context"
 
 export default function CompanyLayout({
   children,
@@ -14,13 +15,15 @@ export default function CompanyLayout({
   return (
     <CompanySidebarProvider>
       <CompanyGpsTrackingProvider>
-        <div className="flex h-screen overflow-hidden bg-background">
-          <CompanySidebar />
-          <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-            <CompanyHeader />
-            <main className="flex-1 overflow-auto p-3 sm:p-6 bg-muted/30">{children}</main>
+        <CompanyCancellationsProvider>
+          <div className="flex h-screen overflow-hidden bg-background">
+            <CompanySidebar />
+            <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+              <CompanyHeader />
+              <main className="flex-1 overflow-auto p-3 sm:p-6 bg-muted/30">{children}</main>
+            </div>
           </div>
-        </div>
+        </CompanyCancellationsProvider>
       </CompanyGpsTrackingProvider>
     </CompanySidebarProvider>
   )

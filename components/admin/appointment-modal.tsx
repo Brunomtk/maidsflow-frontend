@@ -55,7 +55,6 @@ export function AppointmentModal({ isOpen, onClose, onSubmit, appointment }: App
   const [recurrenceType, setRecurrenceType] = useState<"weekly" | "monthly" | "bimonthly">("weekly")
   const [repeatUntil, setRepeatUntil] = useState<string>("")
 
-
   const apiCall = async (endpoint: string, options: RequestInit = {}) => {
     const token = localStorage.getItem("noah_token")
 
@@ -152,32 +151,52 @@ export function AppointmentModal({ isOpen, onClose, onSubmit, appointment }: App
     }
   }
 
-  
-  const buildOccurrences = (startDateStr: string, endDateStr: string, untilStr: string, type: "weekly" | "monthly" | "bimonthly") => {
+  const buildOccurrences = (
+    startDateStr: string,
+    endDateStr: string,
+    untilStr: string,
+    type: "weekly" | "monthly" | "bimonthly",
+  ) => {
     const occurrences: { start: string; end: string }[] = []
     if (!startDateStr || !endDateStr || !untilStr) return occurrences
 
-    const [sh, sm] = (formData.startTime || "09:00").split(":").map((v) => parseInt(v, 10))
-    const [eh, em] = (formData.endTime || "10:00").split(":").map((v) => parseInt(v, 10))
+    const [sh, sm] = (formData.startTime || "09:00").split(":").map((v) => Number.parseInt(v, 10))
+    const [eh, em] = (formData.endTime || "10:00").split(":").map((v) => Number.parseInt(v, 10))
 
-    const baseParts = parseDateOnly(startDateStr); const base = baseParts ? new Date(baseParts.y, baseParts.m-1, baseParts.d) : new Date(startDateStr)
-    base.setHours(0,0,0,0)
-    const untilParts = parseDateOnly(untilStr); const until = untilParts ? new Date(untilParts.y, untilParts.m-1, untilParts.d) : new Date(untilStr)
-    until.setHours(23,59,59,999)
+    const baseParts = parseDateOnly(startDateStr)
+    const base = baseParts ? new Date(baseParts.y, baseParts.m - 1, baseParts.d) : new Date(startDateStr)
+    base.setHours(0, 0, 0, 0)
+    const untilParts = parseDateOnly(untilStr)
+    const until = untilParts ? new Date(untilParts.y, untilParts.m - 1, untilParts.d) : new Date(untilStr)
+    until.setHours(23, 59, 59, 999)
 
     let cur = new Date(base)
     const pushOccurrence = (d: Date) => {
       const s = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), sh, sm, 0, 0))
       const e = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), eh, em, 0, 0))
       // push occurrence if still within range
-      if (s <= until) { const y=s.getUTCFullYear(), m=s.getUTCMonth()+1, d=s.getUTCDate(); const ye=e.getUTCFullYear(), me=e.getUTCMonth()+1, de=e.getUTCDate(); occurrences.push({ start: `${y}-${pad2(m)}-${pad2(d)}T${pad2(sh)}:${pad2(sm)}:00.000Z`, end: `${ye}-${pad2(me)}-${pad2(de)}T${pad2(eh)}:${pad2(em)}:00.000Z` }) }
+      if (s <= until) {
+        const y = s.getUTCFullYear(),
+          m = s.getUTCMonth() + 1,
+          d = s.getUTCDate()
+        const ye = e.getUTCFullYear(),
+          me = e.getUTCMonth() + 1,
+          de = e.getUTCDate()
+        occurrences.push({
+          start: `${y}-${pad2(m)}-${pad2(d)}T${pad2(sh)}:${pad2(sm)}:00.000Z`,
+          end: `${ye}-${pad2(me)}-${pad2(de)}T${pad2(eh)}:${pad2(em)}:00.000Z`,
+        })
+      }
     }
 
     const addInterval = (d: Date) => {
       const nd = new Date(d)
       if (type === "weekly") nd.setDate(nd.getDate() + 7)
-      else if (type === "monthly") { nd.setMonth(nd.getMonth() + 1) }
-      else { nd.setMonth(nd.getMonth() + 2) }
+      else if (type === "monthly") {
+        nd.setMonth(nd.getMonth() + 1)
+      } else {
+        nd.setMonth(nd.getMonth() + 2)
+      }
       return nd
     }
 
@@ -193,18 +212,18 @@ export function AppointmentModal({ isOpen, onClose, onSubmit, appointment }: App
     return occurrences
   }
 
-  
-  // --- robust local date helpers (avoid locale/UTC shifts) ---
   const parseDateOnly = (s?: string | null) => {
     if (!s) return null
     const iso = /^\d{4}-\d{2}-\d{2}$/.test(s)
     if (iso) {
-      const [y,m,d] = s.split("-").map((v) => parseInt(v, 10))
+      const [y, m, d] = s.split("-").map((v) => Number.parseInt(v, 10))
       return { y, m, d }
     }
     const m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
     if (m) {
-      const a = parseInt(m[1],10), b = parseInt(m[2],10), y = parseInt(m[3],10)
+      const a = Number.parseInt(m[1], 10),
+        b = Number.parseInt(m[2], 10),
+        y = Number.parseInt(m[3], 10)
       // if first part > 12 assume DD/MM/YYYY else MM/DD/YYYY
       if (a > 12) return { y, m: b, d: a }
       return { y, m: a, d: b }
@@ -212,25 +231,26 @@ export function AppointmentModal({ isOpen, onClose, onSubmit, appointment }: App
     return null
   }
 
-  
-  // Build ISO in UTC keeping the selected clock time in Z (e.g., 08:30 -> 08:30Z)
-  
-  const pad2 = (n:number) => String(n).padStart(2, '0')
-  // Build ISO string with Z *without* using Date(), preserving the picked clock time exactly
+  const pad2 = (n: number) => String(n).padStart(2, "0")
   const composeISOZ = (dateStr: string, timeStr?: string) => {
     const parts = parseDateOnly(dateStr)
-    let y:number, m:number, d:number
-    if (parts) { y = parts.y; m = parts.m; d = parts.d }
-    else {
+    let y: number, m: number, d: number
+    if (parts) {
+      y = parts.y
+      m = parts.m
+      d = parts.d
+    } else {
       const dt = new Date(dateStr)
-      y = dt.getFullYear(); m = dt.getMonth()+1; d = dt.getDate()
+      y = dt.getFullYear()
+      m = dt.getMonth() + 1
+      d = dt.getDate()
     }
-    const [hh, mm] = (timeStr || "00:00").split(":").map((v) => parseInt(v || "0", 10))
+    const [hh, mm] = (timeStr || "00:00").split(":").map((v) => Number.parseInt(v || "0", 10))
     return `${y}-${pad2(m)}-${pad2(d)}T${pad2(hh)}:${pad2(mm)}:00.000Z`
   }
-const composeUTCISO = (dateStr: string, timeStr?: string) => {
+  const composeUTCISO = (dateStr: string, timeStr?: string) => {
     const parts = parseDateOnly(dateStr)
-    const [hh, mm] = (timeStr || "00:00").split(":").map((v) => parseInt(v || "0", 10))
+    const [hh, mm] = (timeStr || "00:00").split(":").map((v) => Number.parseInt(v || "0", 10))
     if (parts) {
       const ms = Date.UTC(parts.y, parts.m - 1, parts.d, hh, mm, 0, 0)
       return new Date(ms).toISOString()
@@ -239,9 +259,9 @@ const composeUTCISO = (dateStr: string, timeStr?: string) => {
     const dt = new Date(`${dateStr}T${timeStr || "00:00"}:00Z`)
     return dt.toISOString()
   }
-const composeLocalISO = (dateStr: string, timeStr?: string) => {
+  const composeLocalISO = (dateStr: string, timeStr?: string) => {
     const parts = parseDateOnly(dateStr)
-    const [hh, mm] = (timeStr || "00:00").split(":").map((v) => parseInt(v || "0", 10))
+    const [hh, mm] = (timeStr || "00:00").split(":").map((v) => Number.parseInt(v || "0", 10))
     if (parts) {
       const dt = new Date(parts.y, parts.m - 1, parts.d, hh, mm, 0, 0) // local time
       return dt.toISOString()
@@ -250,7 +270,8 @@ const composeLocalISO = (dateStr: string, timeStr?: string) => {
     const dt = new Date(`${dateStr}T${timeStr || "00:00"}:00`)
     return dt.toISOString()
   }
-const handleSubmit = async (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
@@ -261,6 +282,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           description: "Please select a date for the appointment.",
           variant: "destructive",
         })
+        setIsLoading(false)
         return
       }
 
@@ -270,6 +292,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           description: "Please select start and end times.",
           variant: "destructive",
         })
+        setIsLoading(false)
         return
       }
 
@@ -291,6 +314,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             description: "End time must be after start time.",
             variant: "destructive",
           })
+          setIsLoading(false)
           return
         }
       }
@@ -318,15 +342,13 @@ const handleSubmit = async (e: React.FormEvent) => {
           const body = { ...appointmentData, start: occ.start, end: occ.end }
           await appointmentsApi.createAppointment(body as any)
         }
+        // Close modal after all recurrences are created
+        onClose()
       } else {
+        // Wait for onSubmit to complete before closing
         await onSubmit(appointmentData)
+        onClose()
       }
-
-      toast({
-        title: "Success",
-        description: appointment ? "Appointment updated successfully!" : "Appointment created successfully!",
-        variant: "default",
-      })
     } catch (error) {
       console.error("Error submitting appointment:", error)
       toast({
@@ -601,42 +623,55 @@ const handleSubmit = async (e: React.FormEvent) => {
             </Button>
           </DialogFooter>
         </form>
-      
-            <div className="mt-6 rounded-xl border border-[#2a3349] p-4">
-              <h4 className="mb-3 text-sm font-medium text-gray-200">Recurrence</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center gap-2">
-                  <input
-                    id="recurrenceEnabled"
-                    type="checkbox"
-                    checked={recurrenceEnabled}
-                    onChange={(e) => setRecurrenceEnabled(e.target.checked)}
-                    className="h-4 w-4"
-                  />
-                  <label htmlFor="recurrenceEnabled" className="text-sm text-gray-300">Enable recurrence</label>
-                </div>
-                <div>
-                  <Label htmlFor="recurrenceType">Frequency</Label>
-                  <Select value={recurrenceType} onValueChange={(v) => setRecurrenceType(v as any)} disabled={!recurrenceEnabled}>
-                    <SelectTrigger className="bg-transparent border-[#2a3349] text-white">
-                      <SelectValue placeholder="Select frequency" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                      <SelectItem value="bimonthly">Bimonthly</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="repeatUntil">Repeat until</Label>
-                  <Input id="repeatUntil" type="date" value={repeatUntil} onChange={(e) => setRepeatUntil(e.target.value)} disabled={!recurrenceEnabled} />
-                  <p className="text-xs text-gray-400 mt-1">We will create appointments from the selected Date, repeating until this date (inclusive).</p>
-                </div>
-              </div>
-            </div>
 
-        </DialogContent>
+        <div className="mt-6 rounded-xl border border-[#2a3349] p-4">
+          <h4 className="mb-3 text-sm font-medium text-gray-200">Recurrence</h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center gap-2">
+              <input
+                id="recurrenceEnabled"
+                type="checkbox"
+                checked={recurrenceEnabled}
+                onChange={(e) => setRecurrenceEnabled(e.target.checked)}
+                className="h-4 w-4"
+              />
+              <label htmlFor="recurrenceEnabled" className="text-sm text-gray-300">
+                Enable recurrence
+              </label>
+            </div>
+            <div>
+              <Label htmlFor="recurrenceType">Frequency</Label>
+              <Select
+                value={recurrenceType}
+                onValueChange={(v) => setRecurrenceType(v as any)}
+                disabled={!recurrenceEnabled}
+              >
+                <SelectTrigger className="bg-transparent border-[#2a3349] text-white">
+                  <SelectValue placeholder="Select frequency" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="bimonthly">Bimonthly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="repeatUntil">Repeat until</Label>
+              <Input
+                id="repeatUntil"
+                type="date"
+                value={repeatUntil}
+                onChange={(e) => setRepeatUntil(e.target.value)}
+                disabled={!recurrenceEnabled}
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                We will create appointments from the selected Date, repeating until this date (inclusive).
+              </p>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
     </Dialog>
   )
 }

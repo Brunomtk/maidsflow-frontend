@@ -7,8 +7,7 @@ import SplashScreen from "@/components/splash-screen"
 
 export default function Home() {
   const router = useRouter()
-  const [showSplash, setShowSplash] = useState(false)
-  const [isPWA, setIsPWA] = useState(false)
+  const [isPWA, setIsPWA] = useState<boolean | null>(null)
 
   useEffect(() => {
     const checkPWAMode = () => {
@@ -19,24 +18,19 @@ export default function Home() {
 
     const pwaMode = checkPWAMode()
     setIsPWA(pwaMode)
-
-    if (pwaMode) {
-      setShowSplash(true)
-    }
   }, [])
 
   const handleSplashComplete = () => {
-    setShowSplash(false)
     router.push("/login")
   }
 
-  if (isPWA && showSplash) {
+  if (isPWA === true) {
     return <SplashScreen onComplete={handleSplashComplete} />
   }
 
-  if (!isPWA) {
+  if (isPWA === false) {
     return <LandingPage />
   }
 
-  return null
+  return <SplashScreen onComplete={handleSplashComplete} />
 }

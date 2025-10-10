@@ -26,7 +26,6 @@ export function CustomerDetailsModal({ open, onOpenChange, customer }: CustomerD
     })
   }
 
-  
   const normalizePhone = (raw?: string | null) => {
     const digits = (raw || "").replace(/\D/g, "")
     if (!digits) return null
@@ -37,15 +36,19 @@ export function CustomerDetailsModal({ open, onOpenChange, customer }: CustomerD
 
   const handleOnMyWay = () => {
     const phone = normalizePhone(customer?.phone as any)
-    if (!phone) { alert("Client phone not available."); return }
+    if (!phone) {
+      alert("Client phone not available.")
+      return
+    }
     const name = customer?.name || ""
-    const companyName = customer?.company?.name || (typeof window !== "undefined" ? (localStorage.getItem("company_name") || "our") : "our")
+    const companyName =
+      customer?.company?.name || (typeof window !== "undefined" ? localStorage.getItem("company_name") || "our" : "our")
     const eta = "15 minutes"
     const message = `Hi ${name}, hope your having a nice day. Your ${companyName} team is on the way, ${eta} from your house`
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
     if (typeof window !== "undefined") window.open(url, "_blank")
   }
-return (
+  return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-[#1a2234] border-[#2a3349] text-white max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -60,7 +63,16 @@ return (
           <Card className="bg-[#0f172a] border-[#2a3349]">
             <CardHeader>
               <CardTitle className="text-white text-lg">Basic Information</CardTitle>
-            <div className="mt-2"><Button variant="outline" className="border-[#2a3349] text-white hover:bg-[#2a3349]" onClick={handleOnMyWay}>On my way</Button></div></CardHeader>
+              <div className="mt-2">
+                <Button
+                  variant="outline"
+                  className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent"
+                  onClick={handleOnMyWay}
+                >
+                  On my way
+                </Button>
+              </div>
+            </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="space-y-2">
@@ -84,7 +96,7 @@ return (
                     <FileText className="h-4 w-4" />
                     <span className="text-sm">SSN</span>
                   </div>
-                  <p className="text-white">{customer.document}</p>
+                  <p className="text-white">{customer.ssn || "Not provided"}</p>
                 </div>
 
                 <div className="space-y-2">
@@ -142,30 +154,31 @@ return (
               </div>
             </CardContent>
           </Card>
-      <Card className="bg-[#0f172a] border-[#2a3349]">
-        <CardHeader>
-          <CardTitle className="text-white">Billing & Profile</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300">
-          <div>
-            <div className="text-sm text-gray-400">SSN</div>
-            <div className="text-white">{customer?.ssn || "—"}</div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-400">Ticket</div>
-            <div className="text-white">{customer?.ticket ?? "—"}</div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-400">Frequency</div>
-            <div className="text-white">{customer?.frequency || "—"}</div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-400">Payment Method</div>
-            <div className="text-white">{customer?.paymentMethod || "—"}</div>
-          </div>
-        </CardContent>
-      </Card>
-        
+
+          {/* Billing & Profile */}
+          <Card className="bg-[#0f172a] border-[#2a3349]">
+            <CardHeader>
+              <CardTitle className="text-white">Billing & Profile</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300">
+              <div>
+                <div className="text-sm text-gray-400">SSN</div>
+                <div className="text-white">{customer?.ssn || "—"}</div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-400">Ticket</div>
+                <div className="text-white">{customer?.ticket ?? "—"}</div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-400">Frequency</div>
+                <div className="text-white">{customer?.frequency || "—"}</div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-400">Payment Method</div>
+                <div className="text-white">{customer?.paymentMethod || "—"}</div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Company Information */}
           {customer.company && (

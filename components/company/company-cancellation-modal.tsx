@@ -21,11 +21,15 @@ import { useAuth } from "@/contexts/auth-context"
 import { useCompanyCancellationsContext } from "@/contexts/company-cancellations-context"
 import { customersApi } from "@/lib/api/customers"
 import { fetchApi } from "@/lib/api/utils"
+import type { Appointment } from "@/types/appointment"
+import { updateCompanyAppointment } from "@/lib/api/company-appointments"
 
 interface CompanyCancellationModalProps {
   isOpen: boolean
   onClose: () => void
   cancellation?: Cancellation
+  appointment?: Appointment
+  onSuccess?: () => void
 }
 
 interface Customer {
@@ -34,7 +38,7 @@ interface Customer {
   email?: string
 }
 
-interface Appointment {
+interface AppointmentData {
   id: number
   customerId: number
   customerName?: string
@@ -42,30 +46,36 @@ interface Appointment {
   scheduledDate?: string
 }
 
-export function CompanyCancellationModal({ isOpen, onClose, cancellation }: CompanyCancellationModalProps) {
+export function CompanyCancellationModal({
+  isOpen,
+  onClose,
+  cancellation,
+  appointment,
+  onSuccess,
+}: CompanyCancellationModalProps) {
   const { addCancellation, updateCancellation } = useCompanyCancellationsContext()
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [customers, setCustomers] = useState<Customer[]>([])
-  const [appointments, setAppointments] = useState<Appointment[]>([])
+  const [appointments, setAppointments] = useState<AppointmentData[]>([])
   const [loadingData, setLoadingData] = useState(false)
 
   const isEditing = !!cancellation
 
   const [formData, setFormData] = useState({
-    appointmentId: cancellation?.appointmentId || 0,
-    customerId: cancellation?.customerId || 0,
-    customerName: cancellation?.customerName || "",
+    appointmentId: cancellation?.appointmentId || appointment?.id || 0,
+    customerId: cancellation?.customerId || appointment?.customerId || 0,
+    customerName: cancellation?.customerName || appointment?.customer?.name || "",
     reason: cancellation?.reason || "",
     refundStatus: cancellation?.refundStatus || RefundStatus.Pending,
     notes: cancellation?.notes || "",
   })
 
   useEffect(() => {
-    if (isOpen && !isEditing) {
+    if (isOpen && !isEditing && !appointment) {
       loadDropdownData()
     }
-  }, [isOpen, isEditing])
+  }, [isOpen, isEditing, appointment])
 
   useEffect(() => {
     if (cancellation) {
@@ -77,6 +87,15 @@ export function CompanyCancellationModal({ isOpen, onClose, cancellation }: Comp
         refundStatus: cancellation.refundStatus || RefundStatus.Pending,
         notes: cancellation.notes || "",
       })
+    } else if (appointment) {
+      setFormData({
+        appointmentId: appointment.id || 0,
+        customerId: appointment.customerId || 0,
+        customerName: appointment.customer?.name || "",
+        reason: "",
+        refundStatus: RefundStatus.Pending,
+        notes: "",
+      })
     } else {
       setFormData({
         appointmentId: 0,
@@ -87,7 +106,7 @@ export function CompanyCancellationModal({ isOpen, onClose, cancellation }: Comp
         notes: "",
       })
     }
-  }, [cancellation])
+  }, [cancellation, appointment])
 
   const loadDropdownData = async () => {
     if (!user?.companyId) return
@@ -202,7 +221,6 @@ export function CompanyCancellationModal({ isOpen, onClose, cancellation }: Comp
         const newCancellation: CancellationFormData = {
           appointmentId: formData.appointmentId,
           customerId: formData.customerId,
-          customerName: finalCustomerName,
           companyId: user.companyId,
           reason: formData.reason,
           refundStatus: formData.refundStatus,
@@ -213,8 +231,19 @@ export function CompanyCancellationModal({ isOpen, onClose, cancellation }: Comp
 
         console.log("[v0] Final payload being sent:", newCancellation)
         await addCancellation(newCancellation)
+
+        if (formData.appointmentId) {
+          console.log("[v0] Updating appointment status to Cancelled...")
+          await updateCompanyAppointment(formData.appointmentId, {
+            status: 3, // Cancelled status
+          })
+          console.log("[v0] Appointment status updated successfully")
+        }
       }
       handleClose()
+      if (onSuccess) {
+        onSuccess()
+      }
     } catch (error) {
       console.error("Error saving cancellation:", error)
     } finally {
@@ -236,22 +265,53 @@ export function CompanyCancellationModal({ isOpen, onClose, cancellation }: Comp
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px] bg-[#0f172a] border-[#2a3349] text-white">
+      <DialogContent className="max-w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-[#0f172a] border-[#2a3349] text-white">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit Cancellation" : "New Cancellation"}</DialogTitle>
-          <DialogDescription className="text-gray-400">
+          <DialogTitle className="text-lg sm:text-xl">
+            {isEditing ? "Edit Cancellation" : "Cancel Appointment"}
+          </DialogTitle>
+          <DialogDescription className="text-gray-400 text-sm">
             {isEditing
               ? "Update the cancellation details below."
-              : "Fill in the details to record a service cancellation."}
+              : "Fill in the details to cancel this appointment and record the cancellation."}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            {!isEditing && (
+            {!isEditing && appointment && (
               <>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="appointment" className="text-white">
+                    <Label htmlFor="appointment-display" className="text-white text-sm">
+                      Appointment
+                    </Label>
+                    <Input
+                      id="appointment-display"
+                      value={`#${appointment.id} - ${appointment.customer?.name || "Unknown"}`}
+                      disabled
+                      className="bg-[#1a2234] border-[#2a3349] text-gray-400 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="customer-display" className="text-white text-sm">
+                      Customer
+                    </Label>
+                    <Input
+                      id="customer-display"
+                      value={appointment.customer?.name || "Unknown"}
+                      disabled
+                      className="bg-[#1a2234] border-[#2a3349] text-gray-400 text-sm"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {!isEditing && !appointment && (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="appointment" className="text-white text-sm">
                       Appointment
                     </Label>
                     <Select
@@ -259,21 +319,21 @@ export function CompanyCancellationModal({ isOpen, onClose, cancellation }: Comp
                       onValueChange={handleAppointmentChange}
                       disabled={loadingData}
                     >
-                      <SelectTrigger id="appointment" className="bg-[#1a2234] border-[#2a3349] text-white">
+                      <SelectTrigger id="appointment" className="bg-[#1a2234] border-[#2a3349] text-white text-sm">
                         <SelectValue placeholder={loadingData ? "Loading..." : "Select appointment"} />
                       </SelectTrigger>
                       <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
-                        {appointments.map((appointment) => (
-                          <SelectItem key={appointment.id} value={appointment.id.toString()}>
-                            #{appointment.id} - {appointment.customerName || `Customer ${appointment.customerId}`}
-                            {appointment.serviceType && ` (${appointment.serviceType})`}
+                        {appointments.map((apt) => (
+                          <SelectItem key={apt.id} value={apt.id.toString()} className="text-sm">
+                            #{apt.id} - {apt.customerName || `Customer ${apt.customerId}`}
+                            {apt.serviceType && ` (${apt.serviceType})`}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="customer" className="text-white">
+                    <Label htmlFor="customer" className="text-white text-sm">
                       Customer
                     </Label>
                     <Select
@@ -281,12 +341,12 @@ export function CompanyCancellationModal({ isOpen, onClose, cancellation }: Comp
                       onValueChange={handleCustomerChange}
                       disabled={loadingData}
                     >
-                      <SelectTrigger id="customer" className="bg-[#1a2234] border-[#2a3349] text-white">
+                      <SelectTrigger id="customer" className="bg-[#1a2234] border-[#2a3349] text-white text-sm">
                         <SelectValue placeholder={loadingData ? "Loading..." : "Select customer"} />
                       </SelectTrigger>
                       <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
                         {customers.map((customer) => (
-                          <SelectItem key={customer.id} value={customer.id.toString()}>
+                          <SelectItem key={customer.id} value={customer.id.toString()} className="text-sm">
                             {customer.name}
                             {customer.email && ` (${customer.email})`}
                           </SelectItem>
@@ -299,16 +359,16 @@ export function CompanyCancellationModal({ isOpen, onClose, cancellation }: Comp
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="reason" className="text-white">
+              <Label htmlFor="reason" className="text-white text-sm">
                 Cancellation Reason
               </Label>
               <Select value={formData.reason} onValueChange={(value) => setFormData({ ...formData, reason: value })}>
-                <SelectTrigger id="reason" className="bg-[#1a2234] border-[#2a3349] text-white">
+                <SelectTrigger id="reason" className="bg-[#1a2234] border-[#2a3349] text-white text-sm">
                   <SelectValue placeholder="Select reason" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
                   {getCancellationReasons().map((reason) => (
-                    <SelectItem key={reason.value} value={reason.value}>
+                    <SelectItem key={reason.value} value={reason.value} className="text-sm">
                       {reason.label}
                     </SelectItem>
                   ))}
@@ -317,7 +377,7 @@ export function CompanyCancellationModal({ isOpen, onClose, cancellation }: Comp
               {formData.reason === "Other" && (
                 <Input
                   placeholder="Please specify the reason..."
-                  className="bg-[#1a2234] border-[#2a3349] text-white mt-2"
+                  className="bg-[#1a2234] border-[#2a3349] text-white mt-2 text-sm"
                   value={formData.reason === "Other" ? "" : formData.reason}
                   onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
                 />
@@ -325,7 +385,7 @@ export function CompanyCancellationModal({ isOpen, onClose, cancellation }: Comp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="refundStatus" className="text-white">
+              <Label htmlFor="refundStatus" className="text-white text-sm">
                 Refund Status
               </Label>
               <Select
@@ -334,46 +394,54 @@ export function CompanyCancellationModal({ isOpen, onClose, cancellation }: Comp
                   setFormData({ ...formData, refundStatus: Number.parseInt(value) as RefundStatus })
                 }
               >
-                <SelectTrigger id="refundStatus" className="bg-[#1a2234] border-[#2a3349] text-white">
+                <SelectTrigger id="refundStatus" className="bg-[#1a2234] border-[#2a3349] text-white text-sm">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#1a2234] border-[#2a3349] text-white">
-                  <SelectItem value={RefundStatus.Pending.toString()}>Pending</SelectItem>
-                  <SelectItem value={RefundStatus.Processed.toString()}>Processed</SelectItem>
-                  <SelectItem value={RefundStatus.Rejected.toString()}>Rejected</SelectItem>
-                  <SelectItem value={RefundStatus.NotApplicable.toString()}>Not Applicable</SelectItem>
+                  <SelectItem value={RefundStatus.Pending.toString()} className="text-sm">
+                    Pending
+                  </SelectItem>
+                  <SelectItem value={RefundStatus.Processed.toString()} className="text-sm">
+                    Processed
+                  </SelectItem>
+                  <SelectItem value={RefundStatus.Rejected.toString()} className="text-sm">
+                    Rejected
+                  </SelectItem>
+                  <SelectItem value={RefundStatus.NotApplicable.toString()} className="text-sm">
+                    Not Applicable
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notes" className="text-white">
+              <Label htmlFor="notes" className="text-white text-sm">
                 Notes
               </Label>
               <Textarea
                 id="notes"
-                className="bg-[#1a2234] border-[#2a3349] text-white min-h-[80px]"
+                className="bg-[#1a2234] border-[#2a3349] text-white min-h-[80px] text-sm"
                 placeholder="Enter additional notes about the cancellation..."
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               />
             </div>
           </div>
-          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+          <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-0">
             <Button
               type="button"
               variant="outline"
               onClick={handleClose}
-              className="border-[#2a3349] text-white hover:bg-[#1a2234] hover:text-white bg-transparent"
+              className="w-full sm:w-auto border-[#2a3349] text-white hover:bg-[#1a2234] hover:text-white bg-transparent"
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="bg-[#06b6d4] hover:bg-[#0891b2] text-white"
+              className="w-full sm:w-auto bg-[#06b6d4] hover:bg-[#0891b2] text-white"
               disabled={loading || loadingData}
             >
-              {loading ? "Saving..." : isEditing ? "Update Cancellation" : "Create Cancellation"}
+              {loading ? "Saving..." : isEditing ? "Update Cancellation" : "Cancel Appointment"}
             </Button>
           </DialogFooter>
         </form>

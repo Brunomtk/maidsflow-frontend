@@ -123,6 +123,7 @@ export default function CompaniesPage() {
         title: "Company updated successfully",
         description: `${data.name} has been updated.`,
       })
+      await fetchCompanies(pagination.currentPage, pagination.itemsPerPage, statusFilter, searchQuery)
     }
   }
 
@@ -133,6 +134,12 @@ export default function CompaniesPage() {
         toast({
           title: "Company deleted successfully",
           description: `${companyToDelete.name} has been removed from the system.`,
+        })
+        await fetchCompanies(pagination.currentPage, pagination.itemsPerPage, statusFilter, searchQuery)
+      } else {
+        toast({
+          title: "Delete failed",
+          description: "Unable to delete company. It may have related data that needs to be removed first.",
           variant: "destructive",
         })
       }

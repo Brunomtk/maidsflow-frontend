@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Eye, EyeOff, Loader2, AlertCircle } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export function LoginForm() {
   const [email, setEmail] = useState("")
@@ -19,6 +20,7 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const { login } = useAuth()
   const router = useRouter()
 
@@ -33,6 +35,7 @@ export function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError(null)
 
     try {
       const success = await login({ email, password, rememberMe })
@@ -64,9 +67,12 @@ export function LoginForm() {
               router.push("/admin/dashboard")
           }
         }
+      } else {
+        setError("Invalid email or password. Please check your credentials and try again.")
       }
     } catch (error) {
       console.error("Login error:", error)
+      setError("Invalid email or password. Please check your credentials and try again.")
     } finally {
       setIsLoading(false)
     }
@@ -82,6 +88,13 @@ export function LoginForm() {
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-5">
+          {error && (
+            <Alert variant="destructive" className="bg-red-500/10 border-red-500/50 text-red-400">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="email" className="text-white font-medium">
               Email

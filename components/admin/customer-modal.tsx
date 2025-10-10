@@ -26,18 +26,9 @@ export function CustomerModal({ open, onOpenChange, customer }: CustomerModalPro
     name: "",
     email: "",
     ssn: "",
-    ticket: undefined as unknown as number | undefined,
+    ticket: undefined as number | undefined,
     frequency: "",
     paymentMethod: "",
-    phone: "",
-    address: "",
-    city: "",
-    state: "",
-    observations: "",
-    companyId: 0,
-    status: 1,
-  name: "",
-    email: "",
     phone: "",
     address: "",
     city: "",
@@ -59,14 +50,10 @@ export function CustomerModal({ open, onOpenChange, customer }: CustomerModalPro
       setFormData({
         name: customer.name,
         email: customer.email,
-        
         ssn: customer.ssn ?? "",
         ticket: customer.ticket ?? undefined,
         frequency: customer.frequency ?? "",
         paymentMethod: customer.paymentMethod ?? "",
-
-        email: customer.email,
-        
         phone: customer.phone || "",
         address: customer.address || "",
         city: customer.city || "",
@@ -79,6 +66,10 @@ export function CustomerModal({ open, onOpenChange, customer }: CustomerModalPro
       setFormData({
         name: "",
         email: "",
+        ssn: "",
+        ticket: undefined,
+        frequency: "",
+        paymentMethod: "",
         phone: "",
         address: "",
         city: "",
@@ -94,10 +85,26 @@ export function CustomerModal({ open, onOpenChange, customer }: CustomerModalPro
     e.preventDefault()
 
     try {
+      const submitData = {
+        name: formData.name,
+        email: formData.email,
+        ssn: formData.ssn,
+        ticket: formData.ticket,
+        frequency: formData.frequency,
+        paymentMethod: formData.paymentMethod,
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        observations: formData.observations,
+        companyId: formData.companyId,
+        status: formData.status,
+      }
+
       if (customer) {
-        await updateCustomer(customer.id, formData)
+        await updateCustomer(customer.id, submitData)
       } else {
-        await createCustomer(formData)
+        await createCustomer(submitData)
       }
 
       onOpenChange(false)
@@ -195,7 +202,6 @@ export function CustomerModal({ open, onOpenChange, customer }: CustomerModalPro
                 className="bg-[#0f172a] border-[#2a3349] text-white"
               />
             </div>
-    
 
             <div className="space-y-2">
               <Label htmlFor="phone" className="text-gray-300">

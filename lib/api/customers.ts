@@ -9,14 +9,14 @@ import type {
 
 export const customersApi = {
   async getAll(filters?: CustomerFilters): Promise<CustomerResponse> {
-    const params = new URLSearchParams();
-    if (filters?.companyId) params.append("CompanyId", filters.companyId.toString());
-    if (filters?.name) params.append("Name", filters.name);
-    if (filters?.ssn) params.append("Ssn", filters.ssn);
+    const params = new URLSearchParams()
+    if (filters?.companyId) params.append("CompanyId", filters.companyId.toString())
+    if (filters?.name) params.append("Name", filters.name)
+    if (filters?.ssn) params.append("Ssn", filters.ssn)
     if (filters?.status !== undefined && filters.status !== "all") {
       params.append("Status", filters.status.toString())
     }
-    if (filters?.pageNumber) params.append("PageNumber", filters.pageNumber.toString());
+    if (filters?.pageNumber) params.append("PageNumber", filters.pageNumber.toString())
     if (filters?.pageSize) params.append("PageSize", filters.pageSize.toString())
 
     const queryString = params.toString()
@@ -39,7 +39,22 @@ export const customersApi = {
   async update(data: UpdateCustomerRequest): Promise<Customer> {
     return await fetchApi("/Customer", {
       method: "PUT",
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        ssn: data.ssn,
+        ticket: data.ticket,
+        frequency: data.frequency,
+        paymentMethod: data.paymentMethod,
+        phone: data.phone,
+        address: data.address,
+        city: data.city,
+        state: data.state,
+        observations: data.observations,
+        status: data.status,
+        companyId: data.companyId,
+      }),
     })
   },
 

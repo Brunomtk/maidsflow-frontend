@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Search, MessageSquare, AlertTriangle, CheckCircle, Calendar } from "lucide-react"
+import { Search, MessageSquare, AlertTriangle, CheckCircle, Calendar, RefreshCw } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
@@ -34,6 +34,7 @@ export default function FeedbackPage() {
   const [professionals, setProfessionals] = useState<Professional[]>([])
   const [teams, setTeams] = useState<Team[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const { user } = useAuth()
   const { toast } = useToast()
 
@@ -79,6 +80,16 @@ export default function FeedbackPage() {
   useEffect(() => {
     loadData()
   }, [user?.companyId])
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    await loadData()
+    setIsRefreshing(false)
+    toast({
+      title: "Refreshed",
+      description: "Feedback data has been updated.",
+    })
+  }
 
   const getProfessionalName = (professionalId: number) => {
     const professional = professionals.find((p) => p.id === professionalId)
@@ -171,6 +182,15 @@ export default function FeedbackPage() {
           <h1 className="text-2xl font-bold text-foreground mb-1">Internal Feedback</h1>
           <p className="text-muted-foreground">Review feedback and issues reported by cleaning professionals</p>
         </div>
+        <Button
+          variant="outline"
+          onClick={handleRefresh}
+          className="border-border text-foreground hover:bg-muted bg-transparent"
+          disabled={isLoading || isRefreshing}
+        >
+          <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
+          Refresh
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

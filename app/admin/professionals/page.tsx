@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Search, Eye, Edit, Trash2, Calendar } from "lucide-react"
+import { Plus, Search, Eye, Edit, Trash2 } from "lucide-react"
 import { ProfessionalModal } from "@/components/admin/professional-modal"
 import { ProfessionalDetailsModal } from "@/components/admin/professional-details-modal"
 import { useToast } from "@/hooks/use-toast"
@@ -133,7 +133,7 @@ export default function ProfessionalsPage() {
       })
       toast({ title: "Success", description: "Professional created successfully" })
       setIsModalOpen(false)
-      loadProfessionals()
+      await loadProfessionals()
     } catch (error) {
       console.error("Failed to create professional:", error)
       toast({ title: "Error", description: "Failed to create professional", variant: "destructive" })
@@ -150,7 +150,7 @@ export default function ProfessionalsPage() {
       toast({ title: "Success", description: "Professional updated successfully" })
       setSelectedProfessional(null)
       setIsModalOpen(false)
-      loadProfessionals()
+      await loadProfessionals()
     } catch (error) {
       console.error("Failed to update professional:", error)
       toast({ title: "Error", description: "Failed to update professional", variant: "destructive" })
@@ -163,7 +163,7 @@ export default function ProfessionalsPage() {
       await fetchApi(`/Professional/${professionalToDelete.id}`, { method: "DELETE" })
       toast({ title: "Success", description: "Professional deleted successfully", variant: "destructive" })
       setProfessionalToDelete(null)
-      loadProfessionals()
+      await loadProfessionals()
     } catch (error) {
       console.error("Failed to delete professional:", error)
       toast({ title: "Error", description: "Failed to delete professional", variant: "destructive" })
@@ -382,22 +382,6 @@ export default function ProfessionalsPage() {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Edit</p>
-                        </TooltipContent>
-                      </Tooltip>
-
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleViewSchedule(professional)}
-                            className="h-8 w-8"
-                          >
-                            <Calendar className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>View Schedule</p>
                         </TooltipContent>
                       </Tooltip>
 

@@ -165,7 +165,7 @@ export default function AdminTeamsPage() {
       })
 
       setIsCreateModalOpen(false)
-      fetchTeams()
+      await fetchTeams()
     } catch (error) {
       console.error("Error creating team:", error)
       toast({
@@ -210,7 +210,7 @@ export default function AdminTeamsPage() {
 
       setIsEditModalOpen(false)
       setSelectedTeam(null)
-      fetchTeams()
+      await fetchTeams()
     } catch (error) {
       console.error("Error updating team:", error)
       toast({
@@ -225,9 +225,22 @@ export default function AdminTeamsPage() {
     if (!teamToDelete) return
 
     try {
-      await apiCall(`/Team/${teamToDelete.id}`, {
+      const response = await fetch(`${getApiUrl()}/Team/${teamToDelete.id}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("noah_token")}`,
+        },
       })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const contentType = response.headers.get("content-type")
+      if (contentType && contentType.includes("application/json")) {
+        await response.json()
+      }
 
       toast({
         title: "Success",
@@ -236,7 +249,7 @@ export default function AdminTeamsPage() {
 
       setIsDeleteDialogOpen(false)
       setTeamToDelete(null)
-      fetchTeams()
+      await fetchTeams()
     } catch (error) {
       console.error("Error deleting team:", error)
       toast({
@@ -539,6 +552,7 @@ export default function AdminTeamsPage() {
                               <DropdownMenuItem
                                 onClick={() => {
                                   setTeamToDelete(team)
+                                  setIsDetailsModalOpen(false)
                                   setIsDeleteDialogOpen(true)
                                 }}
                                 className="text-red-500 hover:bg-border hover:text-red-400"

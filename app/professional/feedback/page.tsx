@@ -27,15 +27,19 @@ import {
   User,
   Tag,
   Flag,
+  RefreshCw,
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useProfessionalFeedback } from "@/hooks/use-professional-feedback"
 import { useToast } from "@/hooks/use-toast"
 import type { InternalFeedback } from "@/types/internal-feedback"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function ProfessionalFeedback() {
   const { feedbacks, isLoading, createFeedback, fetchFeedbacks, addComment } = useProfessionalFeedback()
   const { toast } = useToast()
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   // Form state for new feedback
   const [newFeedback, setNewFeedback] = useState({
@@ -64,6 +68,30 @@ export default function ProfessionalFeedback() {
     })
   }, [searchTerm, statusFilter, priorityFilter, categoryFilter, fetchFeedbacks])
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    try {
+      await fetchFeedbacks({
+        search: searchTerm,
+        status: statusFilter !== "all" ? statusFilter : undefined,
+        priority: priorityFilter !== "all" ? priorityFilter : undefined,
+        category: categoryFilter !== "all" ? categoryFilter : undefined,
+      })
+      toast({
+        title: "Refreshed",
+        description: "Feedback list has been updated.",
+      })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to refresh feedback.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
+
   const handleSubmitFeedback = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -82,7 +110,7 @@ export default function ProfessionalFeedback() {
         category: newFeedback.category,
         description: newFeedback.description,
         priority: Number.parseInt(newFeedback.priority),
-        status: 0, // Pending
+        status: 0,
       })
 
       setNewFeedback({
@@ -132,21 +160,30 @@ export default function ProfessionalFeedback() {
     switch (status) {
       case 0:
         return (
-          <Badge variant="outline" className="border-yellow-500 text-yellow-600 bg-yellow-50">
+          <Badge
+            variant="outline"
+            className="border-yellow-500 text-yellow-700 bg-yellow-50 dark:bg-yellow-950 dark:text-yellow-300"
+          >
             <Clock className="w-3 h-3 mr-1" />
             Pending
           </Badge>
         )
       case 1:
         return (
-          <Badge variant="outline" className="border-blue-500 text-blue-600 bg-blue-50">
+          <Badge
+            variant="outline"
+            className="border-blue-500 text-blue-700 bg-blue-50 dark:bg-blue-950 dark:text-blue-300"
+          >
             <AlertCircle className="w-3 h-3 mr-1" />
             In Progress
           </Badge>
         )
       case 2:
         return (
-          <Badge variant="outline" className="border-green-500 text-green-600 bg-green-50">
+          <Badge
+            variant="outline"
+            className="border-green-500 text-green-700 bg-green-50 dark:bg-green-950 dark:text-green-300"
+          >
             <CheckCircle className="w-3 h-3 mr-1" />
             Resolved
           </Badge>
@@ -160,21 +197,27 @@ export default function ProfessionalFeedback() {
     switch (priority) {
       case 0:
         return (
-          <Badge variant="outline" className="border-green-500 text-green-600 bg-green-50">
+          <Badge
+            variant="outline"
+            className="border-green-500 text-green-700 bg-green-50 dark:bg-green-950 dark:text-green-300"
+          >
             <Flag className="w-3 h-3 mr-1" />
             Low
           </Badge>
         )
       case 1:
         return (
-          <Badge variant="outline" className="border-yellow-500 text-yellow-600 bg-yellow-50">
+          <Badge
+            variant="outline"
+            className="border-yellow-500 text-yellow-700 bg-yellow-50 dark:bg-yellow-950 dark:text-yellow-300"
+          >
             <Flag className="w-3 h-3 mr-1" />
             Medium
           </Badge>
         )
       case 2:
         return (
-          <Badge variant="outline" className="border-red-500 text-red-600 bg-red-50">
+          <Badge variant="outline" className="border-red-500 text-red-700 bg-red-50 dark:bg-red-950 dark:text-red-300">
             <Flag className="w-3 h-3 mr-1" />
             High
           </Badge>
@@ -210,55 +253,47 @@ export default function ProfessionalFeedback() {
   const resolvedCount = feedbacks.filter((f) => f.status === 2).length
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Internal Feedback</h2>
-        <p className="text-muted-foreground">
-          Submit feedback about issues, suggestions, or improvements to help us serve you better.
+    <div className="space-y-4 md:space-y-6 pb-20 md:pb-6 px-4 md:px-0">
+      <div className="space-y-1">
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Internal Feedback</h2>
+        <p className="text-sm md:text-base text-muted-foreground">
+          Submit feedback about issues, suggestions, or improvements
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <div className="flex items-center space-x-4">
-              <div className="p-2 bg-yellow-100 rounded-full">
-                <Clock className="h-6 w-6 text-yellow-600" />
+      <div className="grid gap-3 md:gap-4 grid-cols-3">
+        <Card className="border-yellow-200 dark:border-yellow-900">
+          <CardContent className="p-3 md:p-6">
+            <div className="flex flex-col items-center text-center space-y-1 md:space-y-2">
+              <div className="p-2 bg-yellow-100 dark:bg-yellow-950 rounded-full">
+                <Clock className="h-4 w-4 md:h-6 md:w-6 text-yellow-600 dark:text-yellow-400" />
               </div>
-              <div>
-                <p className="text-2xl font-bold">{pendingCount}</p>
-                <p className="text-sm text-muted-foreground">Pending Review</p>
-              </div>
+              <p className="text-xl md:text-2xl font-bold">{pendingCount}</p>
+              <p className="text-xs md:text-sm text-muted-foreground">Pending</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <div className="flex items-center space-x-4">
-              <div className="p-2 bg-blue-100 rounded-full">
-                <AlertCircle className="h-6 w-6 text-blue-600" />
+        <Card className="border-blue-200 dark:border-blue-900">
+          <CardContent className="p-3 md:p-6">
+            <div className="flex flex-col items-center text-center space-y-1 md:space-y-2">
+              <div className="p-2 bg-blue-100 dark:bg-blue-950 rounded-full">
+                <AlertCircle className="h-4 w-4 md:h-6 md:w-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <div>
-                <p className="text-2xl font-bold">{inProgressCount}</p>
-                <p className="text-sm text-muted-foreground">In Progress</p>
-              </div>
+              <p className="text-xl md:text-2xl font-bold">{inProgressCount}</p>
+              <p className="text-xs md:text-sm text-muted-foreground">In Progress</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <div className="flex items-center space-x-4">
-              <div className="p-2 bg-green-100 rounded-full">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+        <Card className="border-green-200 dark:border-green-900">
+          <CardContent className="p-3 md:p-6">
+            <div className="flex flex-col items-center text-center space-y-1 md:space-y-2">
+              <div className="p-2 bg-green-100 dark:bg-green-950 rounded-full">
+                <CheckCircle className="h-4 w-4 md:h-6 md:w-6 text-green-600 dark:text-green-400" />
               </div>
-              <div>
-                <p className="text-2xl font-bold">{resolvedCount}</p>
-                <p className="text-sm text-muted-foreground">Resolved</p>
-              </div>
+              <p className="text-xl md:text-2xl font-bold">{resolvedCount}</p>
+              <p className="text-xs md:text-sm text-muted-foreground">Resolved</p>
             </div>
           </CardContent>
         </Card>
@@ -266,35 +301,35 @@ export default function ProfessionalFeedback() {
 
       <Tabs defaultValue="submit" className="space-y-4">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="submit" className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Submit Feedback
+          <TabsTrigger value="submit" className="flex items-center gap-2 text-xs md:text-sm">
+            <Plus className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">Submit</span> Feedback
           </TabsTrigger>
-          <TabsTrigger value="history" className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4" />
-            My Feedback History
+          <TabsTrigger value="history" className="flex items-center gap-2 text-xs md:text-sm">
+            <MessageSquare className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">My</span> History
           </TabsTrigger>
         </TabsList>
 
         {/* Submit New Feedback Tab */}
         <TabsContent value="submit" className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Send className="h-5 w-5" />
+            <CardHeader className="pb-3 md:pb-6">
+              <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                <Send className="h-4 w-4 md:h-5 md:w-5" />
                 Submit New Feedback
               </CardTitle>
-              <CardDescription>
-                Help us improve by sharing your feedback about any issues, suggestions, or improvements.
+              <CardDescription className="text-xs md:text-sm">
+                Help us improve by sharing your feedback about any issues or suggestions
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmitFeedback} className="space-y-6">
+              <form onSubmit={handleSubmitFeedback} className="space-y-4 md:space-y-6">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="title">
+                    <Label htmlFor="title" className="text-sm">
                       <span className="flex items-center gap-2">
-                        <Tag className="h-4 w-4" />
+                        <Tag className="h-3 w-3 md:h-4 md:w-4" />
                         Title *
                       </span>
                     </Label>
@@ -302,15 +337,16 @@ export default function ProfessionalFeedback() {
                       id="title"
                       value={newFeedback.title}
                       onChange={(e) => setNewFeedback({ ...newFeedback, title: e.target.value })}
-                      placeholder="Brief description of your feedback"
+                      placeholder="Brief description"
                       required
+                      className="text-sm"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="category">
+                    <Label htmlFor="category" className="text-sm">
                       <span className="flex items-center gap-2">
-                        <Filter className="h-4 w-4" />
+                        <Filter className="h-3 w-3 md:h-4 md:w-4" />
                         Category *
                       </span>
                     </Label>
@@ -318,8 +354,8 @@ export default function ProfessionalFeedback() {
                       value={newFeedback.category}
                       onValueChange={(value) => setNewFeedback({ ...newFeedback, category: value })}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
+                      <SelectTrigger className="text-sm">
+                        <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Equipment">Equipment Issues</SelectItem>
@@ -329,7 +365,7 @@ export default function ProfessionalFeedback() {
                         <SelectItem value="Safety">Safety Concerns</SelectItem>
                         <SelectItem value="Sistema">System Issues</SelectItem>
                         <SelectItem value="Acesso">Access Problems</SelectItem>
-                        <SelectItem value="Usabilidade">Usability Improvements</SelectItem>
+                        <SelectItem value="Usabilidade">Usability</SelectItem>
                         <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
                     </Select>
@@ -337,9 +373,9 @@ export default function ProfessionalFeedback() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="priority">
+                  <Label htmlFor="priority" className="text-sm">
                     <span className="flex items-center gap-2">
-                      <Flag className="h-4 w-4" />
+                      <Flag className="h-3 w-3 md:h-4 md:w-4" />
                       Priority Level
                     </span>
                   </Label>
@@ -347,21 +383,21 @@ export default function ProfessionalFeedback() {
                     value={newFeedback.priority}
                     onValueChange={(value) => setNewFeedback({ ...newFeedback, priority: value })}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select priority level" />
+                    <SelectTrigger className="text-sm">
+                      <SelectValue placeholder="Select priority" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="0">Low - Minor issue or suggestion</SelectItem>
-                      <SelectItem value="1">Medium - Affects my work efficiency</SelectItem>
-                      <SelectItem value="2">High - Urgent issue that blocks my work</SelectItem>
+                      <SelectItem value="0">Low - Minor issue</SelectItem>
+                      <SelectItem value="1">Medium - Affects efficiency</SelectItem>
+                      <SelectItem value="2">High - Urgent issue</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">
+                  <Label htmlFor="description" className="text-sm">
                     <span className="flex items-center gap-2">
-                      <MessageSquare className="h-4 w-4" />
+                      <MessageSquare className="h-3 w-3 md:h-4 md:w-4" />
                       Description *
                     </span>
                   </Label>
@@ -369,17 +405,17 @@ export default function ProfessionalFeedback() {
                     id="description"
                     value={newFeedback.description}
                     onChange={(e) => setNewFeedback({ ...newFeedback, description: e.target.value })}
-                    placeholder="Please provide detailed information about your feedback. Include steps to reproduce if it's an issue, or specific suggestions for improvements."
-                    rows={6}
+                    placeholder="Provide detailed information about your feedback..."
+                    rows={5}
                     required
+                    className="text-sm resize-none"
                   />
                 </div>
 
-                <Alert>
+                <Alert className="border-blue-200 dark:border-blue-900">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    Your feedback will be reviewed by our team and you'll receive updates on its progress. Please
-                    provide as much detail as possible to help us understand and address your feedback effectively.
+                  <AlertDescription className="text-xs md:text-sm">
+                    Your feedback will be reviewed by our team. Provide as much detail as possible.
                   </AlertDescription>
                 </Alert>
 
@@ -403,38 +439,51 @@ export default function ProfessionalFeedback() {
 
         {/* Feedback History Tab */}
         <TabsContent value="history" className="space-y-4">
-          {/* Filters */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Filter className="h-5 w-5" />
-                Filter Your Feedback
-              </CardTitle>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+                  <Filter className="h-4 w-4 md:h-5 md:w-5" />
+                  Filters
+                </CardTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                  className="h-8 px-2 md:px-3"
+                >
+                  <RefreshCw className={`h-3 w-3 md:h-4 md:w-4 ${isRefreshing ? "animate-spin" : ""}`} />
+                  <span className="ml-1 hidden sm:inline text-xs md:text-sm">Refresh</span>
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+              <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                 <div className="space-y-2">
-                  <Label htmlFor="search">Search</Label>
+                  <Label htmlFor="search" className="text-xs md:text-sm">
+                    Search
+                  </Label>
                   <div className="relative">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute left-2 top-2.5 h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
                     <Input
                       id="search"
-                      placeholder="Search your feedback..."
+                      placeholder="Search..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-8"
+                      className="pl-7 md:pl-8 text-xs md:text-sm h-9"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Status</Label>
+                  <Label className="text-xs md:text-sm">Status</Label>
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm h-9">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Statuses</SelectItem>
+                      <SelectItem value="all">All</SelectItem>
                       <SelectItem value="0">Pending</SelectItem>
                       <SelectItem value="1">In Progress</SelectItem>
                       <SelectItem value="2">Resolved</SelectItem>
@@ -443,13 +492,13 @@ export default function ProfessionalFeedback() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Priority</Label>
+                  <Label className="text-xs md:text-sm">Priority</Label>
                   <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm h-9">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Priorities</SelectItem>
+                      <SelectItem value="all">All</SelectItem>
                       <SelectItem value="0">Low</SelectItem>
                       <SelectItem value="1">Medium</SelectItem>
                       <SelectItem value="2">High</SelectItem>
@@ -458,13 +507,13 @@ export default function ProfessionalFeedback() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Category</Label>
+                  <Label className="text-xs md:text-sm">Category</Label>
                   <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                    <SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm h-9">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Categories</SelectItem>
+                      <SelectItem value="all">All</SelectItem>
                       <SelectItem value="Equipment">Equipment</SelectItem>
                       <SelectItem value="Scheduling">Scheduling</SelectItem>
                       <SelectItem value="Customer Info">Customer Info</SelectItem>
@@ -477,119 +526,96 @@ export default function ProfessionalFeedback() {
                     </SelectContent>
                   </Select>
                 </div>
-
-                <div className="flex items-end">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setSearchTerm("")
-                      setStatusFilter("all")
-                      setPriorityFilter("all")
-                      setCategoryFilter("all")
-                    }}
-                    className="w-full"
-                  >
-                    Clear Filters
-                  </Button>
-                </div>
               </div>
+
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchTerm("")
+                  setStatusFilter("all")
+                  setPriorityFilter("all")
+                  setCategoryFilter("all")
+                }}
+                className="w-full mt-3 text-xs md:text-sm h-9"
+                size="sm"
+              >
+                Clear All Filters
+              </Button>
             </CardContent>
           </Card>
 
-          {/* Feedback List */}
           <Card>
-            <CardHeader>
-              <CardTitle>Your Feedback History ({filteredFeedbacks.length})</CardTitle>
-              <CardDescription>Track the status and progress of all your submitted feedback</CardDescription>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base md:text-lg">Your Feedback ({filteredFeedbacks.length})</CardTitle>
+              <CardDescription className="text-xs md:text-sm">
+                Track the status of all your submitted feedback
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {isLoading ? (
-                <div className="flex items-center justify-center py-12">
+                <div className="flex flex-col items-center justify-center py-12">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                  <span className="ml-2">Loading your feedback...</span>
+                  <span className="mt-2 text-sm text-muted-foreground">Loading...</span>
                 </div>
               ) : filteredFeedbacks.length === 0 ? (
                 <div className="text-center py-12">
-                  <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-lg font-medium">No feedback found</p>
-                  <p className="text-muted-foreground">
+                  <MessageSquare className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-base md:text-lg font-medium">No feedback found</p>
+                  <p className="text-xs md:text-sm text-muted-foreground mt-1">
                     {feedbacks.length === 0
-                      ? "You haven't submitted any feedback yet."
-                      : "No feedback matches your current filters."}
+                      ? "You haven't submitted any feedback yet"
+                      : "No feedback matches your filters"}
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3 max-h-[600px] overflow-y-auto">
                   {filteredFeedbacks.map((feedback) => (
-                    <div key={feedback.id} className="border rounded-lg p-6 hover:shadow-md transition-shadow">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1">
-                          <h4 className="text-lg font-semibold mb-2">{feedback.title}</h4>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                    <Card key={feedback.id} className="hover:shadow-md transition-shadow border-l-4 border-l-primary">
+                      <CardContent className="p-3 md:p-4">
+                        <div className="space-y-3">
+                          <div className="flex items-start justify-between gap-2">
+                            <h4 className="text-sm md:text-base font-semibold line-clamp-1 flex-1">{feedback.title}</h4>
+                            <div className="flex gap-1 flex-shrink-0">{getStatusBadge(feedback.status)}</div>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                             <span className="flex items-center gap-1">
-                              <Calendar className="h-4 w-4" />
+                              <Calendar className="h-3 w-3" />
                               {formatDate(feedback.date)}
                             </span>
+                            <Separator orientation="vertical" className="h-3" />
                             <span className="flex items-center gap-1">
-                              <Tag className="h-4 w-4" />
+                              <Tag className="h-3 w-3" />
                               {feedback.category}
                             </span>
+                            <Separator orientation="vertical" className="h-3" />
+                            {getPriorityBadge(feedback.priority)}
+                          </div>
+
+                          <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">
+                            {feedback.description}
+                          </p>
+
+                          <div className="flex items-center justify-between pt-2 border-t">
+                            {feedback.comments && feedback.comments.length > 0 && (
+                              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <MessageSquare className="h-3 w-3" />
+                                {feedback.comments.length}
+                              </span>
+                            )}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setSelectedFeedback(feedback)}
+                              className="ml-auto text-xs h-8"
+                            >
+                              <Eye className="h-3 w-3 mr-1" />
+                              View
+                            </Button>
                           </div>
                         </div>
-                        <div className="flex gap-2">
-                          {getStatusBadge(feedback.status)}
-                          {getPriorityBadge(feedback.priority)}
-                        </div>
-                      </div>
-
-                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{feedback.description}</p>
-
-                      <Separator className="my-4" />
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          {feedback.comments && feedback.comments.length > 0 && (
-                            <span className="flex items-center gap-1">
-                              <MessageSquare className="h-4 w-4" />
-                              {feedback.comments.length} comment{feedback.comments.length !== 1 ? "s" : ""}
-                            </span>
-                          )}
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setSelectedFeedback(feedback)}
-                          className="flex items-center gap-2"
-                        >
-                          <Eye className="h-4 w-4" />
-                          View Details
-                        </Button>
-                      </div>
-
-                      {/* Comments Section */}
-                      {feedback.comments && feedback.comments.length > 0 && (
-                        <div className="mt-4 pt-4 border-t">
-                          <h5 className="font-medium mb-3 flex items-center gap-2">
-                            <MessageSquare className="h-4 w-4" />
-                            Comments & Updates
-                          </h5>
-                          <div className="space-y-3">
-                            {feedback.comments.map((comment, index) => (
-                              <div key={index} className="bg-muted/50 rounded-lg p-3">
-                                <div className="flex justify-between items-center mb-2">
-                                  <span className="font-medium text-sm flex items-center gap-2">
-                                    <User className="h-3 w-3" />
-                                    {comment.author}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground">{formatDate(comment.date)}</span>
-                                </div>
-                                <p className="text-sm">{comment.text}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                      </CardContent>
+                    </Card>
                   ))}
                 </div>
               )}
@@ -598,89 +624,93 @@ export default function ProfessionalFeedback() {
         </TabsContent>
       </Tabs>
 
-      {/* Feedback Details Modal */}
       {selectedFeedback && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-xl">{selectedFeedback.title}</CardTitle>
-                  <CardDescription className="flex items-center gap-4 mt-2">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      {formatDate(selectedFeedback.date)}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Tag className="h-4 w-4" />
-                      {selectedFeedback.category}
-                    </span>
-                  </CardDescription>
+        <Dialog open={!!selectedFeedback} onOpenChange={() => setSelectedFeedback(null)}>
+          <DialogContent className="max-w-[95vw] md:max-w-2xl max-h-[90vh] p-0">
+            <DialogHeader className="p-4 md:p-6 pb-3">
+              <div className="space-y-3">
+                <DialogTitle className="text-base md:text-xl pr-8">{selectedFeedback.title}</DialogTitle>
+                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    {formatDate(selectedFeedback.date)}
+                  </span>
+                  <Separator orientation="vertical" className="h-3" />
+                  <span className="flex items-center gap-1">
+                    <Tag className="h-3 w-3" />
+                    {selectedFeedback.category}
+                  </span>
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => setSelectedFeedback(null)}>
-                  ×
-                </Button>
+                <div className="flex gap-2">
+                  {getStatusBadge(selectedFeedback.status)}
+                  {getPriorityBadge(selectedFeedback.priority)}
+                </div>
               </div>
-              <div className="flex gap-2 mt-4">
-                {getStatusBadge(selectedFeedback.status)}
-                {getPriorityBadge(selectedFeedback.priority)}
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <h4 className="font-medium mb-2">Description</h4>
-                <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
-                  {selectedFeedback.description}
-                </p>
-              </div>
+            </DialogHeader>
 
-              {selectedFeedback.comments && selectedFeedback.comments.length > 0 && (
+            <ScrollArea className="max-h-[calc(90vh-200px)] px-4 md:px-6">
+              <div className="space-y-4 pb-4">
                 <div>
-                  <h4 className="font-medium mb-3 flex items-center gap-2">
-                    <MessageSquare className="h-4 w-4" />
-                    Comments & Updates ({selectedFeedback.comments.length})
-                  </h4>
-                  <div className="space-y-3 max-h-60 overflow-y-auto">
-                    {selectedFeedback.comments.map((comment, index) => (
-                      <div key={index} className="bg-muted/50 rounded-lg p-3">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="font-medium text-sm flex items-center gap-2">
-                            <User className="h-3 w-3" />
-                            {comment.author}
-                          </span>
-                          <span className="text-xs text-muted-foreground">{formatDate(comment.date)}</span>
+                  <h4 className="font-medium mb-2 text-sm">Description</h4>
+                  <p className="text-xs md:text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg leading-relaxed">
+                    {selectedFeedback.description}
+                  </p>
+                </div>
+
+                {selectedFeedback.comments && selectedFeedback.comments.length > 0 && (
+                  <div>
+                    <h4 className="font-medium mb-3 flex items-center gap-2 text-sm">
+                      <MessageSquare className="h-4 w-4" />
+                      Comments ({selectedFeedback.comments.length})
+                    </h4>
+                    <div className="space-y-2">
+                      {selectedFeedback.comments.map((comment, index) => (
+                        <div key={index} className="bg-muted/50 rounded-lg p-3">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="font-medium text-xs flex items-center gap-2">
+                              <User className="h-3 w-3" />
+                              {comment.author}
+                            </span>
+                            <span className="text-xs text-muted-foreground">{formatDate(comment.date)}</span>
+                          </div>
+                          <p className="text-xs md:text-sm">{comment.text}</p>
                         </div>
-                        <p className="text-sm">{comment.text}</p>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Add Comment Form */}
-              <div>
-                <h4 className="font-medium mb-3">Add a Comment</h4>
-                <form onSubmit={handleAddComment} className="space-y-3">
-                  <Textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Add additional information or ask for updates..."
-                    rows={3}
-                  />
-                  <div className="flex gap-2">
-                    <Button type="submit" disabled={!newComment.trim() || isLoading}>
-                      <Send className="h-4 w-4 mr-2" />
-                      Add Comment
-                    </Button>
-                    <Button type="button" variant="outline" onClick={() => setSelectedFeedback(null)}>
-                      Close
-                    </Button>
-                  </div>
-                </form>
+                <div>
+                  <h4 className="font-medium mb-3 text-sm">Add Comment</h4>
+                  <form onSubmit={handleAddComment} className="space-y-3">
+                    <Textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="Add additional information..."
+                      rows={3}
+                      className="text-sm resize-none"
+                    />
+                    <div className="flex gap-2">
+                      <Button type="submit" disabled={!newComment.trim() || isLoading} size="sm" className="text-xs">
+                        <Send className="h-3 w-3 mr-1" />
+                        Add Comment
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setSelectedFeedback(null)}
+                        size="sm"
+                        className="text-xs"
+                      >
+                        Close
+                      </Button>
+                    </div>
+                  </form>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </ScrollArea>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   )

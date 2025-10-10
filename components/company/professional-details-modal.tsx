@@ -68,17 +68,7 @@ export function ProfessionalDetailsModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-[#1a2234] border-[#2a3349] text-white max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-white flex items-center justify-between">
-            Professional Details
-            <Button
-              size="sm"
-              onClick={() => onEdit(professional)}
-              className="bg-[#06b6d4] hover:bg-[#0891b2] text-white"
-            >
-              <Edit className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
-          </DialogTitle>
+          <DialogTitle className="text-white">Professional Details</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">

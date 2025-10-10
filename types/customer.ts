@@ -33,11 +33,7 @@ export interface Customer {
 
 export interface CreateCustomerRequest {
   name: string
-  
   ssn?: string
-  ticket?: number
-  frequency?: string
-  paymentMethod?: stringssn?: string
   ticket?: number
   frequency?: string
   paymentMethod?: string
@@ -64,17 +60,14 @@ export interface UpdateCustomerRequest {
   state?: string
   observations?: string
   status: number
+  companyId?: number
 }
 
 export interface CustomerFilters {
   search?: string
   name?: string
   ssn?: string
-  
-  ssn?: string
-  ticket?: number
-  frequency?: string
-  paymentMethod?: stringcompanyId?: number
+  companyId?: number
   status?: number | string
   pageNumber?: number
   pageSize?: number

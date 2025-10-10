@@ -27,8 +27,10 @@ export function ProfessionalHeader({ onMenuClick }: ProfessionalHeaderProps) {
   const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
-    loadUnreadCount()
-  }, [])
+    if (user) {
+      loadUnreadCount()
+    }
+  }, [user])
 
   const loadUnreadCount = async () => {
     try {
@@ -36,6 +38,7 @@ export function ProfessionalHeader({ onMenuClick }: ProfessionalHeaderProps) {
       setUnreadCount(count)
     } catch (error) {
       console.error("Error loading unread count:", error)
+      setUnreadCount(0)
     }
   }
 

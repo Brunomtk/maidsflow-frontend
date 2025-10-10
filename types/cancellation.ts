@@ -40,6 +40,7 @@ export interface CancellationFormData {
   cancelledByRole: CancelledByRole
   refundStatus: RefundStatus
   notes?: string
+  customerName?: string
 }
 
 // Interface for updating cancellation

@@ -35,7 +35,7 @@ export function CompanyDetailsModal({ isOpen, onClose, company }: CompanyDetails
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] bg-[#1a2234] border-[#2a3349] text-white">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-[#1a2234] border-[#2a3349] text-white">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-[#06b6d4]" />

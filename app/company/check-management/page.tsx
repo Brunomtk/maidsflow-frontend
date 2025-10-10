@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Calendar, Search, Plus, X } from "lucide-react"
+import { Calendar, Search, Plus, X, RefreshCw } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -78,11 +78,15 @@ export default function CheckManagementPage() {
     await fetchRecords(filters)
   }
 
+  const handleRefresh = async () => {
+    await loadCheckRecords()
+  }
+
   const handleAddCheckRecord = async (data: any) => {
     const result = await createRecord(data)
     if (result) {
       setIsCheckRecordModalOpen(false)
-      await loadCheckRecords()
+      await handleRefresh() // Use handleRefresh
       toast({
         title: "Success",
         description: "Check record created successfully",
@@ -110,7 +114,7 @@ export default function CheckManagementPage() {
       if (result) {
         setIsCheckInModalOpen(false)
         setSelectedCheckRecord(null)
-        await loadCheckRecords()
+        await handleRefresh() // Use handleRefresh
         toast({
           title: "Success",
           description: "Check-in performed successfully",
@@ -125,7 +129,7 @@ export default function CheckManagementPage() {
       if (result) {
         setIsCheckOutModalOpen(false)
         setSelectedCheckRecord(null)
-        await loadCheckRecords()
+        await handleRefresh() // Use handleRefresh
         toast({
           title: "Success",
           description: "Check-out performed successfully",
@@ -140,7 +144,7 @@ export default function CheckManagementPage() {
       if (result) {
         setIsCheckInModalOpen(false)
         setIsCheckOutModalOpen(false)
-        await loadCheckRecords()
+        await handleRefresh() // Use handleRefresh
         toast({
           title: "Success",
           description: "Check record updated successfully",
@@ -369,16 +373,28 @@ export default function CheckManagementPage() {
             Manage check-ins and check-outs for professionals.
           </p>
         </div>
-        <Button
-          className="bg-[#06b6d4] hover:bg-[#0891b2] text-white w-full sm:w-auto"
-          onClick={() => {
-            setSelectedCheckRecord(null)
-            setIsCheckRecordModalOpen(true)
-          }}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          New Check Record
-        </Button>
+        <div className="flex gap-2">
+          {/* Refresh button */}
+          <Button
+            variant="outline"
+            onClick={handleRefresh}
+            className="border-border text-foreground hover:bg-muted bg-transparent"
+            disabled={isLoading}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+          <Button
+            className="bg-[#06b6d4] hover:bg-[#0891b2] text-white w-full sm:w-auto"
+            onClick={() => {
+              setSelectedCheckRecord(null)
+              setIsCheckRecordModalOpen(true)
+            }}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            New Check Record
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}

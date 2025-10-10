@@ -176,7 +176,7 @@ export function UserModal({ isOpen, onClose, user, mode }: UserModalProps) {
         // Check if the operation was successful (status 200/201 or response is true)
         if (response.status === 200 || response.status === 201 || response.data === true || response === true) {
           const newUser: User = {
-            id: Date.now(), // Temporary ID until page refresh
+            id: 0, // Backend will assign proper ID
             name: formData.name,
             email: formData.email,
             role: formData.role,
@@ -187,12 +187,14 @@ export function UserModal({ isOpen, onClose, user, mode }: UserModalProps) {
             updatedDate: new Date().toISOString(),
           }
 
-          dispatch({ type: "ADD_USER", payload: newUser })
+          // dispatch({ type: "ADD_USER", payload: newUser })
           toast({
             title: "Success",
-            description: "User created successfully",
+            description: "User created successfully. Refreshing list...",
           })
           onClose()
+          // Trigger a page refresh to get updated data from server
+          window.location.reload()
         } else {
           console.error("Create user failed:", response)
           throw new Error(response.error || "Failed to create user")

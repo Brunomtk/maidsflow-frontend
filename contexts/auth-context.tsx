@@ -123,7 +123,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return true
     } catch (err: any) {
       console.error("Login error:", err)
-      toast.error("Login failed: " + (err.message || "Please try again."))
       return false
     } finally {
       setIsLoading(false)

@@ -58,6 +58,22 @@ export async function apiRequest(endpoint: string, options: RequestInit = {}): P
 
     console.log(`Response status: ${response.status}`)
 
+    if (response.status === 401) {
+      console.error("Unauthorized access - redirecting to login")
+
+      // Clear authentication data
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("noah_token")
+        localStorage.removeItem("noah_refresh_token")
+        localStorage.removeItem("noah_refresh_token_expiry")
+
+        // Redirect to login page
+        window.location.href = "/login"
+      }
+
+      throw new Error("Unauthorized - Session expired. Please login again.")
+    }
+
     if (!response.ok) {
       let errorText = "Unknown error"
       try {

@@ -579,7 +579,7 @@ export default function ProfessionalSchedule() {
 
             {/* Week View - Otimizado para mobile */}
             {view === "week" && (
-              <div className="space-y-4 max-h-[70vh] overflow-y-auto md:max-h-none">
+              <div className="space-y-4">
                 <div className="grid grid-cols-7 gap-1 md:gap-2">
                   {generateWeekDays.map((day, i) => (
                     <div key={i} className="text-center">
@@ -595,27 +595,66 @@ export default function ProfessionalSchedule() {
                         {day.dayNumber}
                       </div>
                       <div
-                        className={`h-16 md:h-24 rounded-md border border-border overflow-y-auto ${day.appointments.length > 0 ? "bg-primary/5" : "bg-card"}`}
+                        className={`h-12 md:h-16 rounded-md border border-border flex items-center justify-center ${day.appointments.length > 0 ? "bg-primary/5" : "bg-card"}`}
                       >
-                        {day.appointments.map((appointment) => (
-                          <div
-                            key={appointment.id}
-                            className="mx-0.5 md:mx-1 my-0.5 md:my-1 px-0.5 md:px-1 py-0.5 md:py-1 text-xs bg-primary/10 text-primary rounded truncate cursor-pointer hover:bg-primary/20"
-                            onClick={() => handleViewDetails(appointment)}
-                          >
-                            <div className="hidden md:block">
-                              {format(new Date(appointment.start), "HH:mm")}–
-                              {format(new Date(appointment.end), "HH:mm")} • {appointment.title}
-                            </div>
-                            <div className="md:hidden">
-                              {format(new Date(appointment.start), "HH:mm")}–
-                              {format(new Date(appointment.end), "HH:mm")}
-                            </div>
-                          </div>
-                        ))}
+                        {day.appointments.length > 0 && (
+                          <span className="text-xs md:text-sm font-medium text-primary">{day.appointments.length}</span>
+                        )}
                       </div>
                     </div>
                   ))}
+                </div>
+
+                <div className="space-y-3 pt-4 border-t">
+                  <h3 className="text-base md:text-lg font-semibold text-foreground">
+                    Week Appointments ({getWeekAppointments.length})
+                  </h3>
+
+                  {getWeekAppointments.length > 0 ? (
+                    <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                      {getWeekAppointments.map((appointment) => (
+                        <div
+                          key={appointment.id}
+                          className="border border-border rounded-lg p-3 md:p-4 hover:bg-muted/50 transition-colors bg-card cursor-pointer"
+                          onClick={() => handleViewDetails(appointment)}
+                        >
+                          <div className="flex flex-col gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <Badge variant="outline" className={getStatusBadge(appointment.status).className}>
+                                {getStatusBadge(appointment.status).label}
+                              </Badge>
+                              <Badge variant="secondary" className="text-xs">
+                                {getTypeLabel(appointment.type)}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground ml-auto">
+                                {format(new Date(appointment.start), "EEE, MMM d")}
+                              </span>
+                            </div>
+                            <h4 className="font-semibold text-sm md:text-base text-foreground">{appointment.title}</h4>
+                            <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
+                              <Clock className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+                              <span>
+                                {format(new Date(appointment.start), "h:mm a")} -{" "}
+                                {format(new Date(appointment.end), "h:mm a")}
+                              </span>
+                            </div>
+                            <div className="flex items-start gap-2 text-xs md:text-sm text-muted-foreground">
+                              <MapPin className="h-3 w-3 md:h-4 md:w-4 mt-0.5 flex-shrink-0" />
+                              <span className="break-words line-clamp-1">{appointment.address}</span>
+                            </div>
+                            <div className="text-xs md:text-sm text-muted-foreground">
+                              <Users className="h-3 w-3 md:h-4 md:w-4 inline mr-1" />
+                              {appointment.customer?.name || "No customer"}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground text-sm">
+                      No appointments scheduled for this week
+                    </div>
+                  )}
                 </div>
               </div>
             )}

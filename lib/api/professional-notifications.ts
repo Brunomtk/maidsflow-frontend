@@ -11,27 +11,31 @@ export interface Notification {
 }
 
 // Get user ID from token
-function getUserIdFromToken(): string {
+function getUserIdFromToken(): string | null {
   const token = localStorage.getItem("noah_token")
   if (!token) {
-    throw new Error("No authentication token found")
+    return null
   }
 
   try {
     const payload = JSON.parse(atob(token.split(".")[1]))
     const userId = payload.UserId || payload.userId
     if (!userId) {
-      throw new Error("User ID not found in token")
+      return null
     }
     return userId
   } catch (error) {
-    throw new Error("Invalid token format")
+    console.error("Error parsing token:", error)
+    return null
   }
 }
 
 export async function getProfessionalNotifications(): Promise<Notification[]> {
   try {
     const userId = getUserIdFromToken()
+    if (!userId) {
+      return []
+    }
     const response = await apiRequest(`/Notifications/user/${userId}`)
     return response || []
   } catch (error) {
@@ -43,6 +47,9 @@ export async function getProfessionalNotifications(): Promise<Notification[]> {
 export async function getProfessionalUnreadNotificationsCount(): Promise<number> {
   try {
     const userId = getUserIdFromToken()
+    if (!userId) {
+      return 0
+    }
     const response = await apiRequest(`/Notifications/user/${userId}/unread-count`)
     return response || 0
   } catch (error) {
@@ -168,6 +175,9 @@ export async function sendProfessionalNotificationResponse(id: string, response:
 export async function markAllProfessionalNotificationsAsRead(): Promise<boolean> {
   try {
     const userId = getUserIdFromToken()
+    if (!userId) {
+      return false
+    }
     await apiRequest(`/Notifications/user/${userId}/mark-all-read`, { method: "POST" })
     return true
   } catch (error) {

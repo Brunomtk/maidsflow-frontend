@@ -110,6 +110,9 @@ export function CustomersProvider({ children }: { children: React.ReactNode }) {
       const createData = {
         name: data.name,
         ssn: data.ssn,
+        ticket: data.ticket,
+        frequency: data.frequency,
+        paymentMethod: data.paymentMethod,
         email: data.email,
         phone: data.phone,
         address: data.address,
@@ -145,7 +148,10 @@ export function CustomersProvider({ children }: { children: React.ReactNode }) {
         const updateData = {
           id: id,
           name: data.name || existingCustomer.name,
-          ssn: data.ssn || existingCustomer.ssn,
+          ssn: data.ssn !== undefined ? data.ssn : existingCustomer.ssn,
+          ticket: data.ticket !== undefined ? data.ticket : existingCustomer.ticket,
+          frequency: data.frequency !== undefined ? data.frequency : existingCustomer.frequency,
+          paymentMethod: data.paymentMethod !== undefined ? data.paymentMethod : existingCustomer.paymentMethod,
           email: data.email || existingCustomer.email,
           phone: data.phone || existingCustomer.phone,
           address: data.address || existingCustomer.address,
@@ -153,6 +159,7 @@ export function CustomersProvider({ children }: { children: React.ReactNode }) {
           state: data.state || existingCustomer.state,
           observations: data.observations || existingCustomer.observations,
           status: data.status !== undefined ? data.status : existingCustomer.status,
+          companyId: data.companyId || existingCustomer.companyId,
         }
 
         const updatedCustomer = await customersApi.update(updateData)

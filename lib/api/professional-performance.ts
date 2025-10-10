@@ -41,21 +41,21 @@ interface PerformanceMetrics {
 }
 
 // Get user ID from token
-function getUserIdFromToken(): string {
+function getUserIdFromToken(): string | null {
   const token = localStorage.getItem("noah_token")
   if (!token) {
-    throw new Error("No authentication token found")
+    return null
   }
 
   try {
     const payload = JSON.parse(atob(token.split(".")[1]))
     const userId = payload.UserId || payload.userId
     if (!userId) {
-      throw new Error("User ID not found in token")
+      return null
     }
     return userId
   } catch (error) {
-    throw new Error("Invalid token format")
+    return null
   }
 }
 
@@ -65,6 +65,18 @@ export async function getProfessionalReviews(params: {
 }): Promise<ReviewsResponse> {
   try {
     const userId = getUserIdFromToken()
+    if (!userId) {
+      return {
+        data: [],
+        meta: {
+          currentPage: 1,
+          totalPages: 0,
+          totalItems: 0,
+          itemsPerPage: 10,
+        },
+      }
+    }
+
     const queryParams = new URLSearchParams({
       page: (params.page || 1).toString(),
       pageSize: (params.pageSize || 10).toString(),

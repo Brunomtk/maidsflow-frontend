@@ -90,9 +90,14 @@ export function AppointmentDetailsModal({
   const handleOnMyWay = () => {
     if (!appointment) return
     const phone = normalizePhone(appointment.customer?.phone as any)
-    if (!phone) { alert("Client phone not available."); return }
+    if (!phone) {
+      alert("Client phone not available.")
+      return
+    }
     const name = appointment.customer?.name || ""
-    const companyName = appointment.company?.name || (typeof window !== "undefined" ? (localStorage.getItem("company_name") || "our") : "our")
+    const companyName =
+      appointment.company?.name ||
+      (typeof window !== "undefined" ? localStorage.getItem("company_name") || "our" : "our")
     const eta = "15 minutes"
     const message = `Hi ${name}, hope your having a nice day. Your ${companyName} team is on the way, ${eta} from your house`
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
@@ -118,10 +123,7 @@ export function AppointmentDetailsModal({
             <div className="flex items-center gap-2">
               {getStatusBadge(appointment.status)}
               {getTypeBadge(appointment.type)}
-            
-                <Button variant="outline" size="sm" className="border-[#2a3349] text-white hover:bg-[#2a3349]" onClick={handleOnMyWay}>
-                  On my way
-                </Button></div>
+            </div>
           </div>
         </DialogHeader>
 
@@ -243,19 +245,26 @@ export function AppointmentDetailsModal({
           </div>
         </div>
 
-        <DialogFooter className="flex items-center justify-between">
+        <DialogFooter className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
           <Button
             variant="outline"
-            onClick={onClose}
-            className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent"
+            onClick={handleOnMyWay}
+            className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent order-1 sm:order-none"
           >
-            Close
+            On my way
           </Button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 order-2 sm:order-none">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent flex-1 sm:flex-none"
+            >
+              Close
+            </Button>
             <Button
               variant="outline"
               onClick={() => onEdit(appointment)}
-              className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent"
+              className="border-[#2a3349] text-white hover:bg-[#2a3349] bg-transparent flex-1 sm:flex-none"
             >
               <Edit className="h-4 w-4 mr-2" />
               Edit
@@ -263,7 +272,7 @@ export function AppointmentDetailsModal({
             <Button
               variant="destructive"
               onClick={() => onDelete(appointment)}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-red-600 hover:bg-red-700 text-white flex-1 sm:flex-none"
             >
               <Trash2 className="h-4 w-4 mr-2" />
               Delete

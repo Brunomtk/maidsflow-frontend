@@ -462,6 +462,25 @@ export async function createCheckRecordFromAppointment(appointment: any): Promis
   try {
     console.log("[v0] Creating check record from appointment:", appointment)
 
+    const professionalId = Number(appointment.professionalId || appointment.professional?.id)
+    const companyId = Number(appointment.companyId || appointment.company?.id)
+    const customerId = Number(appointment.customerId || appointment.customer?.id)
+    const appointmentId = Number(appointment.id)
+    const teamId = appointment.teamId ? Number(appointment.teamId) : null
+
+    if (!professionalId || isNaN(professionalId)) {
+      throw new Error("Invalid professional ID")
+    }
+    if (!companyId || isNaN(companyId)) {
+      throw new Error("Invalid company ID")
+    }
+    if (!customerId || isNaN(customerId)) {
+      throw new Error("Invalid customer ID")
+    }
+    if (!appointmentId || isNaN(appointmentId)) {
+      throw new Error("Invalid appointment ID")
+    }
+
     let geocodeResult
     try {
       geocodeResult = await geocodeAddress(appointment.address || "")
@@ -471,16 +490,15 @@ export async function createCheckRecordFromAppointment(appointment: any): Promis
       geocodeResult = geocodeAddressFallback(appointment.address || "")
     }
 
-    // Structure matching the check-in API endpoint
     const payload = {
-      professionalId: Number(appointment.professionalId || appointment.professional?.id),
+      professionalId,
       professionalName: appointment.professional?.name || "",
-      companyId: Number(appointment.companyId || appointment.company?.id),
-      customerId: Number(appointment.customerId || appointment.customer?.id),
+      companyId,
+      customerId,
       customerName: appointment.customer?.name || "",
-      appointmentId: Number(appointment.id),
+      appointmentId,
       address: appointment.address || "",
-      teamId: appointment.teamId ? Number(appointment.teamId) : null,
+      teamId,
       teamName: appointment.team?.name || null,
       serviceType: getServiceTypeText(appointment.type),
       notes: appointment.notes || "",
@@ -498,9 +516,9 @@ export async function createCheckRecordFromAppointment(appointment: any): Promis
 
     try {
       const gpsTrackingData = {
-        professionalId: Number(appointment.professionalId || appointment.professional?.id),
+        professionalId,
         professionalName: appointment.professional?.name || "",
-        companyId: Number(appointment.companyId || appointment.company?.id),
+        companyId,
         companyName: appointment.company?.name || "",
         vehicle: "N/A",
         latitude: geocodeResult.latitude,
@@ -526,17 +544,17 @@ export async function createCheckRecordFromAppointment(appointment: any): Promis
     }
 
     try {
-      console.log("[v0] Updating appointment status to InProgress for appointment ID:", appointment.id)
+      console.log("[v0] Updating appointment status to InProgress for appointment ID:", appointmentId)
 
       const updatePayload = {
         title: appointment.title,
         address: appointment.address,
         start: new Date(appointment.start).toISOString(),
         end: new Date(appointment.end).toISOString(),
-        companyId: Number(appointment.companyId || appointment.company?.id),
-        customerId: Number(appointment.customerId || appointment.customer?.id),
-        teamId: appointment.teamId ? Number(appointment.teamId) : null,
-        professionalId: Number(appointment.professionalId || appointment.professional?.id),
+        companyId,
+        customerId,
+        teamId,
+        professionalId,
         status: 1, // InProgress
         type: appointment.type,
         notes: appointment.notes || "",
@@ -544,7 +562,7 @@ export async function createCheckRecordFromAppointment(appointment: any): Promis
 
       console.log("[v0] Appointment update payload:", updatePayload)
 
-      const updateResult = await updateCompanyAppointment(appointment.id, updatePayload)
+      const updateResult = await updateCompanyAppointment(appointmentId, updatePayload)
       console.log("[v0] Appointment status updated successfully:", updateResult)
     } catch (appointmentError) {
       console.error("[v0] Failed to update appointment status:", appointmentError)
